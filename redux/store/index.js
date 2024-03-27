@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import counterSlice from "../../src/pages/supplier_delivery/actions/counterSlice";
+import navigationSlice from "../../src/components/navigation/actions/navigationSlice";
 
 const store = configureStore({
   reducer: {
-    counter: counterSlice,
+    navigations: navigationSlice,
   }
 });
 

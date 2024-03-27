@@ -11,9 +11,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ant-design/icons": "^5.3.4",
+    "@ant-design/icons": "^5.3.5",
     "@reduxjs/toolkit": "^2.2.2",
     "antd": "^5.15.3",
+    "axios": "^1.6.8",
     "compression": "^1.7.4",
     "express": "^4.19.0",
     "express-minify": "^1.0.0",
