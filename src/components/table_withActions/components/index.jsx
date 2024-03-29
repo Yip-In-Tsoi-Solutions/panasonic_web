@@ -2,10 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table } from "antd";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setColumns,
-  setData,
-} from "../../../pages/powerbi_report/actions/tableSlice";
+import { setColumns, setData } from "../actions/tableActionSlice";
 
 const Table_withActions = (props) => {
   const disPatch = useDispatch();
@@ -38,24 +35,9 @@ const Table_withActions = (props) => {
   useEffect(() => {
     fetchData();
   }, []);
-
-  const actionColumn = [
-    {
-      title: "ACTION",
-      dataIndex: "",
-      key: "x",
-      render: () => (
-        <div>
-          <a className="mr-[10px]">Edit</a>
-          <a>Delete</a>
-        </div>
-      ),
-    },
-  ];
-
   return (
     <>
-      <Table dataSource={table.dataSource} columns={[...table.columns, ...actionColumn]} />
+      <Table dataSource={table.dataSource} columns={table.columns.concat(props.actionColumn)} />
     </>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Layout, Button, theme } from "antd";
 import Navigation from "../../components/navigation/components";
 import SearchWithIcon from "../../components/search_with_icon/components";
@@ -10,11 +10,10 @@ import Evaluate_form from "../evaluate_form/components";
 const { Header, Content } = Layout;
 const App = () => {
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { borderRadiusLG },
   } = theme.useToken();
   const logo = "src/assets/Panasonic_ENERGY_Logo.jpg";
   const [selected_items, setSelected] = useState(1);
-  console.log(selected_items);
   return (
     <Layout>
       <Navigation logo={logo} setSelected={setSelected} />
@@ -23,7 +22,7 @@ const App = () => {
           <Header
             style={{
               padding: 0,
-              background: '#f5f5f5',
+              background: "white",
             }}
           >
             <div className="flex p-10 pt-[20px]">
@@ -41,8 +40,9 @@ const App = () => {
         )}
         <div className="clear-both">
           <Content
-            className="p-10 h-screen m-[24px 16px]"
+            className="p-10 m-[24px 16px] h-screen"
             style={{
+              backgroundColor: "white",
               borderRadius: borderRadiusLG,
             }}
           >
@@ -53,7 +53,7 @@ const App = () => {
             ) : selected_items === 3 ? (
               <PriceReport />
             ) : selected_items === 4 ? (
-              <PowerBi_report/>
+              <PowerBi_report />
             ) : selected_items === 5 ? (
               <Evaluate_form />
             ) : (

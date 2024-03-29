@@ -3,7 +3,7 @@ import ViteExpress from "vite-express";
 import supplier_api from "./api/router/supplier_delivery/index.js";
 import minify from "express-minify";
 import compression from "compression";
-import condb from "./api/router/condb.js";
+// import condb from "./api/router/condb.js";
 const PORT = process.env.PORT || 80;
 const app = express();
 app.use(compression());
@@ -16,7 +16,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use("/api", supplier_api);
-app.use(condb);
+// app.use(condb);
 
 // Start express server
 ViteExpress.listen(app, PORT, () => {

@@ -1,9 +1,7 @@
-const mysql = require('mssql')
-const express = require('express')
+import mysql from "mssql";
+import express from "express";
+import bodyParser from "body-parser";
 const app = express()
-const ejs = require('ejs')
-const bodyParser = require('body-parser')
-const req = require('express/lib/request')
 const config = {
     user: 'sa',
     password: 'scitsigol',

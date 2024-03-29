@@ -4,7 +4,7 @@ const initial_state = {
     dataSource: [],
     columns: []
 }
-export const tableSlice = createSlice({
+export const tableActionSlice = createSlice({
     name: "table",
     initialState:initial_state,
     reducers: {
@@ -16,8 +16,5 @@ export const tableSlice = createSlice({
         },
     }
 })
-export const {setData, setColumns} = tableSlice.actions;
-export default tableSlice.reducer;
-
-
-
+export const {setData, setColumns} = tableActionSlice.actions;
+export default tableActionSlice.reducer;

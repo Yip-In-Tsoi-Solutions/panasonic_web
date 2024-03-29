@@ -1,9 +1,8 @@
 import { Button, Form, Input } from "antd";
 import { useState } from "react";
-import Table_withActions from "../../../components/table_withActions/components";
-import ListView from "../../../components/list/components";
 import { useDispatch, useSelector } from "react-redux";
-import { setListView } from "../../../components/list/actions/list_viewSlice";
+import { setListView } from "../../../components/ListViewWithDrawer/actions/list_viewSlice";
+import ListViewWithDrawer from "../../../components/ListViewWithDrawer/components";
 
 const PowerBi_report = () => {
   const disPatch = useDispatch();
@@ -26,8 +25,8 @@ const PowerBi_report = () => {
     disPatch(setListView(payload));
   };
   const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
-  const url = "http://localhost:8123/salesfact";
-  console.log(listView_data.reportName);
+  const powerbi_addCondition =
+    powerbi.reportName != "" && powerbi.url != "" ? false : true;
   return (
     <div>
       <h1 className="uppercase font-bold">PowerBi Report</h1>
@@ -38,6 +37,7 @@ const PowerBi_report = () => {
             <Form.Item>
               <Input
                 type="text"
+                name="name"
                 placeholder="Report Name"
                 onChange={(e) => handleChange(e, "reportName")}
               />
@@ -50,6 +50,7 @@ const PowerBi_report = () => {
             >
               <Input
                 type="text"
+                name="url"
                 placeholder="URL"
                 onChange={(e) => handleChange(e, "url")}
               />
@@ -59,7 +60,13 @@ const PowerBi_report = () => {
                 type="primary"
                 htmlType="submit"
                 className="rounded-md"
-                style={{ backgroundColor: "#006254" }}
+                disabled={powerbi_addCondition}
+                style={{
+                  backgroundColor:
+                    powerbi.reportName != "" && powerbi.url != ""
+                      ? "#006254"
+                      : "#f5f5f5",
+                }}
               >
                 ADD POWER BI
               </Button>
@@ -68,8 +75,7 @@ const PowerBi_report = () => {
         </Form>
       </div>
       <div className="clear-both">
-        <ListView className="h-screen" />
-        {/* <Table_withActions url={url}/> */}
+        <ListViewWithDrawer listView_data={listView_data} />
       </div>
     </div>
   );
