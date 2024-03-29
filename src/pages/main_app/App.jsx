@@ -19,27 +19,30 @@ const App = () => {
     <Layout>
       <Navigation logo={logo} setSelected={setSelected} />
       <Layout>
-        <Header
-          style={{
-            padding: 0,
-            background: colorBgContainer,
-          }}
-        >
-          <div className="flex p-10 pt-[20px]">
-            <SearchWithIcon />
-            <Button
-              type="button"
-              className="w-[160px] h-10 mt-5 bg-[#006254] text-[white] font-bold uppercase"
-            >
-              Add Supplier +
-            </Button>
-          </div>
-        </Header>
+        {selected_items === 1 || selected_items === 2 ? (
+          <Header
+            style={{
+              padding: 0,
+              background: '#f5f5f5',
+            }}
+          >
+            <div className="flex p-10 pt-[20px]">
+              <SearchWithIcon />
+              <Button
+                type="button"
+                className="w-[160px] h-10 mt-5 bg-[#006254] text-[white] font-bold uppercase"
+              >
+                Add Supplier +
+              </Button>
+            </div>
+          </Header>
+        ) : (
+          ""
+        )}
         <div className="clear-both">
           <Content
             className="p-10 h-screen m-[24px 16px]"
             style={{
-              background: colorBgContainer,
               borderRadius: borderRadiusLG,
             }}
           >
@@ -50,7 +53,7 @@ const App = () => {
             ) : selected_items === 3 ? (
               <PriceReport />
             ) : selected_items === 4 ? (
-              <PowerBi_report />
+              <PowerBi_report/>
             ) : selected_items === 5 ? (
               <Evaluate_form />
             ) : (

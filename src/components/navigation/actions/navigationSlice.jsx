@@ -2,7 +2,7 @@
 import { UploadOutlined, UserOutlined, VideoCameraOutlined } from "@ant-design/icons";
 import { createSlice } from "@reduxjs/toolkit";
 
-export const initialState = {
+const initialState = {
   items: [
     {
       key: "1",
