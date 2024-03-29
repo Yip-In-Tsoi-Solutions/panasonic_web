@@ -13,11 +13,6 @@ const config = {
         "encrypt": false // Disable encryption
     }
 };
-//listen port 4200
-app.listen(4200,(err,result)=>{
-    if(err) throw err;
-});
-
 app.use(bodyParser.json()); 
 
 async function connectDB() {
@@ -100,3 +95,5 @@ app.post('/api/router/reason', async (req,res)=>{
         //exit
     }
 })
+const condb = app;
+export default condb;
