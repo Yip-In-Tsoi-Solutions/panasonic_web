@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Table } from "antd";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setColumns, setData } from "../actions/tableActionSlice";
-
+import axios from "axios";
 const Table_withActions = (props) => {
   const disPatch = useDispatch();
-  const table = useSelector((state)=> state.table_data);
+  const table = useSelector((state)=> state?.table_data);
   const fetchData = async () => {
     try {
       const response = await axios.get(props.url);

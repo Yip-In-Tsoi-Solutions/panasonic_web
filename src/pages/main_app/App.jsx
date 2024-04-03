@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { Layout, Button, theme } from "antd";
+import { Layout, theme } from "antd";
 import Navigation from "../../components/navigation/components";
-import SearchWithIcon from "../../components/search_with_icon/components";
 import Supplier_delivery from "../supplier_delivery/components";
 import Buyer_Reason from "../buyer_reason/components";
 import PriceReport from "../price_report/components";
 import PowerBi_report from "../powerbi_report/components";
 import Evaluate_form from "../evaluate_form/components";
-const { Header, Content } = Layout;
+const { Content } = Layout;
 const App = () => {
   const {
     token: { borderRadiusLG },
@@ -18,27 +17,7 @@ const App = () => {
     <Layout>
       <Navigation logo={logo} setSelected={setSelected} />
       <Layout>
-        {selected_items === 1 || selected_items === 2 ? (
-          <Header
-            style={{
-              padding: 0,
-              background: "white",
-            }}
-          >
-            <div className="flex p-10 pt-[20px]">
-              <SearchWithIcon />
-              <Button
-                type="button"
-                className="w-[160px] h-10 mt-5 bg-[#006254] text-[white] font-bold uppercase"
-              >
-                Add Supplier +
-              </Button>
-            </div>
-          </Header>
-        ) : (
-          ""
-        )}
-        <div className="clear-both">
+        <div>
           <Content
             className="p-10 m-[24px 16px] h-screen"
             style={{
