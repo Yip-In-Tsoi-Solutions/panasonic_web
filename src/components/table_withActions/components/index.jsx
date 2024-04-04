@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import { Table } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { setColumns, setData } from "../actions/tableActionSlice";
@@ -31,12 +31,12 @@ const Table_withActions = (props) => {
       console.error("Error fetching data:", error);
     }
   };
-  useEffect(() => {
+  useMemo(() => {
     fetchData();
   }, []);
   return (
     <>
-      <Table dataSource={table.dataSource} columns={table.columns.concat(props.actionColumn)} />
+      <Table dataSource={table.dataSource} columns={table.columns.concat(props.actionColumn) || table.columns} />
     </>
   );
 };
