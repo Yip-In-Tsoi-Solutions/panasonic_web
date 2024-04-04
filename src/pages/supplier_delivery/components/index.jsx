@@ -18,10 +18,7 @@ import { useForm } from "antd/es/form/Form";
 const { Header } = Layout;
 const { Option } = Select;
 const Supplier_delivery = () => {
-  const [promise_date_form] = useForm();
-  const [buyer_form] = useForm();
-  const [vendor_form] = useForm();
-  const [po_number_form] = useForm();
+  const [form] = useForm();
   const suppliery_list = useSelector((state) => state.supplier_delivery);
   const dispatch = useDispatch();
   async function fetchSupplierAPI() {
@@ -160,10 +157,7 @@ const Supplier_delivery = () => {
     return columnsData;
   };
   const clearFilter = () => {
-    promise_date_form.resetFields();
-    buyer_form.resetFields();
-    vendor_form.resetFields();
-    po_number_form.resetFields();
+    form.resetFields();
     handlePromiseDateChange("");
     handleBuyerChange("");
     handleVendorChange("");
@@ -174,7 +168,7 @@ const Supplier_delivery = () => {
       <h1 className="text-2xl font-bold pl-0 p-3">Supplier Delivery</h1>
       <br />
       <div className="grid grid-cols-4 gap-4">
-        <Form form={promise_date_form}>
+        <Form form={form}>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
             Promise DATE
           </label>
@@ -192,7 +186,7 @@ const Supplier_delivery = () => {
             )}
           </Select>
         </Form>
-        <Form form={buyer_form}>
+        <Form form={form}>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
             Buyer
           </label>
@@ -208,7 +202,7 @@ const Supplier_delivery = () => {
             ))}
           </Select>
         </Form>
-        <Form form={vendor_form}>
+        <Form form={form}>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
             vendor
           </label>
@@ -224,7 +218,7 @@ const Supplier_delivery = () => {
             ))}
           </Select>
         </Form>
-        <Form form={po_number_form}>
+        <Form form={form}>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
             PO Numbers
           </label>
