@@ -1,5 +1,5 @@
-import { Layout, Select, Table } from "antd";
-import { useMemo, useState } from "react";
+import { Button, Form, Layout, Select, Table } from "antd";
+import { useEffect, useMemo, useState } from "react";
 import {
   setFilterBuyer,
   setFilterP0,
@@ -13,12 +13,16 @@ import {
 } from "../actions/supplier_deliverySlice";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
+import { useForm } from "antd/es/form/Form";
 
 const { Header } = Layout;
 const { Option } = Select;
 const Supplier_delivery = () => {
+  const [promise_date_form] = useForm();
+  const [buyer_form] = useForm();
+  const [vendor_form] = useForm();
+  const [po_number_form] = useForm();
   const suppliery_list = useSelector((state) => state.supplier_delivery);
-  const [current_data, setCurrent] = useState([]);
   const dispatch = useDispatch();
   async function fetchSupplierAPI() {
     try {
@@ -56,6 +60,7 @@ const Supplier_delivery = () => {
       ? 0
       : 1;
   }
+  // dataset before filter
   const suppliery_list_cleansing = suppliery_list?.suppliery_list.map((i) => {
     const diff_day = diff_days(
       i["Receive Date"],
@@ -110,6 +115,9 @@ const Supplier_delivery = () => {
       t_id: i["T_ID"],
     };
   });
+  useEffect(() => {
+    dispatch(setSupplieryList(suppliery_list_cleansing));
+  }, []);
   const removed_duplicated = (item) => {
     const result = [...new Set(item)];
     return result;
@@ -127,18 +135,21 @@ const Supplier_delivery = () => {
     dispatch(setFilterResultPO(value));
   };
   const { promise_date, buyer, vendor, purchaseNo } =
-    suppliery_list?.result_filter;
+    suppliery_list?.temp_state_filter;
 
+  // dataset have filtered
   let suppliery_list_filter_result = suppliery_list_cleansing.filter(
     (item) =>
       item.promise_date === promise_date ||
-      item.buyer === buyer ||
-      item.vendor === vendor ||
-      item.po_no === parseInt(purchaseNo)
+      String(item.buyer).toLowerCase() === String(buyer).toLowerCase() ||
+      String(item.vendor).toLowerCase() === String(vendor).toLowerCase() ||
+      parseInt(item.po_no) === parseInt(purchaseNo)
   );
+  // list of columns
   const schema = () => {
     const columnsData = [];
-    for (const item in suppliery_list_filter_result[0] || suppliery_list_cleansing[0]) {
+    for (const item in suppliery_list_filter_result[0] ||
+      suppliery_list_cleansing[0]) {
       let col_data = {
         title: item,
         dataIndex: item,
@@ -146,33 +157,47 @@ const Supplier_delivery = () => {
       };
       columnsData.push(col_data);
     }
-    return columnsData
+    return columnsData;
+  };
+  const clearFilter = () => {
+    promise_date_form.resetFields();
+    buyer_form.resetFields();
+    vendor_form.resetFields();
+    po_number_form.resetFields();
+    handlePromiseDateChange("");
+    handleBuyerChange("");
+    handleVendorChange("");
+    handlePOChange("");
   };
   return (
     <>
       <h1 className="text-2xl font-bold pl-0 p-3">Supplier Delivery</h1>
       <br />
       <div className="grid grid-cols-4 gap-4">
-        <form>
+        <Form form={promise_date_form}>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
             Promise DATE
           </label>
           <Select
+            value={suppliery_list.temp_state_filter.promise_date} // Set the value of the Select component
             onChange={handlePromiseDateChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
             {removed_duplicated(suppliery_list?.filterPromiseDate).map(
               (item) => (
-                <Option value={item}>{item}</Option>
+                <Option key={item} value={item}>
+                  {item}
+                </Option>
               )
             )}
           </Select>
-        </form>
-        <form>
+        </Form>
+        <Form form={buyer_form}>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-            buyer
+            Buyer
           </label>
           <Select
+            value={suppliery_list.temp_state_filter.buyer}
             onChange={handleBuyerChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
@@ -182,12 +207,13 @@ const Supplier_delivery = () => {
               </Option>
             ))}
           </Select>
-        </form>
-        <form>
+        </Form>
+        <Form form={vendor_form}>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-            Vendor
+            vendor
           </label>
           <Select
+            value={suppliery_list.temp_state_filter.vendor} // Set the value of the Select component
             onChange={handleVendorChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
@@ -197,12 +223,13 @@ const Supplier_delivery = () => {
               </Option>
             ))}
           </Select>
-        </form>
-        <form>
+        </Form>
+        <Form form={po_number_form}>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
             PO Numbers
           </label>
           <Select
+            value={suppliery_list.temp_state_filter.purchaseNo} // Set the value of the Select component
             onChange={handlePOChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
@@ -212,10 +239,27 @@ const Supplier_delivery = () => {
               </Option>
             ))}
           </Select>
-        </form>
+        </Form>
+        <Form>
+          <Button
+            type="button"
+            onClick={clearFilter}
+            className="w-[160px] bg-white text-[black] font-bold uppercase rounded-2xl border-solid border-2 border-stone-400"
+          >
+            clear filter
+          </Button>
+        </Form>
       </div>
-      <div className="clear-both">
-        <Table dataSource={suppliery_list_filter_result.length > 0 ? suppliery_list_filter_result : suppliery_list_cleansing} columns={schema()}/>
+      <div className="clear-both mt-10">
+        <Table
+          className="w-full overflow-y-hidden"
+          dataSource={
+            suppliery_list_filter_result.length > 0
+              ? suppliery_list_filter_result
+              : suppliery_list_cleansing
+          }
+          columns={schema()}
+        />
       </div>
     </>
   );
