@@ -2,12 +2,12 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initial_state = {
   suppliery_list: [],
-  filterPromiseDate: [],
   filterBuyer: [],
   filterVendor: [],
   filterPO: [],
   temp_state_filter: {
-    promise_date: "",
+    promise_start_date: "",
+    promise_end_date: "",
     buyer: "",
     vendor: "",
     purchaseNo: "",
@@ -20,9 +20,6 @@ export const supplier_deliverySlice = createSlice({
     setSupplieryList(state, action) {
       state.suppliery_list = action.payload;
     },
-    setFilterPromise_date(state, action) {
-      state.filterPromiseDate = action.payload;
-    },
     setFilterBuyer(state, action) {
       state.filterBuyer = action.payload;
     },
@@ -32,8 +29,11 @@ export const supplier_deliverySlice = createSlice({
     setFilterP0(state, action) {
       state.filterPO = action.payload;
     },
-    setFilterResultPromise(state, action) {
-      state.temp_state_filter.promise_date = action.payload;
+    setFilterResultPromiseStart(state, action) {
+      state.temp_state_filter.promise_start_date = action.payload;
+    },
+    setFilterResultPromiseEnd(state, action) {
+      state.temp_state_filter.promise_end_date = action.payload;
     },
     setFilterResultBuyer(state, action) {
       state.temp_state_filter.buyer = action.payload;
@@ -48,11 +48,11 @@ export const supplier_deliverySlice = createSlice({
 });
 export const {
   setSupplieryList,
-  setFilterPromise_date,
   setFilterBuyer,
   setFilterP0,
   setFilterVendor,
-  setFilterResultPromise,
+  setFilterResultPromiseStart,
+  setFilterResultPromiseEnd,
   setFilterResultBuyer,
   setFilterResultVendor,
   setFilterResultPO

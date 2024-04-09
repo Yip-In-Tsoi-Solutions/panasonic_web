@@ -1,44 +1,42 @@
-import { Button, Form, Layout, Select, Table } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { Button, DatePicker, Form, Input, Layout, Select, Table } from "antd";
+import { useEffect, useMemo } from "react";
 import {
   setFilterBuyer,
   setFilterP0,
-  setFilterPromise_date,
   setFilterResultBuyer,
   setFilterResultPO,
-  setFilterResultPromise,
   setFilterResultVendor,
   setFilterVendor,
   setSupplieryList,
+  setFilterResultPromiseStart,
+  setFilterResultPromiseEnd,
 } from "../actions/supplier_deliverySlice";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
-
+import moment from "moment";
+import convert_to_thai_year_dd_mm_yyyy from "../../../javascript/convert_to_thai_year_dd_mm_yyyy";
+import Table_withActions from "../../../components/table_withActions/components";
 const { Header } = Layout;
 const { Option } = Select;
 const Supplier_delivery = () => {
   const [form] = useForm();
-  const suppliery_list = useSelector((state) => state.supplier_delivery);
+  const suppliery_list = useSelector((state) => state.original_delivery_report);
   const dispatch = useDispatch();
+  const url = "/api/supplier_list";
   async function fetchSupplierAPI() {
     try {
-      const response = await axios.get(
-        "http://localhost:8123/supplier_delivery"
-      );
+      const response = await axios.get("/api/supplier_list");
       if (response.status === 200) {
         dispatch(setSupplieryList(response.data));
-        let promise_date_data = [];
         let buyer_data = [];
         let vendor_data = [];
         let po_number = [];
         response.data.forEach((data) => {
-          promise_date_data.push(data["Promise Date"]);
           buyer_data.push(data.Buyer);
           vendor_data.push(data["Vendor"]);
           po_number.push(data["PO No"]);
         });
-        dispatch(setFilterPromise_date(promise_date_data));
         dispatch(setFilterBuyer(buyer_data));
         dispatch(setFilterVendor(vendor_data));
         dispatch(setFilterP0(po_number));
@@ -119,8 +117,11 @@ const Supplier_delivery = () => {
     const result = [...new Set(item)];
     return result;
   };
-  const handlePromiseDateChange = (value) => {
-    dispatch(setFilterResultPromise(value));
+  const handlePromiseStartDate = (a, dateString) => {
+    dispatch(setFilterResultPromiseStart(dateString));
+  };
+  const handlePromisetoDate = (a, dateString) => {
+    dispatch(setFilterResultPromiseEnd(dateString));
   };
   const handleBuyerChange = (value) => {
     dispatch(setFilterResultBuyer(value));
@@ -131,13 +132,15 @@ const Supplier_delivery = () => {
   const handlePOChange = (value) => {
     dispatch(setFilterResultPO(value));
   };
-  const { promise_date, buyer, vendor, purchaseNo } =
+  const { promise_start_date, promise_end_date, buyer, vendor, purchaseNo } =
     suppliery_list?.temp_state_filter;
-
   // dataset have filtered
   let suppliery_list_filter_result = suppliery_list_cleansing.filter(
     (item) =>
-      item.promise_date === promise_date ||
+      (item.promise_date >=
+        convert_to_thai_year_dd_mm_yyyy(promise_start_date) &&
+        item.promise_date <
+          convert_to_thai_year_dd_mm_yyyy(promise_end_date)) ||
       String(item.buyer).toLowerCase() === String(buyer).toLowerCase() ||
       String(item.vendor).toLowerCase() === String(vendor).toLowerCase() ||
       parseInt(item.po_no) === parseInt(purchaseNo)
@@ -158,33 +161,50 @@ const Supplier_delivery = () => {
   };
   const clearFilter = () => {
     form.resetFields();
-    handlePromiseDateChange("");
+    dispatch(setFilterResultPromiseStart(""));
+    dispatch(setFilterResultPromiseEnd(""));
     handleBuyerChange("");
     handleVendorChange("");
     handlePOChange("");
   };
+  const dateFormat = "DD/MM/YYYY";
   return (
     <>
       <h1 className="text-2xl font-bold pl-0 p-3">Supplier Delivery</h1>
       <br />
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-5 gap-5">
         <Form form={form}>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-            Promise DATE
+            Promise DATE FROM
           </label>
-          <Select
-            value={suppliery_list.temp_state_filter.promise_date} // Set the value of the Select component
-            onChange={handlePromiseDateChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          >
-            {removed_duplicated(suppliery_list?.filterPromiseDate).map(
-              (item) => (
-                <Option key={item} value={item}>
-                  {item}
-                </Option>
-              )
-            )}
-          </Select>
+          <DatePicker
+            type="date"
+            format={dateFormat}
+            className="w-full"
+            value={
+              promise_start_date !== ""
+                ? moment(promise_start_date, dateFormat)
+                : ""
+            }
+            onChange={handlePromiseStartDate}
+            locale={"th"}
+          />
+        </Form>
+        <Form form={form}>
+          <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+            Promise DATE TO
+          </label>
+          <DatePicker
+            type="date"
+            format={dateFormat}
+            className="w-full"
+            value={
+              promise_end_date !== ""
+                ? moment(promise_end_date, dateFormat)
+                : ""
+            }
+            onChange={handlePromisetoDate}
+          />
         </Form>
         <Form form={form}>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">

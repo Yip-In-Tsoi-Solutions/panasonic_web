@@ -25377,7 +25377,7 @@ supplier_api.get("/supplier_list", (req, res) => {
       T_ID: 5278484,
     },
   ];
-  res.send(data)
+  res.status(200).send(data)
 });
 supplier_api.post("/route2", (req, res) => {});
 supplier_api.put("/route2", (req, res) => {});

@@ -9,7 +9,7 @@ const store = configureStore({
     navigations: navigationSlice,
     table_data: tableActionSlice,
     list_view: list_viewSlice,
-    supplier_delivery: supplier_deliverySlice
+    original_delivery_report: supplier_deliverySlice
   }
 });
 
