@@ -3,9 +3,11 @@ import ViteExpress from "vite-express";
 import supplier_api from "./api/router/supplier_delivery/index.js";
 import minify from "express-minify";
 import compression from "compression";
+import bodyParser from "body-parser";
 // import condb from "./api/router/condb.js";
 const PORT = process.env.PORT || 80;
 const app = express();
+app.use(bodyParser.json()); 
 app.use(compression());
 app.use(minify());
 // api route configuration

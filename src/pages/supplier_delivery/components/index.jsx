@@ -1,5 +1,15 @@
-import { Button, DatePicker, Form, Input, Layout, Select, Table } from "antd";
-import { useEffect, useMemo } from "react";
+import {
+  Button,
+  Checkbox,
+  DatePicker,
+  Form,
+  Layout,
+  Modal,
+  Select,
+  Table,
+  message,
+} from "antd";
+import { useEffect, useMemo, useState } from "react";
 import {
   setFilterBuyer,
   setFilterP0,
@@ -16,30 +26,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
 import moment from "moment";
 import convert_to_thai_year_dd_mm_yyyy from "../../../javascript/convert_to_thai_year_dd_mm_yyyy";
-import Table_withActions from "../../../components/table_withActions/components";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { setBuyer_reason } from "../../buyer_reason/actions/buyer_reasonSlice";
+const url = "/api/supplier_list";
 const { Header } = Layout;
 const { Option } = Select;
+// class components
 const Supplier_delivery = () => {
-  const [form] = useForm();
-  const suppliery_list = useSelector((state) => state.original_delivery_report);
+  // redux/Antd
   const dispatch = useDispatch();
-  const url = "/api/supplier_list";
-  async function fetchSupplierAPI() {
+  const [form] = useForm();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  // state
+  const suppliery_list = useSelector((state) => state.original_delivery_report);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [checked, setChecked] = useState(false);
+  // date formato f date start & date end
+  const dateFormat = "DD/MM/YYYY";
+
+  async function fetchSupplierList() {
     try {
       const response = await axios.get("/api/supplier_list");
       if (response.status === 200) {
         dispatch(setSupplieryList(response.data));
-        let buyer_data = [];
-        let vendor_data = [];
-        let po_number = [];
-        response.data.forEach((data) => {
-          buyer_data.push(data.Buyer);
-          vendor_data.push(data["Vendor"]);
-          po_number.push(data["PO No"]);
-        });
-        dispatch(setFilterBuyer(buyer_data));
-        dispatch(setFilterVendor(vendor_data));
-        dispatch(setFilterP0(po_number));
       } else {
         dispatch(setSupplieryList(...suppliery_list.suppliery_list));
       }
@@ -47,8 +57,42 @@ const Supplier_delivery = () => {
       console.log(error);
     }
   }
-  useMemo(() => {
-    fetchSupplierAPI();
+  async function fetchDropdownBuyer() {
+    try {
+      const response = await axios.get("/api/dropdown/buyer");
+      response.status === 200
+        ? dispatch(setFilterBuyer(response.data))
+        : dispatch(setFilterBuyer(...suppliery_list?.filterBuyer));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function fetchDropdownVendor() {
+    try {
+      const response = await axios.get("/api/dropdown/vendor");
+      response.status === 200
+        ? dispatch(setFilterVendor(response.data))
+        : dispatch(setFilterVendor(...suppliery_list?.filterVendor));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function fetchDropdownPoNumber() {
+    try {
+      const response = await axios.get("/api/dropdown/po_number");
+      response.status === 200
+        ? dispatch(setFilterP0(response.data))
+        : dispatch(setFilterP0(...suppliery_list?.filterPO));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  //po_number
+  useEffect(() => {
+    fetchSupplierList();
+    fetchDropdownBuyer();
+    fetchDropdownVendor();
+    fetchDropdownPoNumber();
   }, []);
   function diff_days(receive_date, promise_date, po_qty, receive_qty) {
     return receive_date - promise_date === 0 && po_qty - receive_qty === 0
@@ -110,25 +154,32 @@ const Supplier_delivery = () => {
       t_id: i["T_ID"],
     };
   });
-  useEffect(() => {
+  useMemo(() => {
     dispatch(setSupplieryList(suppliery_list_cleansing));
   }, []);
+
+  // remove every data is duplicate
   const removed_duplicated = (item) => {
     const result = [...new Set(item)];
     return result;
   };
+  //actions of Promise date Start
   const handlePromiseStartDate = (a, dateString) => {
     dispatch(setFilterResultPromiseStart(dateString));
   };
+  //actions of Promise date to
   const handlePromisetoDate = (a, dateString) => {
     dispatch(setFilterResultPromiseEnd(dateString));
   };
+  //actions of buyer dropdown
   const handleBuyerChange = (value) => {
     dispatch(setFilterResultBuyer(value));
   };
+  //actions of vendor dropdown
   const handleVendorChange = (value) => {
     dispatch(setFilterResultVendor(value));
   };
+  //actions of purchase order dropdown
   const handlePOChange = (value) => {
     dispatch(setFilterResultPO(value));
   };
@@ -159,6 +210,7 @@ const Supplier_delivery = () => {
     }
     return columnsData;
   };
+  // actions of Clear filter
   const clearFilter = () => {
     form.resetFields();
     dispatch(setFilterResultPromiseStart(""));
@@ -167,12 +219,131 @@ const Supplier_delivery = () => {
     handleVendorChange("");
     handlePOChange("");
   };
-  const dateFormat = "DD/MM/YYYY";
+  // const handleCheckboxChange = (element) => {
+  //   console.log(element);
+  // };
+  // // checbox UI
+  // const checkAll = (e) => {
+  //   let status = e.target.checked;
+  //   let selectBox = [];
+  //   // check
+  //   if (status === true) {
+  //     selectBox.push(
+  //       suppliery_list_filter_result.length > 0
+  //         ? suppliery_list_filter_result
+  //         : suppliery_list_cleansing
+  //     );
+  //     setChecked(status);
+  //     console.log(selectBox[0]);
+  //   }
+  //   // uncheck
+  //   else {
+  //     selectBox.push(...selectBox);
+  //     console.log(selectBox);
+  //     setChecked(status);
+  //   }
+  // };
+  const load_toBuyer_reason = () => {
+    const action_inSec = 5000;
+    try {
+      messageApi.open({
+        type: "success",
+        content: `This is a success for loading to Buyer Reason page, and thses message will close in ${
+          action_inSec / 1000
+        } seconds`,
+        duration: action_inSec / 1000,
+      });
+      setTimeout(() => {
+        dispatch(setBuyer_reason(suppliery_list_filter_result));
+        setIsModalOpen(false);
+        clearFilter();
+      }, action_inSec);
+    } catch (error) {
+      if (error) {
+        messageApi.open({
+          type: "error",
+          content: "This is an error message",
+        });
+        setTimeout(() => {
+          dispatch(setBuyer_reason([]));
+        }, action_inSec);
+      }
+    }
+  };
   return (
     <>
-      <h1 className="text-2xl font-bold pl-0 p-3">Supplier Delivery</h1>
-      <br />
-      <div className="grid grid-cols-5 gap-5">
+      <div>
+        <h1 className="text-2xl font-bold pl-0 p-3 float-left">
+          Supplier Delivery
+        </h1>
+        <div className="flex flex-row float-right">
+          <Button
+            type="button"
+            onClick={clearFilter}
+            className="float-left mt-2 mr-5 bg-[white] text-[black] font-bold uppercase rounded-2xl border-solid border-2 border-[black]"
+          >
+            clear filter
+          </Button>
+          <Button
+            disabled={
+              promise_start_date != "" &&
+              promise_end_date != "" &&
+              buyer != "" &&
+              vendor != "" &&
+              purchaseNo != ""
+                ? false
+                : true
+            }
+            onClick={() => setIsModalOpen(true)}
+            className="float-left mt-2 bg-[#006254] text-[white] font-bold uppercase rounded-2xl border-solid border-2 border-[#006254]"
+          >
+            Confirm
+          </Button>
+        </div>
+        <Modal open={isModalOpen} footer={null} closeIcon={null}>
+          <div role="alert">
+            {/* <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+              หมายเหตุ
+            </div>
+            <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+              <p className="text-wrap text-lg">
+                ยืนยันโอนย้ายรายการทั้งหมดของ {buyer} ไปยัง Buyer Reason
+                เมื่อยืนยันแล้วจะไม่สามารถทำรายการของเดือน ช่วงระหว่าง{" "}
+                {promise_start_date} - {promise_end_date}{" "}
+                ที่หน้านี้ได้อีกทุกกรณี
+              </p>
+            </div> */}
+            <ExclamationCircleOutlined className="text-8xl text-[red] table m-auto mb-5" />
+            <h1 className="text-lg font-bold text-center text-[red]">
+              หมายเหตุ
+            </h1>
+            <p className="text-center">
+              การโอนย้ายรายการทั้งหมดของ {buyer} ไปยังหน้า Buyer Reason
+              เมื่อยืนยันแล้วจะไม่สามารถทำรายการ ที่หน้านี้ได้อีกทุกกรณี
+            </p>
+            <br />
+            <div className="table flex-row m-auto">
+              {contextHolder}
+              <Button
+                type="button"
+                onClick={load_toBuyer_reason}
+                className="bg-[#006254] text-[white] font-bold uppercase rounded-2xl border-solid border-2 border-[#006254] mr-5"
+              >
+                YES
+              </Button>{" "}
+              <Button
+                type="button"
+                className="bg-[white] text-[black] font-bold uppercase rounded-2xl border-solid border-2 border-[black]"
+                onClick={() => setIsModalOpen(false)}
+              >
+                NO
+              </Button>
+            </div>
+            <br />
+          </div>
+        </Modal>
+      </div>
+      <div className="grid grid-cols-5 gap-5 clear-both">
         <Form form={form}>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
             Promise DATE FROM
@@ -187,7 +358,6 @@ const Supplier_delivery = () => {
                 : ""
             }
             onChange={handlePromiseStartDate}
-            locale={"th"}
           />
         </Form>
         <Form form={form}>
@@ -215,9 +385,9 @@ const Supplier_delivery = () => {
             onChange={handleBuyerChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
-            {removed_duplicated(suppliery_list?.filterBuyer).map((item) => (
-              <Option key={item} value={item}>
-                {item}
+            {suppliery_list?.filterBuyer.map((item) => (
+              <Option key={item.Buyer} value={item.Buyer}>
+                {item.Buyer}
               </Option>
             ))}
           </Select>
@@ -231,9 +401,9 @@ const Supplier_delivery = () => {
             onChange={handleVendorChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
-            {removed_duplicated(suppliery_list?.filterVendor).map((item) => (
-              <Option key={item} value={item}>
-                {item}
+            {suppliery_list?.filterVendor.map((item) => (
+              <Option key={item.Vendor} value={item.Vendor}>
+                {item.Vendor}
               </Option>
             ))}
           </Select>
@@ -247,31 +417,38 @@ const Supplier_delivery = () => {
             onChange={handlePOChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
-            {removed_duplicated(suppliery_list?.filterPO).map((item) => (
-              <Option key={item} value={item}>
-                {item}
+            {suppliery_list?.filterPO.map((item) => (
+              <Option key={item.po_no} value={item.po_no}>
+                {item.po_no}
               </Option>
             ))}
           </Select>
         </Form>
-        <Form>
-          <Button
-            type="button"
-            onClick={clearFilter}
-            className="w-[160px] bg-white text-[black] font-bold uppercase rounded-2xl border-solid border-2 border-stone-400"
-          >
-            clear filter
-          </Button>
-        </Form>
       </div>
       <div className="clear-both mt-10">
-        <Table
+        {/* <Table
           className="w-full overflow-y-hidden"
           dataSource={
             suppliery_list_filter_result.length > 0
               ? suppliery_list_filter_result
               : suppliery_list_cleansing
           }
+          columns={[
+            {
+              title: <Checkbox onChange={checkAll}></Checkbox>,
+              key: "action",
+              render: (text, value) => (
+                <Checkbox
+                  indeterminate={checked}
+                  onChange={handleCheckboxChange.bind(this, value)}
+                />
+              ),
+            },
+          ].concat(schema())}
+        /> */}
+        <Table
+          className="w-full overflow-y-hidden"
+          dataSource={suppliery_list_filter_result}
           columns={schema()}
         />
       </div>
