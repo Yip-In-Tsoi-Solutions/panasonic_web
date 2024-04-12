@@ -56,12 +56,14 @@ function Buyer_Reason() {
               // onChange={handlePromisetoDate}
             />
           </Form>
-          <Button
-            type="button"
-            className="w-[200px] float-left mt-7 ml-5 bg-[white] text-[black] font-bold uppercase rounded-2xl border-solid border-2 border-[black]"
-          >
-            clear filter
-          </Button>
+          <Form>
+            <Button
+              type="button"
+              className="float-left mt-7 ml-5 bg-[white] text-[black] font-bold uppercase rounded-2xl border-solid border-2 border-[black]"
+            >
+              clear filter
+            </Button>
+          </Form>
         </div>
       </div>
     </>

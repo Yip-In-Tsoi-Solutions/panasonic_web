@@ -109,7 +109,7 @@ const Supplier_delivery = () => {
     );
     return {
       item_no: i["Item No"],
-      iten_name: i["Item Name"],
+      item_name: i["Item Name"],
       uom: i.UOM,
       transaction: i.Transaction,
       buyer: i.Buyer,
