@@ -255,10 +255,16 @@ const Supplier_delivery = () => {
       });
       setTimeout(async () => {
         //dispatch(setBuyer_reason(suppliery_list_filter_result));
-        const response = await axios.post("/api/load_data_buyer_reason", suppliery_list_filter_result);
-        response.status === 200 ? console.log(response.data) : "";
-        setIsModalOpen(false);
-        clearFilter();
+        const response = await axios.post(
+          "/api/load_data_buyer_reason",
+          suppliery_list_filter_result
+        );
+        if (response.status === 200) {
+          clearFilter();
+          setIsModalOpen(false);
+        } else {
+          setIsModalOpen(true);
+        }
       }, action_inSec);
     } catch (error) {
       if (error) {
