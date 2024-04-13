@@ -253,8 +253,10 @@ const Supplier_delivery = () => {
         } seconds`,
         duration: action_inSec / 1000,
       });
-      setTimeout(() => {
-        dispatch(setBuyer_reason(suppliery_list_filter_result));
+      setTimeout(async () => {
+        //dispatch(setBuyer_reason(suppliery_list_filter_result));
+        const response = await axios.post("/api/load_data_buyer_reason", suppliery_list_filter_result);
+        response.status === 200 ? console.log(response.data) : "";
         setIsModalOpen(false);
         clearFilter();
       }, action_inSec);
