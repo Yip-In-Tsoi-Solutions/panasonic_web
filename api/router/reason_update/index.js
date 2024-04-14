@@ -5,6 +5,7 @@ const reason_update = express();
 
 reason_update.use(express.json());
 
+//load data from supplier to Buyer reason
 reason_update.post("/load_data_buyer_reason", async (req, res) => {
   try {
     const sql = await sql_serverConn();
@@ -56,6 +57,7 @@ reason_update.post("/load_data_buyer_reason", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+// get data from PECTH_SUPPLIER_DELIVERY_HISTORICAL
 reason_update.get("/buyerlist", async (req, res) => {
   const sql = await sql_serverConn();
   // const result = await sql.query(
@@ -92,5 +94,20 @@ reason_update.get("/buyerlist", async (req, res) => {
     `
   );
   res.status(200).json(result.recordset);
+});
+// Mocking API for root_cause
+reason_update.get("/root_cause", async (req, res) => {
+  const data = [
+    {
+      case: "Supplier Does not inform delivery changing",
+    },
+    {
+      case: "Buyer does not update delivery in system",
+    },
+    {
+      case: "Supplier postpone shipment",
+    },
+  ];
+  res.status(200).send(data);
 });
 export default reason_update;
