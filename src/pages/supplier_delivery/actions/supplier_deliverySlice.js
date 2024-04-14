@@ -55,6 +55,6 @@ export const {
   setFilterResultPromiseEnd,
   setFilterResultBuyer,
   setFilterResultVendor,
-  setFilterResultPO
+  setFilterResultPO,
 } = supplier_deliverySlice.actions;
 export default supplier_deliverySlice.reducer;

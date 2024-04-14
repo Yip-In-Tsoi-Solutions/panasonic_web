@@ -28,6 +28,7 @@ import moment from "moment";
 import convert_to_thai_year_dd_mm_yyyy from "../../../javascript/convert_to_thai_year_dd_mm_yyyy";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { setBuyer_reason } from "../../buyer_reason/actions/buyer_reasonSlice";
+import schema from "../../../javascript/print_schema";
 const url = "/api/supplier_list";
 const { Header } = Layout;
 const { Option } = Select;
@@ -196,20 +197,6 @@ const Supplier_delivery = () => {
       String(item.vendor).toLowerCase() === String(vendor).toLowerCase() ||
       parseInt(item.po_no) === parseInt(purchaseNo)
   );
-  // list of columns
-  const schema = () => {
-    const columnsData = [];
-    for (const item in suppliery_list_filter_result[0] ||
-      suppliery_list_cleansing[0]) {
-      let col_data = {
-        title: item,
-        dataIndex: item,
-        key: item,
-      };
-      columnsData.push(col_data);
-    }
-    return columnsData;
-  };
   // actions of Clear filter
   const clearFilter = () => {
     form.resetFields();
@@ -457,7 +444,7 @@ const Supplier_delivery = () => {
         <Table
           className="w-full overflow-y-hidden"
           dataSource={suppliery_list_filter_result}
-          columns={schema()}
+          columns={schema(suppliery_list_filter_result)}
         />
       </div>
     </>
