@@ -87,6 +87,7 @@ reason_update.get("/buyerlist", async (req, res) => {
       [Item No] as item_no,
       [Item Name] as item_name,
       [Diff Day],
+      T_ID,
       reason
     FROM
       demo.dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL
@@ -96,7 +97,7 @@ reason_update.get("/buyerlist", async (req, res) => {
   res.status(200).json(result.recordset);
 });
 // Mocking API for root_cause
-reason_update.get("/root_cause", async (req, res) => {
+reason_update.get("/dropdown/root_cause", async (req, res) => {
   const data = [
     {
       case: "Supplier Does not inform delivery changing",
@@ -109,5 +110,26 @@ reason_update.get("/root_cause", async (req, res) => {
     },
   ];
   res.status(200).send(data);
+});
+reason_update.get("/dropdown/actions", async (req, res) => {
+  const data = [
+    {
+      type: "Supplier must send in advance delivery",
+    },
+    {
+      type: "Buyer must update realtime delivery",
+    },
+    {
+      type: "Countermeasure require",
+    },
+  ];
+  res.status(200).send(data);
+});
+reason_update.get("/dropdown/transaction_id", async (req, res) => {
+  const sql = await sql_serverConn();
+  const result = await sql.query(
+    `SELECT DISTINCT T_ID from demo.dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL order by T_ID asc`
+  );
+  res.status(200).json(result.recordset);
 });
 export default reason_update;
