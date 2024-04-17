@@ -187,16 +187,46 @@ const Supplier_delivery = () => {
   const { promise_start_date, promise_end_date, buyer, vendor, purchaseNo } =
     suppliery_list?.temp_state_filter;
   // dataset have filtered
-  let suppliery_list_filter_result = suppliery_list_cleansing.filter(
-    (item) =>
-      (item.promise_date >=
-        convert_to_thai_year_dd_mm_yyyy(promise_start_date) &&
-        item.promise_date <
-          convert_to_thai_year_dd_mm_yyyy(promise_end_date)) ||
-      String(item.buyer).toLowerCase() === String(buyer).toLowerCase() ||
-      String(item.vendor).toLowerCase() === String(vendor).toLowerCase() ||
-      parseInt(item.po_no) === parseInt(purchaseNo)
-  );
+  // let suppliery_list_filter_result = suppliery_list_cleansing.filter((item) => {
+  //   const promiseDateMatch =
+  //     item.promise_date >=
+  //       convert_to_thai_year_dd_mm_yyyy(promise_start_date) &&
+  //     item.promise_date < convert_to_thai_year_dd_mm_yyyy(promise_end_date);
+  //   const buyerMatch =
+  //     String(item.buyer).toLowerCase() === String(buyer).toLowerCase();
+  //   const vendorMatch = item.vendor === vendor;
+  //   const poNumberMatch = parseInt(item.po_no) === parseInt(purchaseNo);
+  //   // Filtering logic
+  //   if (
+  //     buyer ||
+  //     (!buyer &&
+  //       !promise_start_date &&
+  //       !promise_end_date &&
+  //       !vendor &&
+  //       !purchaseNo)
+  //   ) {
+  //     if (buyerMatch) return true;
+  //   }
+  //   if (!buyer && promise_start_date && promise_end_date) {
+  //     if (promiseDateMatch) return true;
+  //   }
+  //   if (!buyer && vendor) {
+  //     if (vendorMatch) return true;
+  //   }
+  //   if (!buyer && purchaseNo) {
+  //     if (poNumberMatch) return true;
+  //   }
+  //   return false;
+  // });
+  let suppliery_list_filter_result = suppliery_list_cleansing.filter(item => (
+    (!buyer || String(item.buyer).toLowerCase() === String(buyer).toLowerCase()) &&
+    (!vendor || String(item.vendor).toLowerCase() === String(vendor).toLowerCase()) &&
+    (!promise_start_date || !promise_end_date || 
+      (item.promise_date >= convert_to_thai_year_dd_mm_yyyy(promise_start_date) &&
+      item.promise_date < convert_to_thai_year_dd_mm_yyyy(promise_end_date))) &&
+      (!purchaseNo || parseInt(item.po_no) === parseInt(purchaseNo))
+  ));
+  
   // actions of Clear filter
   const clearFilter = () => {
     form.resetFields();
@@ -338,8 +368,25 @@ const Supplier_delivery = () => {
           </div>
         </Modal>
       </div>
-      <div className="grid grid-cols-5 gap-5 clear-both">
-        <Form form={form}>
+      <Form form={form} className="grid grid-cols-5 gap-5 clear-both">
+        <Form.Item>
+          <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+            Buyer
+          </label>
+          <Select
+            allowClear={true}
+            value={suppliery_list.temp_state_filter.buyer}
+            onChange={handleBuyerChange}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          >
+            {suppliery_list?.filterBuyer.map((item) => (
+              <Option key={item.Buyer} value={item.Buyer}>
+                {item.Buyer}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
             Promise DATE FROM
           </label>
@@ -354,8 +401,8 @@ const Supplier_delivery = () => {
             }
             onChange={handlePromiseStartDate}
           />
-        </Form>
-        <Form form={form}>
+        </Form.Item>
+        <Form.Item>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
             Promise DATE TO
           </label>
@@ -370,28 +417,13 @@ const Supplier_delivery = () => {
             }
             onChange={handlePromisetoDate}
           />
-        </Form>
-        <Form form={form}>
-          <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-            Buyer
-          </label>
-          <Select
-            value={suppliery_list.temp_state_filter.buyer}
-            onChange={handleBuyerChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          >
-            {suppliery_list?.filterBuyer.map((item) => (
-              <Option key={item.Buyer} value={item.Buyer}>
-                {item.Buyer}
-              </Option>
-            ))}
-          </Select>
-        </Form>
-        <Form form={form}>
+        </Form.Item>
+        <Form.Item>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
             vendor
           </label>
           <Select
+            allowClear={true}
             value={suppliery_list.temp_state_filter.vendor} // Set the value of the Select component
             onChange={handleVendorChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -402,12 +434,13 @@ const Supplier_delivery = () => {
               </Option>
             ))}
           </Select>
-        </Form>
-        <Form form={form}>
+        </Form.Item>
+        <Form.Item>
           <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
             PO Numbers
           </label>
           <Select
+            allowClear={true}
             value={suppliery_list.temp_state_filter.purchaseNo} // Set the value of the Select component
             onChange={handlePOChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -418,8 +451,8 @@ const Supplier_delivery = () => {
               </Option>
             ))}
           </Select>
-        </Form>
-      </div>
+        </Form.Item>
+      </Form>
       <div className="clear-both mt-10">
         {/* <Table
           className="w-full overflow-y-hidden"
