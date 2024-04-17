@@ -218,15 +218,49 @@ const Supplier_delivery = () => {
   //   }
   //   return false;
   // });
-  let suppliery_list_filter_result = suppliery_list_cleansing.filter(item => (
-    (!buyer || String(item.buyer).toLowerCase() === String(buyer).toLowerCase()) &&
-    (!vendor || String(item.vendor).toLowerCase() === String(vendor).toLowerCase()) &&
-    (!promise_start_date || !promise_end_date || 
-      (item.promise_date >= convert_to_thai_year_dd_mm_yyyy(promise_start_date) &&
-      item.promise_date < convert_to_thai_year_dd_mm_yyyy(promise_end_date))) &&
-      (!purchaseNo || parseInt(item.po_no) === parseInt(purchaseNo))
-  ));
-  
+  let suppliery_list_filter_result = suppliery_list_cleansing.filter((item) => {
+    // กำหนดตัวแปรสำหรับเก็บผลลัพธ์ของเงื่อนไขทั้งหมด
+    let meetsConditions = true;
+
+    // ตรวจสอบเงื่อนไขสำหรับ BUYER (ถ้ามี)
+    if (buyer) {
+      meetsConditions =
+        meetsConditions &&
+        String(item.buyer).toLowerCase() === String(buyer).toLowerCase();
+    }
+
+    // ตรวจสอบเงื่อนไขสำหรับ VENDOR (ถ้ามี)
+    if (vendor) {
+      meetsConditions =
+        meetsConditions &&
+        String(item.vendor).toLowerCase() === String(vendor).toLowerCase();
+    }
+
+    // ตรวจสอบเงื่อนไขสำหรับ PROMISE DATE FROM (ถ้ามี)
+    if (promise_start_date) {
+      meetsConditions =
+        meetsConditions &&
+        item.promise_date >=
+          convert_to_thai_year_dd_mm_yyyy(promise_start_date);
+    }
+
+    // ตรวจสอบเงื่อนไขสำหรับ PROMISE DATE TO (ถ้ามี)
+    if (promise_end_date) {
+      meetsConditions =
+        meetsConditions &&
+        item.promise_date < convert_to_thai_year_dd_mm_yyyy(promise_end_date);
+    }
+
+    // ตรวจสอบเงื่อนไขสำหรับ PO NUMBERS (ถ้ามี)
+    if (purchaseNo) {
+      meetsConditions =
+        meetsConditions && parseInt(item.po_no) === parseInt(purchaseNo);
+    }
+
+    // ส่งผลลัพธ์กลับเมื่อเงื่อนไขทั้งหมดถูกต้อง
+    return meetsConditions;
+  });
+
   // actions of Clear filter
   const clearFilter = () => {
     form.resetFields();
