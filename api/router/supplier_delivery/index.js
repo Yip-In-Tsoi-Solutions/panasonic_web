@@ -9,12 +9,11 @@ supplier_api.get("/supplier_list", async (req, res) => {
   res.status(200).json(result.recordset);
 });
 // display all data from Buyer
-supplier_api.post("/supplier_list/:buyer", async (req, res) => {
+supplier_api.post("/supplier_list_filter_optional", async (req, res) => {
   const sql = await sql_serverConn();
-  const buyer = req.params.buyer;
-  const result = await sql.query(
-    `SELECT * from dbo.Org_delivery_report WHERE Buyer = ${buyer}`
-  );
+  const query = `SELECT * FROM dbo.Org_delivery_report WHERE ${req.body.queryString}`;
+  // Execute the SQL query
+  const result = await sql.query(query);
   res.status(200).json(result.recordset);
 });
 // display dropdown of buyer
