@@ -8,7 +8,7 @@ export const list_viewSlice = createSlice({
     initialState: initial_state,
     reducers: {
         setListView(state, action) {
-            state.list_view.push(action.payload)
+            state.list_view = action.payload
         }
     }
 })

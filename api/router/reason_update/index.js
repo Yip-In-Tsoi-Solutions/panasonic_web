@@ -1,8 +1,10 @@
 import express from "express";
+import redis from "redis";
+import { promisify } from "util";
 import sql_serverConn from "../../sql_server_conn/sql_serverConn.js";
-
+//const redisClient = redis.createClient();
+const redisCacheKey = "buyerlist_inCache";
 const reason_update = express();
-
 reason_update.use(express.json());
 
 //load data from supplier to Buyer reason
@@ -60,25 +62,6 @@ reason_update.post("/load_data_buyer_reason", async (req, res) => {
 // get data from PECTH_SUPPLIER_DELIVERY_HISTORICAL
 reason_update.get("/buyerlist", async (req, res) => {
   const sql = await sql_serverConn();
-  // const result = await sql.query(
-  //   `
-  //   SELECT
-  //     [Promise Date] as promise_date,
-  //     Vendor,
-  //     [Item No] as item_no,
-  //     [Item Name] as item_name,
-  //     [PO No] as po_no,
-  //     [PO release] as po_release,
-  //     UOM,
-  //     [PO QTY] as QTY,
-  //     Buyer,
-  //     [Diff Day],
-  //     reason
-  //   FROM
-  //     demo.dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL
-  //   WHERE [Diff Day] != 0 AND reason IS NULL
-  //   `
-  // );
   const result = await sql.query(
     `
     SELECT
@@ -92,6 +75,25 @@ reason_update.get("/buyerlist", async (req, res) => {
     FROM
       demo.dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL
     WHERE [Diff Day] != 0 AND reason IS NULL
+    `
+  );
+  res.status(200).json(result.recordset);
+});
+reason_update.post("/buyerlist_filter_optional", async (req, res) => {
+  const sql = await sql_serverConn();
+  const result = await sql.query(
+    `
+    SELECT
+      [Promise Date] as promise_date,
+      Vendor,
+      [Item No] as item_no,
+      [Item Name] as item_name,
+      [Diff Day],
+      T_ID,
+      reason
+    FROM
+      demo.dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL
+    WHERE [Diff Day] != 0 AND reason IS NULL ${req.body.queryString}
     `
   );
   res.status(200).json(result.recordset);

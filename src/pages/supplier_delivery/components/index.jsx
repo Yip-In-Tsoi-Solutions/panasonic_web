@@ -43,6 +43,7 @@ const Supplier_delivery = () => {
   // state
   const suppliery_list = useSelector((state) => state.original_delivery_report);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [confirm, setConfirm] = useState(true);
   const [checked, setChecked] = useState(false);
   // date formato f date start & date end
   const dateFormat = "DD/MM/YYYY";
@@ -101,8 +102,8 @@ const Supplier_delivery = () => {
       ? 0
       : 1;
   }
-  // dataset before filter
-  const suppliery_list_cleansing = suppliery_list?.suppliery_list.map((i) => {
+  // dataset is cleansing after filter
+  const suppliery_list_cleansing = suppliery_list_filter_result.map((i) => {
     const diff_day = diff_days(
       i["Receive Date"],
       i["Promise Date"],
@@ -187,50 +188,6 @@ const Supplier_delivery = () => {
   };
   const { promise_start_date, promise_end_date, buyer, vendor, purchaseNo } =
     suppliery_list?.temp_state_filter;
-  // dataset have filtered
-  // let suppliery_list_filter_result = suppliery_list_cleansing.filter((item) => {
-  //   // กำหนดตัวแปรสำหรับเก็บผลลัพธ์ของเงื่อนไขทั้งหมด
-  //   let meetsConditions = true;
-
-  //   // ตรวจสอบเงื่อนไขสำหรับ BUYER (ถ้ามี)
-  //   if (buyer) {
-  //     meetsConditions =
-  //       meetsConditions &&
-  //       String(item.buyer).toLowerCase() === String(buyer).toLowerCase();
-  //   }
-
-  //   // ตรวจสอบเงื่อนไขสำหรับ VENDOR (ถ้ามี)
-  //   if (vendor) {
-  //     meetsConditions =
-  //       meetsConditions &&
-  //       String(item.vendor).toLowerCase() === String(vendor).toLowerCase();
-  //   }
-
-  //   // ตรวจสอบเงื่อนไขสำหรับ PROMISE DATE FROM (ถ้ามี)
-  //   if (promise_start_date) {
-  //     meetsConditions =
-  //       meetsConditions &&
-  //       item.promise_date >=
-  //         convert_to_thai_year_dd_mm_yyyy(promise_start_date);
-  //   }
-
-  //   // ตรวจสอบเงื่อนไขสำหรับ PROMISE DATE TO (ถ้ามี)
-  //   if (promise_end_date) {
-  //     meetsConditions =
-  //       meetsConditions &&
-  //       item.promise_date < convert_to_thai_year_dd_mm_yyyy(promise_end_date);
-  //   }
-
-  //   // ตรวจสอบเงื่อนไขสำหรับ PO NUMBERS (ถ้ามี)
-  //   if (purchaseNo) {
-  //     meetsConditions =
-  //       meetsConditions && parseInt(item.po_no) === parseInt(purchaseNo);
-  //   }
-
-  //   // ส่งผลลัพธ์กลับเมื่อเงื่อนไขทั้งหมดถูกต้อง
-  //   return meetsConditions;
-  // });
-
   // actions of Clear filter
   const clearFilter = () => {
     form.resetFields();
@@ -239,6 +196,7 @@ const Supplier_delivery = () => {
     handleBuyerChange("");
     handleVendorChange("");
     handlePOChange("");
+    setConfirm(true);
   };
   // const handleCheckboxChange = (element) => {
   //   console.log(element);
@@ -275,10 +233,9 @@ const Supplier_delivery = () => {
         duration: action_inSec / 1000,
       });
       setTimeout(async () => {
-        //dispatch(setBuyer_reason(suppliery_list_filter_result));
         const response = await axios.post(
           "/api/load_data_buyer_reason",
-          suppliery_list_filter_result
+          suppliery_list_cleansing
         );
         if (response.status === 200) {
           clearFilter();
@@ -303,6 +260,7 @@ const Supplier_delivery = () => {
     let queryString = "";
     if (buyer != "") {
       queryString += `[Buyer] = ${JSON.stringify(buyer).replace(/"/g, "'")}`;
+      setConfirm(false);
     }
     if (promise_start_date != "" && promise_end_date != "") {
       queryString += ` AND [Promise Date] BETWEEN ${JSON.stringify(
@@ -311,12 +269,14 @@ const Supplier_delivery = () => {
         /"/g,
         "'"
       )}`;
+      setConfirm(false);
     }
     if (vendor != "") {
       queryString += ` AND [Vendor] = ${JSON.stringify(vendor).replace(
         /"/g,
         "'"
       )}`;
+      setConfirm(false);
     }
     if (purchaseNo != "") {
       queryString += ` AND [PO No] = ${purchaseNo}`;
@@ -326,11 +286,11 @@ const Supplier_delivery = () => {
     });
     if (response.status === 200) {
       setSuppliery_list_filter_result(response.data);
+      setConfirm(false);
     }
     else {
-      dispatch(setSupplieryList(...suppliery_list_cleansing));
+      setConfirm(true)
     }
-    console.log(queryString)
   };
   return (
     <>
@@ -347,15 +307,7 @@ const Supplier_delivery = () => {
             clear filter
           </Button> */}
           <Button
-            disabled={
-              promise_start_date != "" &&
-              promise_end_date != "" &&
-              buyer != "" &&
-              vendor != "" &&
-              purchaseNo != ""
-                ? false
-                : true
-            }
+            disabled={confirm}
             onClick={() => setIsModalOpen(true)}
             className="float-left mt-2 bg-[#006254] text-[white] font-bold uppercase rounded-2xl border-solid border-2 border-[#006254]"
           >
@@ -408,7 +360,7 @@ const Supplier_delivery = () => {
       <Form
         onFinish={manageFilter}
         form={form}
-        className="grid grid-cols-5 gap-5 clear-both"
+        className="grid grid-cols-3 gap-3 clear-both"
       >
         <Form.Item
           label={"Buyer"}
@@ -485,44 +437,46 @@ const Supplier_delivery = () => {
           </Select>
         </Form.Item>
         <Form.Item>
-          <Button htmlType="submit" className="uppercase">
-            <div className="flex flex-row">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-5 h-5 float-left mr-2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
-                />
-              </svg>
-              Filter
-            </div>
-          </Button>
-          <Button onClick={clearFilter} className="uppercase ml-10">
-            <div className="flex flex-row">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-5 h-5 float-left mr-2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-                />
-              </svg>
-              Clear Filter
-            </div>
-          </Button>
+          <div className="flex flex-row">
+            <Button htmlType="submit" className="uppercase ml-2">
+              <div className="flex flex-row">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5 float-left mr-2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
+                  />
+                </svg>
+                Filter
+              </div>
+            </Button>
+            <Button onClick={clearFilter} className="uppercase ml-5">
+              <div className="flex flex-row">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5 float-left mr-2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                  />
+                </svg>
+                Clear Filter
+              </div>
+            </Button>
+          </div>
         </Form.Item>
       </Form>
       <div className="clear-both mt-10">
@@ -548,8 +502,8 @@ const Supplier_delivery = () => {
         /> */}
         <Table
           className="w-full overflow-y-hidden"
-          dataSource={suppliery_list_filter_result}
-          columns={schema(suppliery_list_filter_result)}
+          dataSource={suppliery_list_cleansing}
+          columns={schema(suppliery_list_cleansing)}
         />
       </div>
     </>

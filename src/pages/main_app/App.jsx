@@ -11,6 +11,7 @@ const App = () => {
   const {
     token: { borderRadiusLG },
   } = theme.useToken();
+  // original report
   const logo = "src/assets/Panasonic_ENERGY_Logo.jpg";
   const [selected_items, setSelected] = useState(1);
   return (

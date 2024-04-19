@@ -1,28 +1,43 @@
-import { Button, Form, Input } from "antd";
-import { useState } from "react";
+import { Button, Form, Input, Table } from "antd";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setListView } from "../../../components/ListViewWithDrawer/actions/list_viewSlice";
+import axios from "axios";
 import ListViewWithDrawer from "../../../components/ListViewWithDrawer/components";
+import { setListView } from "../../../components/ListViewWithDrawer/actions/list_viewSlice";
+import schema from "../../../javascript/print_schema";
 
 const PowerBi_report = () => {
   const disPatch = useDispatch();
-  const listView_data = useSelector((state) => state?.list_view?.list_view);
+  const dashboard = useSelector((state) => state.list_view.list_view);
   const [powerbi, settingPowerBi] = useState({
     reportName: "",
     url: "",
   });
+  async function fetchPowerBi_report() {
+    const response = await axios.get("/api/powerbi_dashboard");
+    response.status === 200
+      ? disPatch(setListView(response.data))
+      : disPatch(setListView(...dashboard));
+  }
+  useEffect(() => {
+    fetchPowerBi_report();
+  }, []);
   const handleChange = (e, key) => {
     settingPowerBi((prevState) => ({
       ...prevState,
       [key]: e.target.value,
     }));
   };
-  const add_powerbi = () => {
-    let payload = {
-      reportName: powerbi.reportName,
-      url: powerbi.url,
-    };
-    disPatch(setListView(payload));
+  const add_powerbi = async () => {
+    try {
+      let payload = {
+        reportName: powerbi.reportName,
+        url: powerbi.url,
+      };
+      axios.post("/api/powerbi_connect", payload);
+    } catch (error) {
+      console.log(error);
+    }
   };
   const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
   const powerbi_addCondition =
@@ -75,7 +90,21 @@ const PowerBi_report = () => {
         </Form>
       </div>
       <div className="clear-both">
-        <ListViewWithDrawer listView_data={listView_data} />
+        {/* <Table
+          dataSource={dashboard}
+          columns={schema(dashboard)}
+          // columns={[
+          //   {
+          //     title: "platform",
+          //     dataIndex: "platform",
+          //     key: "platform",
+          //     render: ()=> {
+          //       <></>
+          //     }
+          //   },
+          // ].concat(schema(dashboard))}
+        /> */}
+        <ListViewWithDrawer listView_data={dashboard} />
       </div>
     </div>
   );

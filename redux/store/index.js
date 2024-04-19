@@ -11,7 +11,7 @@ const store = configureStore({
     table_data: tableActionSlice,
     list_view: list_viewSlice,
     original_delivery_report: supplier_deliverySlice,
-    buyer_reason_report: buyer_reasonSlice,
+    buyer_reason_report: buyer_reasonSlice
   },
 });
 export default store;
