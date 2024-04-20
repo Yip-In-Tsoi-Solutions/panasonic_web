@@ -1,6 +1,6 @@
 import express from "express";
-const supplier_api = express();
 import sql_serverConn from "../../sql_server_conn/sql_serverConn.js";
+const supplier_api = express();
 
 // display all data in Supplier
 supplier_api.get("/supplier_list", async (req, res) => {

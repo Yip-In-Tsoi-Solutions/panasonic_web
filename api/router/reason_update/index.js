@@ -1,31 +1,37 @@
 import express from "express";
-import redis from "redis";
-import { promisify } from "util";
 import sql_serverConn from "../../sql_server_conn/sql_serverConn.js";
-//const redisClient = redis.createClient();
-const redisCacheKey = "buyerlist_inCache";
 const reason_update = express();
 reason_update.use(express.json());
-
 //load data from supplier to Buyer reason
 reason_update.post("/load_data_buyer_reason", async (req, res) => {
   try {
     const sql = await sql_serverConn();
     for (const item of req.body) {
       const request = sql.request();
-      request.query`
-            INSERT INTO PECTH_SUPPLIER_DELIVERY_HISTORICAL (
-                [Item No], [Item Name], UOM, [Transaction], Buyer, [PO No], [PO release],
-                Vendor, [PO QTY], [Received QTY], [Need By Date], [Promise Date], [Receive Date],
-                [Diff Day], [Days More], [Before 3 Days], [Before 2 Days], [Before 1 Day],
-                [On Time], [Delay 1 Day], [Delay 2 Days], [Delay 3 Days], [Delay 3 ], Status, T_ID
-            ) VALUES (
-                @item_no, @item_name, @uom, @transaction, @buyer, @po_no, @po_release,
-                @vendor, @po_qty, @received_qty, @need_by_date, @promise_date, @received_date,
-                @diff_day, @days_more, @before_3_days, @before_2_days, @before_1_days,
-                @on_time, @delay_1_day, @delay_2_days, @delay_3_days, @delay_3_days_more,
-                @status, @t_id
-            )`;
+      request.query(
+        `
+        BEGIN
+          IF NOT EXISTS (SELECT [Item No], [Item Name], UOM, [Transaction], Buyer, [PO No], [PO release],
+                        Vendor, [PO QTY], [Received QTY], [Need By Date], [Promise Date], [Receive Date],
+                        [Diff Day], [Days More], [Before 3 Days], [Before 2 Days], [Before 1 Day],
+                        [On Time], [Delay 1 Day], [Delay 2 Days], [Delay 3 Days], [Delay 3 ], Status, T_ID FROM dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL WHERE Buyer = @buyer)
+          BEGIN
+              INSERT INTO PECTH_SUPPLIER_DELIVERY_HISTORICAL (
+                        [Item No], [Item Name], UOM, [Transaction], Buyer, [PO No], [PO release],
+                        Vendor, [PO QTY], [Received QTY], [Need By Date], [Promise Date], [Receive Date],
+                        [Diff Day], [Days More], [Before 3 Days], [Before 2 Days], [Before 1 Day],
+                        [On Time], [Delay 1 Day], [Delay 2 Days], [Delay 3 Days], [Delay 3 ], Status, T_ID
+                    ) VALUES (
+                        @item_no, @item_name, @uom, @transaction, @buyer, @po_no, @po_release,
+                        @vendor, @po_qty, @received_qty, @need_by_date, @promise_date, @received_date,
+                        @diff_day, @days_more, @before_3_days, @before_2_days, @before_1_days,
+                        @on_time, @delay_1_day, @delay_2_days, @delay_3_days, @delay_3_days_more,
+                        @status, @t_id
+                    )
+          END
+        END
+        `
+      );
 
       request.input("item_no", item.item_no);
       request.input("item_name", item.item_name);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Button,
@@ -99,7 +99,7 @@ function Buyer_Reason() {
     }
   }
   // API render
-  useEffect(() => {
+  useMemo(() => {
     try {
       fetch_buyerReasonList();
       fetchDropdownBuyer();
@@ -135,6 +135,7 @@ function Buyer_Reason() {
   //actions of state
   const clearFilter = () => {
     form.resetFields();
+    dispatch(setBuyer_reason([]));
     dispatch(setBuyerPromiseStart(""));
     dispatch(setBuyerPromiseEnd(""));
     dispatch(setFilterBuyerList(""));
@@ -152,7 +153,10 @@ function Buyer_Reason() {
   const manageFilter = async () => {
     let queryString = "";
     if (buyer != "") {
-      queryString += `AND [Buyer] = ${JSON.stringify(buyer).replace(/"/g, "'")}`;
+      queryString += `AND [Buyer] = ${JSON.stringify(buyer).replace(
+        /"/g,
+        "'"
+      )}`;
     }
     if (promise_start_date != "" && promise_end_date != "") {
       queryString += ` AND [Promise Date] BETWEEN ${JSON.stringify(

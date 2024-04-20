@@ -90,13 +90,6 @@ const Supplier_delivery = () => {
       console.log(error);
     }
   }
-  //po_number
-  useEffect(() => {
-    fetchSupplierList();
-    fetchDropdownBuyer();
-    fetchDropdownVendor();
-    fetchDropdownPoNumber();
-  }, []);
   function diff_days(receive_date, promise_date, po_qty, receive_qty) {
     return receive_date - promise_date === 0 && po_qty - receive_qty === 0
       ? 0
@@ -158,14 +151,12 @@ const Supplier_delivery = () => {
     };
   });
   useMemo(() => {
+    fetchSupplierList();
+    fetchDropdownBuyer();
+    fetchDropdownVendor();
+    fetchDropdownPoNumber();
     dispatch(setSupplieryList(suppliery_list_cleansing));
   }, []);
-
-  // remove every data is duplicate
-  const removed_duplicated = (item) => {
-    const result = [...new Set(item)];
-    return result;
-  };
   //actions of Promise date Start
   const handlePromiseStartDate = (a, dateString) => {
     dispatch(setFilterResultPromiseStart(dateString));
@@ -191,6 +182,8 @@ const Supplier_delivery = () => {
   // actions of Clear filter
   const clearFilter = () => {
     form.resetFields();
+    dispatch(setSupplieryList([]));
+    setSuppliery_list_filter_result([]);
     dispatch(setFilterResultPromiseStart(""));
     dispatch(setFilterResultPromiseEnd(""));
     handleBuyerChange("");
@@ -287,9 +280,8 @@ const Supplier_delivery = () => {
     if (response.status === 200) {
       setSuppliery_list_filter_result(response.data);
       setConfirm(false);
-    }
-    else {
-      setConfirm(true)
+    } else {
+      setConfirm(true);
     }
   };
   return (
@@ -502,8 +494,8 @@ const Supplier_delivery = () => {
         /> */}
         <Table
           className="w-full overflow-y-hidden"
-          dataSource={suppliery_list_cleansing}
-          columns={schema(suppliery_list_cleansing)}
+          dataSource={suppliery_list_filter_result}
+          columns={schema(suppliery_list_filter_result)}
         />
       </div>
     </>
