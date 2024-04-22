@@ -1,4 +1,5 @@
 import express from "express";
+import dfd from "danfojs-node";
 import sql_serverConn from "../../sql_server_conn/sql_serverConn.js";
 const reason_update = express();
 reason_update.use(express.json());
@@ -9,29 +10,32 @@ reason_update.post("/load_data_buyer_reason", async (req, res) => {
     for (const item of req.body) {
       const request = sql.request();
       request.query(
-        `
-        BEGIN
-          IF NOT EXISTS (SELECT [Item No], [Item Name], UOM, [Transaction], Buyer, [PO No], [PO release],
-                        Vendor, [PO QTY], [Received QTY], [Need By Date], [Promise Date], [Receive Date],
-                        [Diff Day], [Days More], [Before 3 Days], [Before 2 Days], [Before 1 Day],
-                        [On Time], [Delay 1 Day], [Delay 2 Days], [Delay 3 Days], [Delay 3 ], Status, T_ID FROM dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL WHERE Buyer = @buyer)
-          BEGIN
-              INSERT INTO PECTH_SUPPLIER_DELIVERY_HISTORICAL (
-                        [Item No], [Item Name], UOM, [Transaction], Buyer, [PO No], [PO release],
-                        Vendor, [PO QTY], [Received QTY], [Need By Date], [Promise Date], [Receive Date],
-                        [Diff Day], [Days More], [Before 3 Days], [Before 2 Days], [Before 1 Day],
-                        [On Time], [Delay 1 Day], [Delay 2 Days], [Delay 3 Days], [Delay 3 ], Status, T_ID
-                    ) VALUES (
-                        @item_no, @item_name, @uom, @transaction, @buyer, @po_no, @po_release,
-                        @vendor, @po_qty, @received_qty, @need_by_date, @promise_date, @received_date,
-                        @diff_day, @days_more, @before_3_days, @before_2_days, @before_1_days,
-                        @on_time, @delay_1_day, @delay_2_days, @delay_3_days, @delay_3_days_more,
-                        @status, @t_id
-                    )
-          END
-        END
-        `
-      );
+        `INSERT INTO PECTH_SUPPLIER_DELIVERY_HISTORICAL ( [Item No], [Item Name], UOM, [Transaction], Buyer, [PO No], [PO release], Vendor, [PO QTY], [Received QTY], [Need By Date], [Promise Date], [Receive Date], [Diff Day], [Days More], [Before 3 Days], [Before 2 Days], [Before 1 Day], [On Time], [Delay 1 Day], [Delay 2 Days], [Delay 3 Days], [Delay 3 ], Status, T_ID ) VALUES ( @item_no, @item_name, @uom, @transaction, @buyer, @po_no, @po_release, @vendor, @po_qty, @received_qty, @need_by_date, @promise_date, @received_date, @diff_day, @days_more, @before_3_days, @before_2_days, @before_1_days, @on_time, @delay_1_day, @delay_2_days, @delay_3_days, @delay_3_days_more, @status, @t_id)`
+      )
+      // request.query(
+      //   `
+      //   BEGIN
+      //     IF NOT EXISTS (SELECT [Item No], [Item Name], UOM, [Transaction], Buyer, [PO No], [PO release],
+      //                   Vendor, [PO QTY], [Received QTY], [Need By Date], [Promise Date], [Receive Date],
+      //                   [Diff Day], [Days More], [Before 3 Days], [Before 2 Days], [Before 1 Day],
+      //                   [On Time], [Delay 1 Day], [Delay 2 Days], [Delay 3 Days], [Delay 3 ], Status, T_ID FROM dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL WHERE Buyer = @buyer)
+      //     BEGIN
+      //         INSERT INTO PECTH_SUPPLIER_DELIVERY_HISTORICAL (
+      //                   [Item No], [Item Name], UOM, [Transaction], Buyer, [PO No], [PO release],
+      //                   Vendor, [PO QTY], [Received QTY], [Need By Date], [Promise Date], [Receive Date],
+      //                   [Diff Day], [Days More], [Before 3 Days], [Before 2 Days], [Before 1 Day],
+      //                   [On Time], [Delay 1 Day], [Delay 2 Days], [Delay 3 Days], [Delay 3 ], Status, T_ID
+      //               ) VALUES (
+      //                   @item_no, @item_name, @uom, @transaction, @buyer, @po_no, @po_release,
+      //                   @vendor, @po_qty, @received_qty, @need_by_date, @promise_date, @received_date,
+      //                   @diff_day, @days_more, @before_3_days, @before_2_days, @before_1_days,
+      //                   @on_time, @delay_1_day, @delay_2_days, @delay_3_days, @delay_3_days_more,
+      //                   @status, @t_id
+      //               )
+      //     END
+      //   END
+      //   `
+      // );
 
       request.input("item_no", item.item_no);
       request.input("item_name", item.item_name);
@@ -71,10 +75,9 @@ reason_update.get("/buyerlist", async (req, res) => {
   const result = await sql.query(
     `
     SELECT
+      [Buyer],
       [Promise Date] as promise_date,
       Vendor,
-      [Item No] as item_no,
-      [Item Name] as item_name,
       [Diff Day],
       T_ID,
       reason
@@ -90,10 +93,9 @@ reason_update.post("/buyerlist_filter_optional", async (req, res) => {
   const result = await sql.query(
     `
     SELECT
+      [Buyer],
       [Promise Date] as promise_date,
       Vendor,
-      [Item No] as item_no,
-      [Item Name] as item_name,
       [Diff Day],
       T_ID,
       reason
@@ -139,5 +141,31 @@ reason_update.get("/dropdown/transaction_id", async (req, res) => {
     `SELECT DISTINCT T_ID from demo.dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL order by T_ID asc`
   );
   res.status(200).json(result.recordset);
+});
+async function saveFile(df, files_type) {
+  if (files_type === "xlsx") {
+    dfd.toExcel(df, { filePath: `./storage/dataset/sample.${files_type}` });
+  } else if (files_type === "csv") {
+    dfd.toCSV(df, { filePath: `./storage/dataset/sample.${files_type}` });
+  }
+}
+reason_update.post("/export/data", async (req, res) => {
+  let dataSet = [];
+  let files_type = "";
+  if (req.body.files_type === "excel") {
+    req.body.dataset.forEach((item) => {
+      dataSet.push(item);
+    });
+    files_type += "xlsx";
+    const df = new dfd.DataFrame(dataSet);
+    saveFile(df, files_type);
+  } else if (req.body.files_type === "csv") {
+    req.body.dataset.forEach((item) => {
+      dataSet.push(item);
+    });
+    files_type += "csv";
+    const df = new dfd.DataFrame(dataSet);
+    saveFile(df, files_type);
+  }
 });
 export default reason_update;

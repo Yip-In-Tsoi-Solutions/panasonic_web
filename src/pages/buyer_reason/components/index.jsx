@@ -8,7 +8,7 @@ import {
   Table,
   Drawer,
   Input,
-  Tag,
+  Dropdown,
 } from "antd";
 import axios from "axios";
 import { useForm } from "antd/es/form/Form";
@@ -26,32 +26,23 @@ import {
   setFilterAction,
 } from "../actions/buyer_reasonSlice";
 import schema from "../../../javascript/print_schema";
+import { FileExcelOutlined, FileTextOutlined } from "@ant-design/icons";
 function Buyer_Reason() {
   const [form] = useForm();
   // State of Components
   const dateFormat = "DD/MM/YYYY";
+  // open update form
   const [openUpdateForm, setUpdateForm] = useState(false);
+  // state
   const buyer_reason = useSelector((state) => state.buyer_reason_report);
   const [current_selected, setCurrentSelected] = useState({
     promiseDate: "",
     vendor: "",
     transaction_id: "",
+    ms_excel: "",
+    csv: "",
   });
   const dispatch = useDispatch();
-
-  // fetch api data of buyer table
-  async function fetch_buyerReasonList() {
-    try {
-      const response = await axios.get("/api/buyerlist");
-      if (response.status === 200) {
-        dispatch(setBuyer_reason(response.data));
-      } else {
-        dispatch(setBuyer_reason(...buyer_reason?.buyer_reason_table));
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
   // fetch api data of Dropdown buyer
   async function fetchDropdownBuyer() {
     try {
@@ -101,7 +92,6 @@ function Buyer_Reason() {
   // API render
   useMemo(() => {
     try {
-      fetch_buyerReasonList();
       fetchDropdownBuyer();
       fetchDropdownRootCause();
       fetchDropdownAction();
@@ -175,6 +165,14 @@ function Buyer_Reason() {
       dispatch(setBuyer_reason(...buyer_reason?.buyer_reason_table));
     }
   };
+  const export_to = async (val)=> {
+    
+    let payload = {
+      dataset: buyer_reason?.buyer_reason_table,
+      files_type: String(val).toLowerCase()
+    }
+    const response = await axios.post('/api/export/data', payload);
+  }
   return (
     <>
       <div>
@@ -273,6 +271,104 @@ function Buyer_Reason() {
                   Clear Filter
                 </div>
               </Button>
+              {/* <Dropdown
+                menu={{
+                  items: export_datasource,
+                }}
+                placement="bottomRight"
+              >
+                <Button className="uppercase ml-5">
+                  <div className="flex flex-row">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-5 h-5 float-left mr-2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+                      />
+                    </svg>
+                    export data
+                  </div>
+                </Button>
+                
+              </Dropdown> */}
+              <Select
+                className="w-full ml-5"
+                defaultValue="EXPORT DATA"
+                onChange={export_to}
+                options={[
+                  {
+                    value: "Excel",
+                    label: (
+                      <>
+                        <div className="flex flex-row uppercase">
+                          <FileExcelOutlined className="text-xl mr-2" />
+                          Excel
+                        </div>
+                      </>
+                    ),
+                  },
+                  {
+                    value: "CSV",
+                    label: (
+                      <>
+                        <div className="flex flex-row uppercase">
+                          <FileTextOutlined className="text-xl mr-2" />
+                          csv
+                        </div>
+                      </>
+                    ),
+                  },
+                ]}
+              />
+              {/* <Button
+                onClick={() => setExportOption(true)}
+                className="w-screen ml-5 uppercase"
+              >
+                <div className="flex flex-row">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-5 h-5 float-left mr-2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+                    />
+                  </svg>
+                  Export
+                </div>
+              </Button>
+              <Modal
+                title={"EXPORT DATA"}
+                open={exportOption}
+                width={window.innerWidth/2}
+                footer={null}
+                onCancel={() => setExportOption(false)}
+              >
+                <Row gutter={16}>
+                  <Col span={8}>
+                    <Card bordered={false}>
+                    <FileExcelOutlined className="text-6xl justify-center" />
+                    </Card>
+                  </Col>
+                  <Col span={8}>
+                    <Card bordered={false}>
+                      <FileOutlined/>
+                    </Card>
+                  </Col>
+                </Row>
+              </Modal> */}
             </div>
           </Form.Item>
         </Form>
