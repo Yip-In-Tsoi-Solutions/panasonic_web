@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>9.1Evaluate</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class = "container p-5">
+            <h1 class = " mb-5 text-uppcase"></h1>
+            <div class = "row">
+                <div class = "col-sm-12 bg-light rounded py-12">
+                    <form id="evaf91" name="evaf91" method = "POST" action = '/eva91/create'>
+                        <div class = "form-group">
+                            <table style="width: 101.093%; height: 188px;" border="0">
+                                <tbody>
+                                <tr style="height: 24px;">
+                                <td style="width: 65.689%; text-align: center; height: 24px;" colspan="2">PANASONIC ENERGY (THAILAND) CO.,LTD</td>
+                                </tr>
+                                <tr style="height: 31px;">
+                                <td style="width: 65.689%; height: 40px;" colspan="2">&nbsp;9.1 การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ</td>
+                                </tr>
+                                <tr style="height: 32px;">
+                                <td style="width: 61.9738%; height: 40px;">
+                                <p>&nbsp;หน่วยงาน/แผนก</p>
+                                </td>
+                                <td style="width: 3.71517%; height: 40px;">&nbsp;จัดซื้อ
+                                    <input id="fixdepartname" name="fixdepartname" type="hidden" value="PURCHASE" placeholder="Department Name" />
+                                </td>
+                                </tr>
+                                <tr style="height: 35px;">
+                                <td style="width: 61.9738%; height: 53px;">
+                                <p>&nbsp;ชื่อผู้ส่งมอบ</p>
+                                </td>
+                                <td style="width: 3.71517%; height: 53px;">&nbsp;&nbsp;
+                                    <select id="dept" name="dept" required>
+                                        <option value="" selected>-select vendor-</option>
+                                        <% data.forEach(item => { %>
+                                            <option value="<%= item.vendora %>"><%= item.vendora %></option>
+                                        <% }); %>
+                                    </select>
+                                </td>
+                                </tr>
+                                <tr style="height: 41px;">
+                                <td style="width: 61.9738%; height: 13px;">
+                                <p>&nbsp;</p>
+                                <p>&nbsp;รายงานประจำเดือน</p>
+                                </td>
+                                <td style="width: 3.71517%; height: 13px;">&nbsp;
+                                    <select id="monthlyname" name="monthlyname" required>
+                                        <option value="" selected>-select month-</option>
+                                        <option value="JAN">JAN</option>
+                                        <option value="FEB">FEB</option>
+                                        <option value="MAR">MAR</option>
+                                        <option value="APR">APRIL</option>
+                                        <option value="MAY">MAY</option>
+                                        <option value="JUN">JUN</option>
+                                        <option value="JUL">JUL</option>
+                                        <option value="AUG">AUG</option>
+                                        <option value="SEP">SEP</option>
+                                        <option value="OCT">OCT</option>
+                                        <option value="NOV">NOV</option>
+                                        <option value="DEC">DEC</option>
+                                    </select>
+                                </tr>
+                                <tr style="height: 18px;">
+                                <td style="width: 65.689%; height: 18px;" colspan="2">
+                                <table style="border-collapse: collapse; width: 100%; height: 352px;" border="0">
+                                <tbody>
+                                <tr style="height: 18px;">
+                                <td style="width: 57.9023%; height: 10px;">&nbsp;</td>
+                                <td style="width: 42.0979%; height: 10px;" colspan="5"><strong><span style="font-size: small;">ระดับความพึงพอใจ (Satisfaction Level)</span></strong></td>
+                                </tr>
+                                <tr style="height: 21px;">
+                                <td style="width: 57.9023%; height: 21px;">&nbsp;<strong><span style="font-size: small;">หัวข้อประเมิน</span></strong></td>
+                                <td style="width: 9.26738%; height: 21px;" align="center">1</td>
+                                <td style="width: 7.05994%; height: 21px;" align="center">2</td>
+                                <td style="width: 8.15959%; height: 21px;" align="center">3</td>
+                                <td style="width: 7.70994%; height: 21px;" align="center">4</td>
+                                <td style="width: 9.90104%; height: 21px;" align="center">5</td>
+                                </tr>
+                                <tr style="height: 18px;">
+                                <td style="width: 57.9023%; height: 18px;" colspan="6">&nbsp;<strong><span style="font-size: small;">คุณภาพการบรรจุหีบห่อ</span></strong></td>
+                                </tr>
+                                <tr style="height: 27px;">
+                                <td style="width: 57.9023%; height: 27px;">&nbsp;<span style="font-size: small;">1.การส่งมอบสินค้าตรงเวลา 
+                                    <input name="Q11" type="hidden" value="1.การส่งมอบสินค้าตรงเวลา" /></span></td>
+                                <td style="width: 9.26738%; height: 27px;"><center><input name="ws11" type="radio" value="1" /></center></td>
+                                <td style="width: 7.05994%; height: 27px;"><center><input name="ws11" type="radio" value="2" /></center></td>
+                                <td style="width: 8.15959%; height: 27px;"><center><input name="ws11" type="radio" value="3" /></center></td>
+                                <td style="width: 7.70994%; height: 27px;"><center><input name="ws11" type="radio" value="4" /></center></td>
+                                <td style="width: 9.90104%; height: 27px;"><center><input name="ws11" type="radio" value="5" /></center></td>
+                                </tr>
+                                <tr style="height: 36px;">
+                                <td style="width: 57.9023%; height: 36px;">&nbsp;<span style="font-size: small;">2.การแต่งกายของเจ้าหน้าที่จัดส่งและ ความสุภาพ การปฏิบัติตนขณะขนส่ง</span> 
+                                    <input name="Q21" type="hidden" value="2.การแต่งกายของเจ้าหน้าที่จัดส่งและ ความสุภาพ การปฏิบัติตนขณะขนส่ง" /></td>
+                                <td style="width: 9.26738%; height: 36px;"><center><input name="ws21" type="radio" value="1" /></center></td>
+                                <td style="width: 7.05994%; height: 36px;"><center><input name="ws21" type="radio" value="2" /></center></td>
+                                <td style="width: 8.15959%; height: 36px;"><center><input name="ws21" type="radio" value="3" /></center></td>
+                                <td style="width: 7.70994%; height: 36px;"><center><input name="ws21" type="radio" value="4" /></center></td>
+                                <td style="width: 9.90104%; height: 36px;"><center><input name="ws21" type="radio" value="5" /></center></td>
+                                </tr>
+                                <tr style="height: 54px;">
+                                <td style="width: 57.9023%; height: 54px;">&nbsp;<span style="font-size: small;">3.ชนิดสินค้าและจำนวนถูกต้อง มีการจัดเรียงสินค้าเป็นระเบียบเรียบร้อยเมื่อส่งมอบงาน</span>
+                                    <input name="Q31" type="hidden" value="3.ชนิดสินค้าและจำนวนถูกต้อง มีการจัดเรียงสินค้าเป็นระเบียบเรียบร้อยเมื่อส่งมอบงาน" />
+                                </td>
+                                <td style="width: 9.26738%; height: 54px;"><center><input name="ws31" type="radio" value="1" /></center></td>
+                                <td style="width: 7.05994%; height: 54px;"><center><input name="ws31" type="radio" value="2" /></center></td>
+                                <td style="width: 8.15959%; height: 54px;"><center><input name="ws31" type="radio" value="3" /></center></td>
+                                <td style="width: 7.70994%; height: 54px;"><center><input name="ws31" type="radio" value="4" /></center></td>
+                                <td style="width: 9.90104%; height: 54px;"><center><input name="ws31" type="radio" value="5" /></center></td>
+                                </tr>
+                                <tr style="height: 54px;">
+                                <td style="width: 57.9023%; height: 54px;">&nbsp;<span style="font-size: small;">4.เจ้าหน้าที่จัดส่ง ปฏิบัติตามกฏระบียบของบริษัทอย่างเคร่งครัด</span>
+                                    <input name="Q41" type="hidden" value="4.เจ้าหน้าที่จัดส่ง ปฏิบัติตามกฏระบียบของบริษัทอย่างเคร่งครัด" />
+                                </td>
+                                <td style="width: 9.26738%; height: 54px;"><center><input name="ws41" type="radio" value="1" /></center></td>
+                                <td style="width: 7.05994%; height: 54px;"><center><input name="ws41" type="radio" value="2" /></center></td>
+                                <td style="width: 8.15959%; height: 54px;"><center><input name="ws41" type="radio" value="3" /></center></td>
+                                <td style="width: 7.70994%; height: 54px;"><center><input name="ws41" type="radio" value="4" /></center></td>
+                                <td style="width: 9.90104%; height: 54px;"><center><input name="ws41" type="radio" value="5" /></center></td>
+                                </tr>
+                                <tr style="height: 72px;">
+                                <td style="width: 57.9023%; height: 72px;">&nbsp;<span style="font-size: small;">5.ลักษณะทางกายภาพของหีบห่อที่บรรจุสินค้า (เช่น ไม่มีรอยฉีกขาด เป็นต้น)</span>
+                                    <input name="Q51" type="hidden" value="5.ลักษณะทางกายภาพของหีบห่อที่บรรจุสินค้า (เช่น ไม่มีรอยฉีกขาด เป็นต้น)" />
+                                </td>
+                                <td style="width: 9.26738%; height: 72px;"><center><input name="ws51" type="radio" value="1" /></center></td>
+                                <td style="width: 7.05994%; height: 72px;"><center><input name="ws51" type="radio" value="2" /></center></td>
+                                <td style="width: 8.15959%; height: 72px;"><center><input name="ws51" type="radio" value="3" /></center></td>
+                                <td style="width: 7.70994%; height: 72px;"><center><input name="ws51" type="radio" value="4" /></center></td>
+                                <td style="width: 9.90104%; height: 72px;"><center><input name="ws51" type="radio" value="5" /></center></td>
+                                </tr>
+                                <tr style="height: 18px;">
+                                <td style="width: 57.9023%; height: 24px;">&nbsp;<span style="font-size: small;">6.ป้ายชื่อสินค้าถูกต้องตามมาตรฐาน, บรรจุหีบห่อถูกต้องตามข้อกำหนด</span>
+                                    <input name="Q61" type="hidden" value="6.ป้ายชื่อสินค้าถูกต้องตามมาตรฐาน, บรรจุหีบห่อถูกต้องตามข้อกำหนด" />
+                                </td>
+                                <td style="width: 9.26738%; height: 24px;"><center><input name="ws61" type="radio" value="1" /></center></td>
+                                <td style="width: 7.05994%; height: 24px;"><center><input name="ws61" type="radio" value="2" /></center></td>
+                                <td style="width: 8.15959%; height: 24px;"><center><input name="ws61" type="radio" value="3" /></center></td>
+                                <td style="width: 7.70994%; height: 24px;"><center><input name="ws61" type="radio" value="4" /></center></td>
+                                <td style="width: 9.90104%; height: 24px;"><center><input name="ws61" type="radio" value="5" /></center></td>
+                                </tr>
+                                <tr style="height: 18px;">
+                                    <td style="width: 57.9023%; height: 18px;" colspan="6">&nbsp;<span style="font-size: small;"><strong>Service / การบริการ</strong></span></td>
+                                    </tr>
+                                    <tr style="height: 18px;">
+                                    <td style="width: 57.9023%; height: 18px;"><span style="font-size: small;">&nbsp;1.ความรวดเร็วในการแก้ปัญหา</span>
+                                        <input name="QS11" type="hidden" value="1.ความรวดเร็วในการแก้ปัญหา" />
+                                    </td>
+                                    <td style="width: 9.26738%; height: 18px;"><center><input name="qws11" type="radio" value="1" /></center></td>
+                                    <td style="width: 7.05994%; height: 18px;"><center><input name="qws11" type="radio" value="2" /></center></td>
+                                    <td style="width: 8.15959%; height: 18px;"><center><input name="qws11" type="radio" value="3" /></center></td>
+                                    <td style="width: 7.70994%; height: 18px;"><center><input name="qws11" type="radio" value="4" /></center></td>
+                                    <td style="width: 9.90104%; height: 18px;"><center><input name="qws11" type="radio" value="5" /></center></td>
+                                    </tr>
+                                    <tr style="height: 25px;">
+                                    <td style="width: 57.9023%; height: 25px;"><span style="font-size: small;">&nbsp;2.ความสุภาพและการปฏิบัติของพนักงานบริษัท</span>
+                                        <input name="QS21" type="hidden" value="2.ความสุภาพและการปฏิบัติของพนักงานบริษัท" />
+                                    </td>
+                                    <td style="width: 9.26738%; height: 25px;"><center><input name="qws21" type="radio" value="1" /></center></td>
+                                    <td style="width: 7.05994%; height: 25px;"><center><input name="qws21" type="radio" value="2" /></center></td>
+                                    <td style="width: 8.15959%; height: 25px;"><center><input name="qws21" type="radio" value="3" /></center></td>
+                                    <td style="width: 7.70994%; height: 25px;"><center><input name="qws21" type="radio" value="4" /></center></td>
+                                    <td style="width: 9.90104%; height: 25px;"><center><input name="qws21" type="radio" value="5" /></center></td>
+                                    <tr style="height: 31px;">
+                                        <td style="width: 57.9023%; height: 31px;" colspan="6"><span style="font-size: small;">&nbsp;<strong>Marketing Co-ordination / การติดต่อประสานงาน</strong></span></td>
+                                        </tr>
+                                        <tr style="height: 19px;">
+                                        <td style="width: 57.9023%; height: 19px;">&nbsp;1.การเป็นที่ปรึกษา ให้คำแนะนำด้านเทคนิคผลิตภัณฑ์
+                                            <input name="QM31" type="hidden" value="1.การเป็นที่ปรึกษา ให้คำแนะนำด้านเทคนิคผลิตภัณฑ์" />
+                                        </td>
+                                        <td style="width: 9.26738%; height: 19px;"><center><input name="qws31" type="radio" value="1" /></center></td>
+                                        <td style="width: 7.05994%; height: 19px;"><center><input name="qws31" type="radio" value="2" /></center></td>
+                                        <td style="width: 8.15959%; height: 19px;"><center><input name="qws31" type="radio" value="3" /></center></td>
+                                        <td style="width: 7.70994%; height: 19px;"><center><input name="qws31" type="radio" value="4" /></center></td>
+                                        <td style="width: 9.90104%; height: 19px;"><center><input name="qws31" type="radio" value="5" /></center></td>
+                                        </tr>
+                                        <tr style="height: 18px;">
+                                        <td style="width: 57.9023%; height: 18px;">&nbsp;2.ความสุภาพและการปฏิบัติของพนักงานขาย
+                                            <input name="QM32" type="hidden" value="2.ความสุภาพและการปฏิบัติของพนักงานขาย" />
+                                        </td>
+                                        <td style="width: 9.26738%; height: 18px;"><center><input name="qws32" type="radio" value="1" /></center></td>
+                                        <td style="width: 7.05994%; height: 18px;"><center><input name="qws32" type="radio" value="2" /></center></td>
+                                        <td style="width: 8.15959%; height: 18px;"><center><input name="qws32" type="radio" value="3" /></center></td>
+                                        <td style="width: 7.70994%; height: 18px;"><center><input name="qws32" type="radio" value="4" /></center></td>
+                                        <td style="width: 9.90104%; height: 18px;"><center><input name="qws32" type="radio" value="5" /></center></td>
+                                        </tr>
+                                        <tr style="height: 18px;">
+                                        <td style="width: 57.9023%; height: 18px;">&nbsp;3.ความสม่ำเสมอในการติดต่อและบริการ
+                                            <input name="QM33" type="hidden" value="3.ความสม่ำเสมอในการติดต่อและบริการ" />
+                                        </td>
+                                        <td style="width: 9.26738%; height: 18px;"><center><input name="qws33" type="radio" value="1" /></center></td>
+                                        <td style="width: 7.05994%; height: 18px;"><center><input name="qws33" type="radio" value="2" /></center></td>
+                                        <td style="width: 8.15959%; height: 18px;"><center><input name="qws33" type="radio" value="3" /></center></td>
+                                        <td style="width: 7.70994%; height: 18px;"><center><input name="qws33" type="radio" value="4" /></center></td>
+                                        <td style="width: 9.90104%; height: 18px;"><center><input name="qws33" type="radio" value="5" /></center></td>
+                                        </tr>
+                                        <tr style="height: 18px;">
+                                            <td style="width: 57.9023%; height: 18px;" colspan="6">&nbsp;<span style="font-size: small;">เอกสารต่าง ๆ ที่เกี่ยวข้อง </span></td>
+                                            </tr>
+                                            <tr style="height: 18px;">
+                                            <td style="width: 57.9023%; height: 18px;">&nbsp;1.Certificate of Analysis [COA] (เช่น ความถูกต้อง ความครบถ้วน การตรงต่อเวลา เป็นต้น)
+                                                <input name="QM41" type="hidden" value="1.Certificate of Analysis [COA] (เช่น ความถูกต้อง ความครบถ้วน การตรงต่อเวลา เป็นต้น)" />
+                                            </td>
+                                            <td style="width: 9.26738%; height: 18px;"><center><input name="qws41" type="radio" value="1" /></center></td>
+                                            <td style="width: 7.05994%; height: 18px;"><center><input name="qws41" type="radio" value="2" /></center></td>
+                                            <td style="width: 8.15959%; height: 18px;"><center><input name="qws41" type="radio" value="3" /></center></td>
+                                            <td style="width: 7.70994%; height: 18px;"><center><input name="qws41" type="radio" value="4" /></center></td>
+                                            <td style="width: 9.90104%; height: 18px;"><center><input name="qws41" type="radio" value="5" /></center></td>
+                                            </tr>
+                                            <tr style="height: 18px;">
+                                            <td style="width: 57.9023%; height: 18px;">&nbsp;2.Quotation (ใบเสนอราคา) (เช่น ความรวดเร็ว ความถูกต้อง ความครบถ้วน เป็นต้น)
+                                                <input name="QM42" type="hidden" value="2.Quotation (ใบเสนอราคา) (เช่น ความรวดเร็ว ความถูกต้อง ความครบถ้วน เป็นต้น)" />
+                                            </td>
+                                            <td style="width: 9.26738%; height: 18px;"><center><input name="qws42" type="radio" value="1" /></center></td>
+                                            <td style="width: 7.05994%; height: 18px;"><center><input name="qws42" type="radio" value="2" /></center></td>
+                                            <td style="width: 8.15959%; height: 18px;"><center><input name="qws42" type="radio" value="3" /></center></td>
+                                            <td style="width: 7.70994%; height: 18px;"><center><input name="qws42" type="radio" value="4" /></center></td>
+                                            <td style="width: 9.90104%; height: 18px;"><center><input name="qws42" type="radio" value="5" /></center></td>
+                                            </tr>
+                                            <tr>
+                                            <td style="width: 57.9023%;">&nbsp;3.Invoice / เอกสารส่งมอบงาน (เช่น ความถูกต้อง ความครบถ้วน การตรงต่อเวลา เป็นต้น)
+                                                <input name="QM43" type="hidden" value="3.Invoice / เอกสารส่งมอบงาน (เช่น ความถูกต้อง ความครบถ้วน การตรงต่อเวลา เป็นต้น)" />
+                                            </td>
+                                            <td style="width: 9.26738%;"><center><input name="qws43" type="radio" value="1" /></center></td>
+                                            <td style="width: 7.05994%;"><center><input name="qws43" type="radio" value="2" /></center></td>
+                                            <td style="width: 8.15959%;"><center><input name="qws43" type="radio" value="3" /></center></td>
+                                            <td style="width: 7.70994%;"><center><input name="qws43" type="radio" value="4" /></center></td>
+                                            <td style="width: 9.90104%;"><center><input name="qws43" type="radio" value="5" /></center></td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td style="width: 57.9023%;">ข้อเสนอแนะ</td>
+                                                <td style="width: 42.0979%;" colspan="5">&nbsp;<textarea id="wreview" cols="50" name="wreview" rows="4"></textarea></td>
+                                            </tr>
+                                </tbody>
+                                </table>
+                                <table style="width: 100%; height: 185px;" border="0">
+                                    <tbody>
+                                    <tr style="height: 34px;">
+                                    <td style="width: 100%; height: 34px;" colspan="3"><center>เกณฑ์การให้คะแนน</center></td>
+                                    </tr>
+                                    <tr style="height: 41px;">
+                                    <td style="width: 38.5835%; height: 41px;"><center>เกรด</center></td>
+                                    <td style="width: 22.1459%; height: 41px;"><center>คะแนน (%)</center></td>
+                                    <td style="width: 39.2706%; height: 41px;"><center>ผลสรุป</center></td>
+                                    </tr>
+                                    <tr style="height: 38px;">
+                                    <td style="width: 38.5835%; height: 33px;" align="center">A</td>
+                                    <td style="width: 22.1459%; height: 33px;" align="center">90-100</td>
+                                    <td style="width: 39.2706%; height: 33px;" align="center">ดีมาก</td>
+                                    </tr>
+                                    <tr style="height: 25px;">
+                                    <td style="width: 38.5835%; height: 25px;" align="center">B</td>
+                                    <td style="width: 22.1459%; height: 25px;" align="center">80-89</td>
+                                    <td style="width: 39.2706%; height: 25px;" align="center">ดี</td>
+                                    </tr>
+                                    <tr style="height: 24px;">
+                                    <td style="width: 38.5835%; height: 24px;" align="center">C</td>
+                                    <td style="width: 22.1459%; height: 24px;" align="center">70-79</td>
+                                    <td style="width: 39.2706%; height: 24px;" align="center">พอใช้</td>
+                                    </tr>
+                                    <tr style="height: 28px;">
+                                    <td style="width: 38.5835%; height: 28px;" align="center">D</td>
+                                    <td style="width: 22.1459%; height: 28px;" align="center">น้อยกว่า 69</td>
+                                    <td style="width: 39.2706%; height: 28px;" align="center">ปรับปรุง</td>
+                                    </tr>
+                                    </tbody>
+                                    </table>
+                                    <tr></tr>
+                                </td>
+                                </tr>
+                                </tbody>
+                                </table>
+                        </div>
+                        <br>
+                        <button type="submit">Submit</button>
+                    </form>
+                    <table id="dataTable" style="width: 100%; height: 102px;" border="0">
+                        <tbody>
+                        <tr style="height: 34px;">
+                        <td style="width: 100%; height: 34px;" colspan="5"><center>แสดงผลรวมทั้งหมดของการประเมิน Vendor</center></td>
+                        </tr>
+                        <tr style="height: 41px;">
+                        <td style="width: 27.3784%; height: 41px;"><center>ชื่อ</center></td>
+                        <td style="width: 29.5455%; height: 41px;"><center>รายงานประจำเดือน</center></td>
+                        <td style="width: 23.4408%;"><center>วันที่สร้าง</center></td>
+                        <td style="width: 9.81765%;"><center>%</center></td>
+                        <td style="width: 9.81765%; height: 41px;"><center>เกรด</center></td>
+                        </tr>
+                        <tr style="height: 38px;">
+                        
+                        <td style="width: 27.3784%; height: 27px;" align="center">&nbsp;</td>
+                        <td style="width: 29.5455%; height: 27px;" align="center">&nbsp;</td>
+                        <td style="width: 23.4408%;">&nbsp;</td>
+                        <td style="width: 9.81765%;">&nbsp;</td>
+                        <td style="width: 9.81765%; height: 27px;" align="center">&nbsp;</td>
+
+                        </tr>
+                        </tbody>
+                        </table>
+                </div>
+            </div>
+            
+            
+        </div>
+
+         <!-- Client-side JavaScript -->
+     
+         <script>
+            fetch('/views/f/calculate')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector('#dataTable tbody');
+                    data.forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${row.eva91_sender_name}</td><td>${row.report_name}</td><td>${row.evacreatedate}</td><td>${row.percenscore}</td><td>${row.grade}</td>`; // Adjust according to your column names
+                        tableBody.appendChild(tr);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        </script>
+        
+    </body>
+</html>
