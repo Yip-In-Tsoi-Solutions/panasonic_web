@@ -1,15 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Button,
-  Form,
-  DatePicker,
-  Select,
-  Table,
-  Drawer,
-  Input,
-  Dropdown,
-} from "antd";
+import { Button, Form, DatePicker, Select, Table, Drawer, Input } from "antd";
 import axios from "axios";
 import { useForm } from "antd/es/form/Form";
 import moment from "moment";
@@ -27,6 +18,7 @@ import {
 } from "../actions/buyer_reasonSlice";
 import schema from "../../../javascript/print_schema";
 import { FileExcelOutlined, FileTextOutlined } from "@ant-design/icons";
+import TextArea from "antd/es/input/TextArea";
 function Buyer_Reason() {
   const [form] = useForm();
   // State of Components
@@ -165,14 +157,13 @@ function Buyer_Reason() {
       dispatch(setBuyer_reason(...buyer_reason?.buyer_reason_table));
     }
   };
-  const export_to = async (val)=> {
-    
+  const export_to = async (val) => {
     let payload = {
       dataset: buyer_reason?.buyer_reason_table,
-      files_type: String(val).toLowerCase()
-    }
-    const response = await axios.post('/api/export/data', payload);
-  }
+      files_type: String(val).toLowerCase(),
+    };
+    await axios.post("/api/export/data", payload);
+  };
   return (
     <>
       <div>
@@ -181,7 +172,7 @@ function Buyer_Reason() {
         <Form
           onFinish={manageFilter}
           form={form}
-          className="grid grid-cols-5 gap-5 clear-both"
+          className="grid grid-cols-3 gap-3 clear-both"
         >
           <Form.Item>
             <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
@@ -232,8 +223,8 @@ function Buyer_Reason() {
             />
           </Form.Item>
           <Form.Item>
-            <div className="flex flex-row mt-7">
-              <Button htmlType="submit" className="uppercase ml-2">
+            <div className="flex flex-row">
+              <Button htmlType="submit" className="uppercase">
                 <div className="flex flex-row">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -271,33 +262,6 @@ function Buyer_Reason() {
                   Clear Filter
                 </div>
               </Button>
-              {/* <Dropdown
-                menu={{
-                  items: export_datasource,
-                }}
-                placement="bottomRight"
-              >
-                <Button className="uppercase ml-5">
-                  <div className="flex flex-row">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5 float-left mr-2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
-                      />
-                    </svg>
-                    export data
-                  </div>
-                </Button>
-                
-              </Dropdown> */}
               <Select
                 className="w-full ml-5"
                 defaultValue="EXPORT DATA"
@@ -327,48 +291,6 @@ function Buyer_Reason() {
                   },
                 ]}
               />
-              {/* <Button
-                onClick={() => setExportOption(true)}
-                className="w-screen ml-5 uppercase"
-              >
-                <div className="flex flex-row">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-5 h-5 float-left mr-2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
-                    />
-                  </svg>
-                  Export
-                </div>
-              </Button>
-              <Modal
-                title={"EXPORT DATA"}
-                open={exportOption}
-                width={window.innerWidth/2}
-                footer={null}
-                onCancel={() => setExportOption(false)}
-              >
-                <Row gutter={16}>
-                  <Col span={8}>
-                    <Card bordered={false}>
-                    <FileExcelOutlined className="text-6xl justify-center" />
-                    </Card>
-                  </Col>
-                  <Col span={8}>
-                    <Card bordered={false}>
-                      <FileOutlined/>
-                    </Card>
-                  </Col>
-                </Row>
-              </Modal> */}
             </div>
           </Form.Item>
         </Form>
@@ -380,42 +302,46 @@ function Buyer_Reason() {
                 ? buyer_reason?.buyer_reason_table
                 : ""
             }
-            columns={schema(buyer_reason?.buyer_reason_table).concat([
-              {
-                title: "Action",
-                key: "action",
-                render: (record) => (
-                  <Button
-                    onClick={updateReason.bind(this, record)}
-                    className="uppercase"
-                    style={{
-                      backgroundColor: "transparent",
-                      border: "none",
-                      boxShadow: "none",
-                    }}
-                  >
-                    <div className="flex flex-row">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-6 h-6"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                        />
-                      </svg>
+            columns={
+              buyer_reason?.buyer_reason_table.length > 0
+                ? schema(buyer_reason?.buyer_reason_table).concat([
+                    {
+                      title: "Action",
+                      key: "action",
+                      render: (record) => (
+                        <Button
+                          onClick={updateReason.bind(this, record)}
+                          className="uppercase"
+                          style={{
+                            backgroundColor: "transparent",
+                            border: "none",
+                            boxShadow: "none",
+                          }}
+                        >
+                          <div className="flex flex-row">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                              className="w-6 h-6"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                              />
+                            </svg>
 
-                      <p className="ml-5">Reason</p>
-                    </div>
-                  </Button>
-                ),
-              },
-            ])}
+                            <p className="ml-5">Reason</p>
+                          </div>
+                        </Button>
+                      ),
+                    },
+                  ])
+                : schema(buyer_reason?.buyer_reason_table)
+            }
           />
           <Drawer
             title="REASON UPDATE"
@@ -424,8 +350,8 @@ function Buyer_Reason() {
             width={window.innerWidth / 1.5}
           >
             <h1 className="italic uppercase">Current data</h1>
-            <div className="grid grid-cols-3 gap-3 clear-both">
-              <Form form={form}>
+            <Form className="grid grid-cols-3 gap-3 clear-both">
+              <Form.Item>
                 <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
                   promise date
                 </label>
@@ -433,8 +359,8 @@ function Buyer_Reason() {
                   value={current_selected?.promiseDate}
                   className="border-2 border-[#006254]"
                 />
-              </Form>
-              <Form form={form}>
+              </Form.Item>
+              <Form.Item>
                 <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
                   vendor
                 </label>
@@ -442,8 +368,8 @@ function Buyer_Reason() {
                   value={current_selected?.vendor}
                   className="border-2 border-[#006254]"
                 />
-              </Form>
-              <Form form={form}>
+              </Form.Item>
+              <Form.Item>
                 <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
                   transaction_id
                 </label>
@@ -451,12 +377,12 @@ function Buyer_Reason() {
                   value={current_selected?.transaction_id}
                   className="border-2 border-[#006254]"
                 />
-              </Form>
-            </div>
+              </Form.Item>
+            </Form>
             <br />
             <h1 className="italic uppercase">update Information</h1>
-            <div className="grid grid-cols-2 gap-2 clear-both">
-              <Form form={form}>
+            <Form form={form} className="grid grid-cols-2 gap-2 clear-both">
+              <Form.Item>
                 <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
                   root-cause
                 </label>
@@ -471,9 +397,8 @@ function Buyer_Reason() {
                     </Option>
                   ))}
                 </Select>
-              </Form>
-
-              <Form form={form}>
+              </Form.Item>
+              <Form.Item>
                 <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
                   action
                 </label>
@@ -488,8 +413,19 @@ function Buyer_Reason() {
                     </Option>
                   ))}
                 </Select>
-              </Form>
-            </div>
+              </Form.Item>
+            </Form>
+            <Form>
+              <Form.Item>
+                <TextArea
+                  autoSize={{
+                    minRows: 2,
+                    maxRows: 12,
+                  }}
+                />
+                <Button>UPDATE</Button>
+              </Form.Item>
+            </Form>
           </Drawer>
         </div>
       </div>
