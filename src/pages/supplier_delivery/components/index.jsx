@@ -20,7 +20,7 @@ import {
   setSupplieryList,
   setFilterResultPromiseStart,
   setFilterResultPromiseEnd,
-} from "../actions/supplier_deliverySlice";
+} from "./actions/supplier_deliverySlice";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";

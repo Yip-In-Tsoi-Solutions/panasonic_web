@@ -1,12 +1,16 @@
 import express from "express";
 import sql_serverConn from "../../sql_server_conn/sql_serverConn.js";
 const supplier_api = express();
-
-// display all data in Supplier
 supplier_api.get("/supplier_list", async (req, res) => {
-  const sql = await sql_serverConn();
-  const result = await sql.query(`SELECT * from dbo.Org_delivery_report`);
-  res.status(200).json(result.recordset);
+  try {
+    const sql = await sql_serverConn();
+    const result = await sql.query(`SELECT * from dbo.Org_delivery_report`);
+    res.status(200).json(result.recordset);
+  } catch (error) {
+    if (error) {
+      res.status(500).json({ message: error });
+    }
+  }
 });
 // display all data from Buyer
 supplier_api.post("/supplier_list_filter_optional", async (req, res) => {

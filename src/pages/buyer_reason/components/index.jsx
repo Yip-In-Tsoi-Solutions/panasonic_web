@@ -418,12 +418,19 @@ function Buyer_Reason() {
             <Form>
               <Form.Item>
                 <TextArea
+                  placeholder="write buyer reason here"
                   autoSize={{
-                    minRows: 2,
+                    minRows: 6,
                     maxRows: 12,
                   }}
                 />
-                <Button>UPDATE</Button>
+                <Button
+                  type="primary"
+                  style={{backgroundColor: "#006254"}}
+                  className="mt-5 text-[white] font-bold uppercase rounded-2xl border-solid border-2 border-[#006254]"
+                >
+                  UPDATE
+                </Button>
               </Form.Item>
             </Form>
           </Drawer>
