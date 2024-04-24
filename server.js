@@ -8,6 +8,7 @@ import { rateLimit } from "express-rate-limit";
 import supplier_api from "./api/router/supplier_delivery/index.js";
 import reason_update from "./api/router/reason_update/index.js";
 import power_bi_report from "./api/router/powerbi_report/index.js";
+import evaluate_form from "./api/router/evaluate_form/index.js";
 // import condb from "./api/router/condb.js";
 const PORT = process.env.PORT || 80;
 const app = express();
@@ -35,6 +36,7 @@ app.use((req, res, next) => {
 app.use("/api", supplier_api);
 app.use("/api", reason_update);
 app.use("/api", power_bi_report);
+app.use("/api", evaluate_form);
 // app.use(condb);
 
 // Start express server
