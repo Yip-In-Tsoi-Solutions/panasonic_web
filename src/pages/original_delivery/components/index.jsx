@@ -1,15 +1,5 @@
-import {
-  Button,
-  Checkbox,
-  DatePicker,
-  Form,
-  Layout,
-  Modal,
-  Select,
-  Table,
-  message,
-} from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { Button, Form, Modal, Select, Table, message } from "antd";
+import { useMemo, useState } from "react";
 import {
   setFilterBuyer,
   setFilterP0,
@@ -20,41 +10,42 @@ import {
   setSupplieryList,
   setFilterResultPromiseStart,
   setFilterResultPromiseEnd,
-} from "../actions/supplier_deliverySlice";
+} from "../actions/original_deliverySlice";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
-import moment from "moment";
-import convert_to_thai_year_dd_mm_yyyy from "../../../javascript/convert_to_thai_year_dd_mm_yyyy";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { setBuyer_reason } from "../../buyer_reason/actions/buyer_reasonSlice";
 import schema from "../../../javascript/print_schema";
-const url = "/api/supplier_list";
-const { Header } = Layout;
 const { Option } = Select;
 // class components
-const Supplier_delivery = () => {
+const Original_delivery = () => {
   // redux/Antd
   const dispatch = useDispatch();
   const [form] = useForm();
   const [messageApi, contextHolder] = message.useMessage();
-  const [suppliery_list_filter_result, setSuppliery_list_filter_result] =
-    useState([]);
+  const [
+    original_delivery_report_filter_result,
+    setOriginal_delivery_report_filter_result,
+  ] = useState([]);
   // state
-  const suppliery_list = useSelector((state) => state.supplier_delivery_report);
+  const original_delivery_report = useSelector(
+    (state) => state.original_delivery_report
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [confirm, setConfirm] = useState(true);
-  const [checked, setChecked] = useState(false);
   // date formato f date start & date end
   const dateFormat = "DD/MM/YYYY";
 
   async function fetchSupplierList() {
     try {
-      const response = await axios.get("/api/supplier_list");
+      const response = await axios.get("/api/original_delivery_report");
       if (response.status === 200) {
         dispatch(setSupplieryList(response.data));
       } else {
-        dispatch(setSupplieryList(...suppliery_list.suppliery_list));
+        dispatch(
+          setSupplieryList(...original_delivery_report.original_delivery_report)
+        );
       }
     } catch (error) {
       console.log(error);
@@ -62,30 +53,30 @@ const Supplier_delivery = () => {
   }
   async function fetchDropdownBuyer() {
     try {
-      const response = await axios.get("/api/dropdown/buyer");
+      const response = await axios.get("/api/original_delivery_report/dropdown/buyer");
       response.status === 200
         ? dispatch(setFilterBuyer(response.data))
-        : dispatch(setFilterBuyer(...suppliery_list?.filterBuyer));
+        : dispatch(setFilterBuyer(...original_delivery_report?.filterBuyer));
     } catch (error) {
       console.log(error);
     }
   }
   async function fetchDropdownVendor() {
     try {
-      const response = await axios.get("/api/dropdown/vendor");
+      const response = await axios.get("/api/original_delivery_report/dropdown/vendor");
       response.status === 200
         ? dispatch(setFilterVendor(response.data))
-        : dispatch(setFilterVendor(...suppliery_list?.filterVendor));
+        : dispatch(setFilterVendor(...original_delivery_report?.filterVendor));
     } catch (error) {
       console.log(error);
     }
   }
   async function fetchDropdownPoNumber() {
     try {
-      const response = await axios.get("/api/dropdown/po_number");
+      const response = await axios.get("/api/original_delivery_report/dropdown/po_number");
       response.status === 200
         ? dispatch(setFilterP0(response.data))
-        : dispatch(setFilterP0(...suppliery_list?.filterPO));
+        : dispatch(setFilterP0(...original_delivery_report?.filterPO));
     } catch (error) {
       console.log(error);
     }
@@ -96,66 +87,67 @@ const Supplier_delivery = () => {
       : 1;
   }
   // dataset is cleansing after filter
-  const suppliery_list_cleansing = suppliery_list_filter_result.map((i) => {
-    const diff_day = diff_days(
-      i["Receive Date"],
-      i["Promise Date"],
-      i["PO QTY"],
-      i["Received QTY"]
-    );
-    return {
-      item_no: i["Item No"],
-      item_name: i["Item Name"],
-      uom: i.UOM,
-      transaction: i.Transaction,
-      buyer: i.Buyer,
-      po_no: i["PO No"],
-      po_release: i["PO release"],
-      vendor: i["Vendor"],
-      po_qty: parseInt(i["PO QTY"]),
-      received_qty: parseInt(i["Received QTY"]),
-      need_by_date: i["Need By Date"],
-      promise_date: i["Promise Date"],
-      received_date: i["Receive Date"],
-      diff_day: diff_day,
-      days_more: diff_day < -3 ? 1 : "",
-      before_3_days: diff_day === -3 ? 1 : "",
-      before_2_days: diff_day === -2 ? 1 : "",
-      before_1_days: diff_day === -1 ? 1 : "",
-      on_time: diff_day === 0 ? 1 : "",
-      delay_1_day: diff_day === 1 ? 1 : "",
-      delay_2_days: diff_day === 2 ? 1 : "",
-      delay_3_days: diff_day === 3 ? 1 : "",
-      delay_3_days_more: diff_day > 3 ? 1 : "",
-      status:
-        diff_day == 0
-          ? "On Time"
-          : diff_day == 1
-          ? "Delay 1 Day"
-          : diff_day == 2
-          ? "Delay 2 Day"
-          : diff_day == 3
-          ? "Delay 3 Day"
-          : diff_day > 3
-          ? "Delay 3 Days More"
-          : diff_day < -3
-          ? "Before 3 Days More"
-          : diff_day === -3
-          ? "Before 3 Days"
-          : diff_day === -2
-          ? "Before 2 Days"
-          : diff_day === -1
-          ? "Before 1 Day"
-          : "",
-      t_id: i["T_ID"],
-    };
-  });
+  const original_delivery_report_cleansing =
+    original_delivery_report_filter_result.map((i) => {
+      const diff_day = diff_days(
+        i["Receive Date"],
+        i["Promise Date"],
+        i["PO QTY"],
+        i["Received QTY"]
+      );
+      return {
+        item_no: i["Item No"],
+        item_name: i["Item Name"],
+        uom: i.UOM,
+        transaction: i.Transaction,
+        buyer: i.Buyer,
+        po_no: i["PO No"],
+        po_release: i["PO release"],
+        vendor: i["Vendor"],
+        po_qty: parseInt(i["PO QTY"]),
+        received_qty: parseInt(i["Received QTY"]),
+        need_by_date: i["Need By Date"],
+        promise_date: i["Promise Date"],
+        received_date: i["Receive Date"],
+        diff_day: diff_day,
+        days_more: diff_day < -3 ? 1 : "",
+        before_3_days: diff_day === -3 ? 1 : "",
+        before_2_days: diff_day === -2 ? 1 : "",
+        before_1_days: diff_day === -1 ? 1 : "",
+        on_time: diff_day === 0 ? 1 : "",
+        delay_1_day: diff_day === 1 ? 1 : "",
+        delay_2_days: diff_day === 2 ? 1 : "",
+        delay_3_days: diff_day === 3 ? 1 : "",
+        delay_3_days_more: diff_day > 3 ? 1 : "",
+        status:
+          diff_day == 0
+            ? "On Time"
+            : diff_day == 1
+            ? "Delay 1 Day"
+            : diff_day == 2
+            ? "Delay 2 Day"
+            : diff_day == 3
+            ? "Delay 3 Day"
+            : diff_day > 3
+            ? "Delay 3 Days More"
+            : diff_day < -3
+            ? "Before 3 Days More"
+            : diff_day === -3
+            ? "Before 3 Days"
+            : diff_day === -2
+            ? "Before 2 Days"
+            : diff_day === -1
+            ? "Before 1 Day"
+            : "",
+        t_id: i["T_ID"],
+      };
+    });
   useMemo(() => {
     fetchSupplierList();
     fetchDropdownBuyer();
     fetchDropdownVendor();
     fetchDropdownPoNumber();
-    dispatch(setSupplieryList(suppliery_list_cleansing));
+    dispatch(setSupplieryList(original_delivery_report_cleansing));
   }, []);
   //actions of Promise date Start
   const handlePromiseStartDate = (a, dateString) => {
@@ -178,12 +170,12 @@ const Supplier_delivery = () => {
     dispatch(setFilterResultPO(value));
   };
   const { promise_start_date, promise_end_date, buyer, vendor, purchaseNo } =
-    suppliery_list?.temp_state_filter;
+    original_delivery_report?.temp_state_filter;
   // actions of Clear filter
   const clearFilter = () => {
     form.resetFields();
     dispatch(setSupplieryList([]));
-    setSuppliery_list_filter_result([]);
+    setOriginal_delivery_report_filter_result([]);
     dispatch(setFilterResultPromiseStart(""));
     dispatch(setFilterResultPromiseEnd(""));
     handleBuyerChange("");
@@ -191,30 +183,6 @@ const Supplier_delivery = () => {
     handlePOChange("");
     setConfirm(true);
   };
-  // const handleCheckboxChange = (element) => {
-  //   console.log(element);
-  // };
-  // // checbox UI
-  // const checkAll = (e) => {
-  //   let status = e.target.checked;
-  //   let selectBox = [];
-  //   // check
-  //   if (status === true) {
-  //     selectBox.push(
-  //       suppliery_list_filter_result.length > 0
-  //         ? suppliery_list_filter_result
-  //         : suppliery_list_cleansing
-  //     );
-  //     setChecked(status);
-  //     console.log(selectBox[0]);
-  //   }
-  //   // uncheck
-  //   else {
-  //     selectBox.push(...selectBox);
-  //     console.log(selectBox);
-  //     setChecked(status);
-  //   }
-  // };
   const load_toBuyer_reason = () => {
     const action_inSec = 5000;
     try {
@@ -228,7 +196,7 @@ const Supplier_delivery = () => {
       setTimeout(async () => {
         const response = await axios.post(
           "/api/load_data_buyer_reason",
-          suppliery_list_cleansing
+          original_delivery_report_cleansing
         );
         if (response.status === 200) {
           clearFilter();
@@ -255,15 +223,6 @@ const Supplier_delivery = () => {
       queryString += `[Buyer] = ${JSON.stringify(buyer).replace(/"/g, "'")}`;
       setConfirm(false);
     }
-    if (promise_start_date != "" && promise_end_date != "") {
-      queryString += ` AND [Promise Date] BETWEEN ${JSON.stringify(
-        promise_start_date
-      ).replace(/"/g, "'")} AND ${JSON.stringify(promise_end_date).replace(
-        /"/g,
-        "'"
-      )}`;
-      setConfirm(false);
-    }
     if (vendor != "") {
       queryString += ` AND [Vendor] = ${JSON.stringify(vendor).replace(
         /"/g,
@@ -274,11 +233,11 @@ const Supplier_delivery = () => {
     if (purchaseNo != "") {
       queryString += ` AND [PO No] = ${purchaseNo}`;
     }
-    const response = await axios.post("/api/supplier_list_filter_optional", {
+    const response = await axios.post("/api/original_delivery_report/supplier_list_filter_optional", {
       queryString,
     });
     if (response.status === 200) {
-      setSuppliery_list_filter_result(response.data);
+      setOriginal_delivery_report_filter_result(response.data);
       setConfirm(false);
     } else {
       setConfirm(true);
@@ -288,16 +247,9 @@ const Supplier_delivery = () => {
     <>
       <div>
         <h1 className="text-2xl font-bold pl-0 p-3 mb-10 float-left">
-          Supplier Delivery Report
+          Original Delivery Report
         </h1>
-        <div className="flex flex-row float-right">
-          {/* <Button
-            type="button"
-            onClick={clearFilter}
-            className="float-left mt-2 mr-5 bg-[white] text-[black] font-bold uppercase rounded-2xl border-solid border-2 border-[black]"
-          >
-            clear filter
-          </Button> */}
+        {/* <div className="flex flex-row float-right">
           <Button
             disabled={confirm}
             onClick={() => setIsModalOpen(true)}
@@ -305,20 +257,9 @@ const Supplier_delivery = () => {
           >
             Confirm
           </Button>
-        </div>
+        </div> */}
         <Modal open={isModalOpen} footer={null} closeIcon={null}>
           <div role="alert">
-            {/* <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
-              หมายเหตุ
-            </div>
-            <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
-              <p className="text-wrap text-lg">
-                ยืนยันโอนย้ายรายการทั้งหมดของ {buyer} ไปยัง Buyer Reason
-                เมื่อยืนยันแล้วจะไม่สามารถทำรายการของเดือน ช่วงระหว่าง{" "}
-                {promise_start_date} - {promise_end_date}{" "}
-                ที่หน้านี้ได้อีกทุกกรณี
-              </p>
-            </div> */}
             <ExclamationCircleOutlined className="text-8xl text-[red] table m-auto mb-5" />
             <h1 className="text-lg font-bold text-center text-[red]">
               หมายเหตุ
@@ -365,50 +306,25 @@ const Supplier_delivery = () => {
           ]}
         >
           <Select
-            value={suppliery_list.temp_state_filter.buyer}
+            value={original_delivery_report.temp_state_filter.buyer}
             onChange={handleBuyerChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
-            {suppliery_list?.filterBuyer.map((item) => (
+            {original_delivery_report?.filterBuyer.map((item) => (
               <Option key={item.Buyer} value={item.Buyer}>
                 {item.Buyer}
               </Option>
             ))}
           </Select>
         </Form.Item>
-        <Form.Item label="Promise DATE FROM" name={"Promise DATE FROM"}>
-          <DatePicker
-            type="date"
-            format={dateFormat}
-            className="w-full"
-            value={
-              promise_start_date !== ""
-                ? moment(promise_start_date, dateFormat)
-                : ""
-            }
-            onChange={handlePromiseStartDate}
-          />
-        </Form.Item>
-        <Form.Item label="Promise DATE TO" name={"Promise DATE TO"}>
-          <DatePicker
-            type="date"
-            format={dateFormat}
-            className="w-full"
-            value={
-              promise_end_date !== ""
-                ? moment(promise_end_date, dateFormat)
-                : ""
-            }
-            onChange={handlePromisetoDate}
-          />
-        </Form.Item>
+
         <Form.Item label="VENDOR" name={"VENDOR"}>
           <Select
-            value={suppliery_list.temp_state_filter.vendor} // Set the value of the Select component
+            value={original_delivery_report.temp_state_filter.vendor} // Set the value of the Select component
             onChange={handleVendorChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
-            {suppliery_list?.filterVendor.map((item) => (
+            {original_delivery_report?.filterVendor.map((item) => (
               <Option key={item.Vendor} value={item.Vendor}>
                 {item.Vendor}
               </Option>
@@ -417,11 +333,11 @@ const Supplier_delivery = () => {
         </Form.Item>
         <Form.Item label="PO Numbers" name={"PO Numbers"}>
           <Select
-            value={suppliery_list.temp_state_filter.purchaseNo} // Set the value of the Select component
+            value={original_delivery_report.temp_state_filter.purchaseNo} // Set the value of the Select component
             onChange={handlePOChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
-            {suppliery_list?.filterPO.map((item) => (
+            {original_delivery_report?.filterPO.map((item) => (
               <Option key={item.po_no} value={item.po_no}>
                 {item.po_no}
               </Option>
@@ -472,33 +388,13 @@ const Supplier_delivery = () => {
         </Form.Item>
       </Form>
       <div className="clear-both mt-10">
-        {/* <Table
-          className="w-full overflow-y-hidden"
-          dataSource={
-            suppliery_list_filter_result.length > 0
-              ? suppliery_list_filter_result
-              : suppliery_list_cleansing
-          }
-          columns={[
-            {
-              title: <Checkbox onChange={checkAll}></Checkbox>,
-              key: "action",
-              render: (text, value) => (
-                <Checkbox
-                  indeterminate={checked}
-                  onChange={handleCheckboxChange.bind(this, value)}
-                />
-              ),
-            },
-          ].concat(schema())}
-        /> */}
         <Table
           className="w-full overflow-y-hidden"
-          dataSource={suppliery_list_filter_result}
-          columns={schema(suppliery_list_filter_result)}
+          dataSource={original_delivery_report_filter_result}
+          columns={schema(original_delivery_report_filter_result)}
         />
       </div>
     </>
   );
 };
-export default Supplier_delivery;
+export default Original_delivery;

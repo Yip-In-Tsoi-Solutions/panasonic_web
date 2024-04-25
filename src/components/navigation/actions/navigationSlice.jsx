@@ -6,22 +6,26 @@ const initialState = {
   items: [
     {
       key: "1",
-      label: "Supplier Delivery",
+      label: "Original Delivery Report",
     },
     {
       key: "2",
-      label: "Buyer Reason",
+      label: "Supplier Delivery Report",
     },
     {
       key: "3",
-      label: "Price Report",
+      label: "Buyer Reason Report",
     },
     {
       key: "4",
-      label: "Power Bi Report",
+      label: "Price Report",
     },
     {
       key: "5",
+      label: "Power Bi Report",
+    },
+    {
+      key: "6",
       label: "Evaluate Form",
     },
   ]

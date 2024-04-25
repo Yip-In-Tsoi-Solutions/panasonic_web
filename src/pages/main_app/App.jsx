@@ -6,6 +6,7 @@ import Buyer_Reason from "../buyer_reason/components";
 import PriceReport from "../price_report/components";
 import PowerBi_report from "../powerbi_report/components";
 import Evaluate_form from "../evaluate_form/components";
+import Original_delivery from "../original_delivery/components";
 const { Content } = Layout;
 const App = () => {
   const {
@@ -27,14 +28,16 @@ const App = () => {
             }}
           >
             {selected_items === 1 ? (
-              <Supplier_delivery />
+              <Original_delivery />
             ) : selected_items === 2 ? (
-              <Buyer_Reason />
+              <Supplier_delivery />
             ) : selected_items === 3 ? (
-              <PriceReport />
+              <Buyer_Reason />
             ) : selected_items === 4 ? (
-              <PowerBi_report />
+              <PriceReport />
             ) : selected_items === 5 ? (
+              <PowerBi_report />
+            ) : selected_items === 6 ? (
               <Evaluate_form />
             ) : (
               ""

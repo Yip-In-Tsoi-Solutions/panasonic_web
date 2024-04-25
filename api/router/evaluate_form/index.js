@@ -54,4 +54,11 @@ evaluate_form.get("/evaluate/topic", async (req, res) => {
 
   res.status(200).send(data);
 });
+evaluate_form.post('/evaluate/sending_form', async (req, res)=> {
+  const vendor = req.body.vendor;
+  const evaluate_date = req.body.evaluate_date;
+  const overall_score = req.body.overall_score;
+  const comment = req.body.comments;
+
+})
 export default evaluate_form;

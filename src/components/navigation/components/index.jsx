@@ -10,7 +10,7 @@ const Navigation = (props) => {
         className="w-full h-auto object-cover overflow-hidden"
         src={props.logo}
       />
-      <Menu mode="inline" className="w-full" style={{ height: '100%' }}>
+      <Menu mode="vertical" className="w-full" style={{ height: '100%' }}>
         {items.length > 0 &&
           items.map((i) => <Menu.Item key={i.key} onClick={(e)=> props.setSelected(parseInt(e.key))}>{i.label}</Menu.Item>)}
       </Menu>

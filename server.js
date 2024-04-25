@@ -9,6 +9,7 @@ import supplier_api from "./api/router/supplier_delivery/index.js";
 import reason_update from "./api/router/reason_update/index.js";
 import power_bi_report from "./api/router/powerbi_report/index.js";
 import evaluate_form from "./api/router/evaluate_form/index.js";
+import original_delivery_api from "./api/router/original_delivery/index.js";
 // import condb from "./api/router/condb.js";
 const PORT = process.env.PORT || 80;
 const app = express();
@@ -18,7 +19,7 @@ app.use(compression());
 app.use(minify());
 const limiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 120,
+  limit: 300,
   message: "Too many request",
 });
 app.use(limiter);
@@ -33,6 +34,7 @@ app.use((req, res, next) => {
   next();
 });
 // API Route
+app.use("/api", original_delivery_api);
 app.use("/api", supplier_api);
 app.use("/api", reason_update);
 app.use("/api", power_bi_report);

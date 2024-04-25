@@ -1,4 +1,4 @@
-import { Button, Card, Col, Form, List, Radio, Row, Select, Table } from "antd";
+import { Button, Card, Col, Form, Radio, Row, Select, Table } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { useMemo, useState } from "react";
 import schema from "../../../javascript/print_schema";
@@ -9,8 +9,8 @@ import {
 } from "../actions/evaluate_formSlice";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { render } from "react-dom";
 import TextArea from "antd/es/input/TextArea";
+import GradingTable from "../../../components/grading/components/grading";
 const { Option } = Select;
 
 const Evaluate_form = () => {
@@ -58,6 +58,9 @@ const Evaluate_form = () => {
     if (score[title] !== selectedValue) {
       setScore({ ...score, [title]: selectedValue });
     }
+    else {
+      setScore({ ...score, [title]: "" });
+    }
   };
   const getTotal = () => {
     let total = 0;
@@ -68,7 +71,7 @@ const Evaluate_form = () => {
     }
     return total;
   };
-  const total_result = getTotal();
+  // action of scoring
   const actionColumns = [
     {
       title: String("ระดับความพึงพอใจ (Satisfaction Level)").toUpperCase(),
@@ -115,10 +118,36 @@ const Evaluate_form = () => {
       ),
     },
   ];
+  const submitForm = async (val) => {
+    form.resetFields();
+    let payload = {
+      vendor: vendor,
+      evaluate_date: month,
+      overall_score: getTotal(),
+      comments: comments,
+    };
+    //const response = await axios.post("", payload);
+    console.log(payload)
+    // console.log(
+    //   vendor
+    // )
+    // console.log(
+    //   month
+    // )
+    // console.log(
+    //   total_result
+    // )
+    // console.log(
+    //   evaluate_title
+    // )
+    // console.log(
+    //   comments
+    // )
+  };
   return (
     <>
       <div className="site-card-wrapper kanit">
-        <Row gutter={24}>
+        <Row>
           <Col span={24}>
             <Card
               title={
@@ -126,7 +155,7 @@ const Evaluate_form = () => {
               }
               bordered={false}
             >
-              <Form form={form}>
+              <Form onFinish={submitForm} form={form}>
                 <p className="text-[16px]">
                   การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ
                 </p>
@@ -153,9 +182,7 @@ const Evaluate_form = () => {
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     >
                       {evaluate_vendors?.vendor_list.map((item) => (
-                        <Option key={item.Vendor} value={item.Vendor}>
-                          {item.Vendor}
-                        </Option>
+                        <Option value={item.Vendor}>{item.Vendor}</Option>
                       ))}
                     </Select>
                   </Form.Item>
@@ -181,18 +208,24 @@ const Evaluate_form = () => {
                         defaultValue={"Select month"}
                         onChange={(e) => setSelectMonth(e)}
                       >
-                        <Option value="JAN">JAN</Option>
-                        <Option value="FEB">FEB</Option>
-                        <Option value="MAR">MAR</Option>
-                        <Option value="APR">APRIL</Option>
-                        <Option value="MAY">MAY</Option>
-                        <Option value="JUN">JUN</Option>
-                        <Option value="JUL">JUL</Option>
-                        <Option value="AUG">AUG</Option>
-                        <Option value="SEP">SEP</Option>
-                        <Option value="OCT">OCT</Option>
-                        <Option value="NOV">NOV</Option>
-                        <Option value="DEC">DEC</Option>
+                        {[
+                          { name: "January", number: 1 },
+                          { name: "February", number: 2 },
+                          { name: "March", number: 3 },
+                          { name: "April", number: 4 },
+                          { name: "May", number: 5 },
+                          { name: "June", number: 6 },
+                          { name: "July", number: 7 },
+                          { name: "August", number: 8 },
+                          { name: "September", number: 9 },
+                          { name: "October", number: 10 },
+                          { name: "November", number: 11 },
+                          { name: "December", number: 12 },
+                        ].map((item) => (
+                          <Option key={item.number} value={item.name}>
+                            {item.name}
+                          </Option>
+                        ))}
                       </Select>
                     </Form.Item>
                   </div>
@@ -208,7 +241,29 @@ const Evaluate_form = () => {
                   />
                   <div>
                     <br />
-                    {total_result !== 0 ? (
+                    <div className="table m-auto mt-5">
+                      <Button htmlType="submit" className="uppercase ml-2">
+                        <div className="flex flex-row">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.5}
+                            stroke="currentColor"
+                            className="w-5 h-5 float-left mr-2"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                            />
+                          </svg>
+                          submit form
+                        </div>
+                      </Button>
+                    </div>
+                    <br />
+                    {/* {total_result !== 0 ? (
                       <>
                         <p className="text-[16px]">รวมทั้งหมดที่ได้</p>
                         <p className="clear-both font-bold text-[#006155] text-[18px] underline">
@@ -216,8 +271,13 @@ const Evaluate_form = () => {
                         </p>
                       </>
                     ) : (
-                      ""
-                    )}
+                      <>
+                        <p className="text-[16px]">รวมทั้งหมดที่ได้</p>
+                        <p className="clear-both font-bold text-[#006155] text-[18px] underline">
+                          ยังไม่ได้ประเมิน
+                        </p>
+                      </>
+                    )} */}
 
                     <br />
                     <p className="text-[16px]">ข้อเสนอแนะ</p>
@@ -228,77 +288,9 @@ const Evaluate_form = () => {
                       onChange={(e) => setComment(e.target.value)}
                     />
                     <br />
-                    <div className="my-10">
-                      <div class="overflow-x-auto">
-                        <table class="sm:w-auto md:w-full border-collapse">
-                          <tbody>
-                            <tr class="bg-[#006254]">
-                              <td class="px-4 py-2" colspan="3">
-                                <h1 class="text-center font-bold text-lg text-white">
-                                  เกณฑ์การให้คะแนน
-                                </h1>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="px-4 py-2 sm:w-1/3">
-                                <center>เกรด</center>
-                              </td>
-                              <td class="px-4 py-2 sm:w-1/4">
-                                <center>คะแนน (%)</center>
-                              </td>
-                              <td class="px-4 py-2 sm:w-2/5">
-                                <center>ผลสรุป</center>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="px-4 py-2">
-                                <center>A</center>
-                              </td>
-                              <td class="px-4 py-2">
-                                <center>90-100</center>
-                              </td>
-                              <td class="px-4 py-2">
-                                <center>ดีมาก</center>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="px-4 py-2">
-                                <center>B</center>
-                              </td>
-                              <td class="px-4 py-2">
-                                <center>80-89</center>
-                              </td>
-                              <td class="px-4 py-2">
-                                <center>ดี</center>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="px-4 py-2">
-                                <center>C</center>
-                              </td>
-                              <td class="px-4 py-2">
-                                <center>70-79</center>
-                              </td>
-                              <td class="px-4 py-2">
-                                <center>พอใช้</center>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="px-4 py-2">
-                                <center>D</center>
-                              </td>
-                              <td class="px-4 py-2">
-                                <center>น้อยกว่า 69</center>
-                              </td>
-                              <td class="px-4 py-2">
-                                <center>ปรับปรุง</center>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+                    <GradingTable />
                   </div>
+                  <br />
                 </div>
               </Form>
             </Card>
