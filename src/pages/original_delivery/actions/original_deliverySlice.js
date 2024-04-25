@@ -6,8 +6,6 @@ const initial_state = {
   filterVendor: [],
   filterPO: [],
   temp_state_filter: {
-    promise_start_date: "",
-    promise_end_date: "",
     buyer: "",
     vendor: "",
     purchaseNo: "",
@@ -29,12 +27,6 @@ export const original_deliverySlice = createSlice({
     setFilterP0(state, action) {
       state.filterPO = action.payload;
     },
-    setFilterResultPromiseStart(state, action) {
-      state.temp_state_filter.promise_start_date = action.payload;
-    },
-    setFilterResultPromiseEnd(state, action) {
-      state.temp_state_filter.promise_end_date = action.payload;
-    },
     setFilterResultBuyer(state, action) {
       state.temp_state_filter.buyer = action.payload;
     },
@@ -51,8 +43,6 @@ export const {
   setFilterBuyer,
   setFilterP0,
   setFilterVendor,
-  setFilterResultPromiseStart,
-  setFilterResultPromiseEnd,
   setFilterResultBuyer,
   setFilterResultVendor,
   setFilterResultPO,

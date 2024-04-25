@@ -8,8 +8,6 @@ import {
   setFilterResultVendor,
   setFilterVendor,
   setSupplieryList,
-  setFilterResultPromiseStart,
-  setFilterResultPromiseEnd,
 } from "../actions/original_deliverySlice";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -149,14 +147,6 @@ const Original_delivery = () => {
     fetchDropdownPoNumber();
     dispatch(setSupplieryList(original_delivery_report_cleansing));
   }, []);
-  //actions of Promise date Start
-  const handlePromiseStartDate = (a, dateString) => {
-    dispatch(setFilterResultPromiseStart(dateString));
-  };
-  //actions of Promise date to
-  const handlePromisetoDate = (a, dateString) => {
-    dispatch(setFilterResultPromiseEnd(dateString));
-  };
   //actions of buyer dropdown
   const handleBuyerChange = (value) => {
     dispatch(setFilterResultBuyer(value));
@@ -169,15 +159,13 @@ const Original_delivery = () => {
   const handlePOChange = (value) => {
     dispatch(setFilterResultPO(value));
   };
-  const { promise_start_date, promise_end_date, buyer, vendor, purchaseNo } =
+  const { buyer, vendor, purchaseNo } =
     original_delivery_report?.temp_state_filter;
   // actions of Clear filter
   const clearFilter = () => {
     form.resetFields();
     dispatch(setSupplieryList([]));
     setOriginal_delivery_report_filter_result([]);
-    dispatch(setFilterResultPromiseStart(""));
-    dispatch(setFilterResultPromiseEnd(""));
     handleBuyerChange("");
     handleVendorChange("");
     handlePOChange("");

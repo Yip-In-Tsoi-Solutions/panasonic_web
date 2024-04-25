@@ -58,9 +58,6 @@ const Evaluate_form = () => {
     if (score[title] !== selectedValue) {
       setScore({ ...score, [title]: selectedValue });
     }
-    else {
-      setScore({ ...score, [title]: "" });
-    }
   };
   const getTotal = () => {
     let total = 0;
@@ -72,77 +69,66 @@ const Evaluate_form = () => {
     return total;
   };
   // action of scoring
+  let id = 0;
   const actionColumns = [
     {
       title: String("ระดับความพึงพอใจ (Satisfaction Level)").toUpperCase(),
       dataIndex: "score",
       key: "score",
       render: (_, record) => (
-        <Radio.Group onChange={(e) => handleScoreChange(record, e)}>
-          <Radio
-            className="text-[16px]"
-            checked={score[record.key] === record.key}
-            value={1}
+        <Form.Item name={`score_${id += 1}`}>
+          <Radio.Group
+            onChange={(e) => handleScoreChange(record, e)}
           >
-            1
-          </Radio>
-          <Radio
-            className="text-[16px]"
-            checked={score[record.key] === record.key}
-            value={2}
-          >
-            2
-          </Radio>
-          <Radio
-            className="text-[16px]"
-            checked={score[record.key] === record.key}
-            value={3}
-          >
-            3
-          </Radio>
-          <Radio
-            className="text-[16px]"
-            checked={score[record.key] === record.key}
-            value={4}
-          >
-            4
-          </Radio>
-          <Radio
-            className="text-[18px]"
-            checked={score[record.key] === record.key}
-            value={5}
-          >
-            5
-          </Radio>
-        </Radio.Group>
+            <Radio
+              className="text-[16px]"
+              checked={score[record.key] === 1}
+              value={1}
+            >
+              1
+            </Radio>
+            <Radio
+              className="text-[16px]"
+              checked={score[record.key] === 2}
+              value={2}
+            >
+              2
+            </Radio>
+            <Radio
+              className="text-[16px]"
+              checked={score[record.key] === 3}
+              value={3}
+            >
+              3
+            </Radio>
+            <Radio
+              className="text-[16px]"
+              checked={score[record.key] === 4}
+              value={4}
+            >
+              4
+            </Radio>
+            <Radio
+              className="text-[18px]"
+              checked={score[record.key] === 5}
+              value={5}
+            >
+              5
+            </Radio>
+          </Radio.Group>
+        </Form.Item>
       ),
     },
   ];
   const submitForm = async (val) => {
     form.resetFields();
     let payload = {
-      vendor: vendor,
+      supplier: vendor,
       evaluate_date: month,
-      overall_score: getTotal(),
+      evaluate_scoreTotal: getTotal(),
       comments: comments,
     };
-    //const response = await axios.post("", payload);
-    console.log(payload)
-    // console.log(
-    //   vendor
-    // )
-    // console.log(
-    //   month
-    // )
-    // console.log(
-    //   total_result
-    // )
-    // console.log(
-    //   evaluate_title
-    // )
-    // console.log(
-    //   comments
-    // )
+    const response = await axios.post("/api/evaluate/sending_form", payload);
   };
   return (
     <>
@@ -160,13 +146,13 @@ const Evaluate_form = () => {
                   การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ
                 </p>
                 <br />
-                <div className="float-left">
-                  <p className="text-[16px]">ชื่อผู้ส่งมอบ</p>
-                </div>
-                <div className="float-right">
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="text-[16px] float-left">
+                    ชื่อผู้ส่งมอบ (Supplier)
+                  </p>
                   <Form.Item
-                    label="จัดซื้อ"
-                    name={"จัดซื้อ"}
+                    name={"Supplier"}
+                    className="float-left ml-10"
                     rules={[
                       {
                         required: true,
@@ -193,8 +179,7 @@ const Evaluate_form = () => {
                   </div>
                   <div className="float-right">
                     <Form.Item
-                      label="เดือน"
-                      name={"เดือน"}
+                      name={"month"}
                       rules={[
                         {
                           required: true,
@@ -241,8 +226,25 @@ const Evaluate_form = () => {
                   />
                   <div>
                     <br />
+                    <p className="text-[16px]">ข้อเสนอแนะ</p>
+                    <br />
+                    <Form.Item name={"comments"}>
+                      <TextArea
+                        placeholder="ระบุข้อเสนอแนะ"
+                        autoSize={{ minRows: 6, maxRows: 24 }}
+                        onChange={(e) => setComment(e.target.value)}
+                      />
+                    </Form.Item>
                     <div className="table m-auto mt-5">
-                      <Button htmlType="submit" className="uppercase ml-2">
+                      <Button
+                        disabled={
+                          vendor != "" && month != "" && score != 0
+                            ? false
+                            : true
+                        }
+                        htmlType="submit"
+                        className="uppercase ml-2"
+                      >
                         <div className="flex flex-row">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -262,31 +264,6 @@ const Evaluate_form = () => {
                         </div>
                       </Button>
                     </div>
-                    <br />
-                    {/* {total_result !== 0 ? (
-                      <>
-                        <p className="text-[16px]">รวมทั้งหมดที่ได้</p>
-                        <p className="clear-both font-bold text-[#006155] text-[18px] underline">
-                          {total_result} คะแนน (%)
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-[16px]">รวมทั้งหมดที่ได้</p>
-                        <p className="clear-both font-bold text-[#006155] text-[18px] underline">
-                          ยังไม่ได้ประเมิน
-                        </p>
-                      </>
-                    )} */}
-
-                    <br />
-                    <p className="text-[16px]">ข้อเสนอแนะ</p>
-                    <br />
-                    <TextArea
-                      placeholder="ระบุข้อเสนอแนะ"
-                      autoSize={{ minRows: 6, maxRows: 24 }}
-                      onChange={(e) => setComment(e.target.value)}
-                    />
                     <br />
                     <GradingTable />
                   </div>
