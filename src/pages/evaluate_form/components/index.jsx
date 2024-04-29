@@ -76,10 +76,8 @@ const Evaluate_form = () => {
       dataIndex: "score",
       key: "score",
       render: (_, record) => (
-        <Form.Item name={`score_${id += 1}`}>
-          <Radio.Group
-            onChange={(e) => handleScoreChange(record, e)}
-          >
+        <Form.Item name={`score_${(id += 1)}`}>
+          <Radio.Group onChange={(e) => handleScoreChange(record, e)}>
             <Radio
               className="text-[16px]"
               checked={score[record.key] === 1}
@@ -137,7 +135,9 @@ const Evaluate_form = () => {
           <Col span={24}>
             <Card
               title={
-                <h1 className="text-lg text-center font-bold">{companyName}</h1>
+                <h1 className="text-2xl text-center font-bold pl-0 p-3 mb-10">
+                  {companyName}
+                </h1>
               }
               bordered={false}
             >

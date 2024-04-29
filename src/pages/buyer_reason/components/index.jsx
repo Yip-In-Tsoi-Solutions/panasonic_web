@@ -25,6 +25,7 @@ function Buyer_Reason() {
   const dateFormat = "DD/MM/YYYY";
   // open update form
   const [openUpdateForm, setUpdateForm] = useState(false);
+  const [reason, setReason] = useState("");
   // state
   const buyer_reason = useSelector((state) => state.buyer_reason_report);
   const [current_selected, setCurrentSelected] = useState({
@@ -114,7 +115,7 @@ function Buyer_Reason() {
   const handleActionChange = (value) => {
     dispatch(setFilterAction(value));
   };
-  //actions of state
+  //actions of Clear State
   const clearFilter = () => {
     form.resetFields();
     dispatch(setBuyer_reason([]));
@@ -123,15 +124,7 @@ function Buyer_Reason() {
     dispatch(setFilterBuyerList(""));
     //dispatch(setFilterRootCause(""));
   };
-  const updateReason = (item) => {
-    setUpdateForm(true);
-    const { promise_date, Vendor, T_ID } = item;
-    setCurrentSelected({
-      promiseDate: promise_date,
-      vendor: Vendor,
-      transaction_id: T_ID,
-    });
-  };
+  // action of Buyer select & Optional select
   const manageFilter = async () => {
     let queryString = "";
     if (buyer != "") {
@@ -157,6 +150,7 @@ function Buyer_Reason() {
       dispatch(setBuyer_reason(...buyer_reason?.buyer_reason_table));
     }
   };
+  // action of Export Data of filter result to Excel, CSV files
   const export_to = async (val) => {
     let payload = {
       dataset: buyer_reason?.buyer_reason_table,
@@ -164,20 +158,56 @@ function Buyer_Reason() {
     };
     await axios.post("/api/export/data", payload);
   };
+  // action of Update reason
+  const updateReasonDetail = (item) => {
+    setUpdateForm(true);
+    const { promise_date, Vendor, T_ID } = item;
+    setCurrentSelected({
+      promiseDate: promise_date,
+      vendor: Vendor,
+      transaction_id: T_ID,
+    });
+  };
+  const updateReason = async () => {
+    let payload = {
+      promise_date: current_selected?.promiseDate,
+      vendor: current_selected?.vendor,
+      root_cause: buyer_reason?.temp_state_filter?.rootCause,
+      action: buyer_reason?.temp_state_filter?.action,
+      reason: reason,
+    };
+    buyer_reason?.buyer_reason_table
+    // const transaction_id = current_selected?.transaction_id;
+    // const response = await axios.put(
+    //   `/api/update_reason/${transaction_id}`,
+    //   payload
+    // );
+    // if (response.status === 200) {
+    //   dispatch(setFilterRootCause(""));
+    //   setCurrentSelected("");
+    //   dispatch(setFilterAction(""));
+    //   setReason("");
+    // }
+  };
   return (
     <>
       <div>
-        <h1 className="text-2xl font-bold pl-0 p-3 float-left">Buyer reason</h1>
-
+        <h1 className="text-2xl font-bold pl-0 p-3 mb-10 float-left">Buyer reason</h1>
         <Form
           onFinish={manageFilter}
           form={form}
           className="grid grid-cols-3 gap-3 clear-both"
         >
-          <Form.Item>
-            <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-              Buyer
-            </label>
+          <Form.Item
+            label={"Buyer"}
+            name={"buyer"}
+            rules={[
+              {
+                required: true,
+                message: "Please select an Buyer",
+              },
+            ]}
+          >
             <Select
               value={buyer}
               onChange={handleBuyerChange}
@@ -190,10 +220,7 @@ function Buyer_Reason() {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item>
-            <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-              Promise DATE FROM
-            </label>
+          <Form.Item label={"Promise DATE FROM"} name={"Promise DATE FROM"}>
             <DatePicker
               type="date"
               format={dateFormat}
@@ -206,10 +233,7 @@ function Buyer_Reason() {
               onChange={handlePromiseStartDate}
             />
           </Form.Item>
-          <Form.Item>
-            <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-              Promise DATE TO
-            </label>
+          <Form.Item label={"Promise DATE TO"} name={"Promise DATE TO"}>
             <DatePicker
               type="date"
               format={dateFormat}
@@ -310,7 +334,7 @@ function Buyer_Reason() {
                       key: "action",
                       render: (record) => (
                         <Button
-                          onClick={updateReason.bind(this, record)}
+                          onClick={updateReasonDetail.bind(this, record)}
                           className="uppercase"
                           style={{
                             backgroundColor: "transparent",
@@ -356,8 +380,8 @@ function Buyer_Reason() {
                   promise date
                 </label>
                 <Input
+                  disabled={true}
                   value={current_selected?.promiseDate}
-                  className="border-2 border-[#006254]"
                 />
               </Form.Item>
               <Form.Item>
@@ -365,8 +389,8 @@ function Buyer_Reason() {
                   vendor
                 </label>
                 <Input
+                  disabled={true}
                   value={current_selected?.vendor}
-                  className="border-2 border-[#006254]"
                 />
               </Form.Item>
               <Form.Item>
@@ -374,8 +398,8 @@ function Buyer_Reason() {
                   transaction_id
                 </label>
                 <Input
+                  disabled={true}
                   value={current_selected?.transaction_id}
-                  className="border-2 border-[#006254]"
                 />
               </Form.Item>
             </Form>
@@ -419,14 +443,17 @@ function Buyer_Reason() {
               <Form.Item>
                 <TextArea
                   placeholder="write buyer reason here"
+                  value={reason}
                   autoSize={{
                     minRows: 6,
                     maxRows: 12,
                   }}
+                  onChange={(e) => setReason(e.target.value)}
                 />
                 <Button
                   type="primary"
-                  style={{backgroundColor: "#006254"}}
+                  style={{ backgroundColor: "#006254" }}
+                  onClick={updateReason}
                   className="mt-5 text-[white] font-bold uppercase rounded-2xl border-solid border-2 border-[#006254]"
                 >
                   UPDATE

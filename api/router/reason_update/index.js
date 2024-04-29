@@ -75,12 +75,7 @@ reason_update.get("/buyerlist", async (req, res) => {
   const result = await sql.query(
     `
     SELECT
-      [Buyer],
-      [Promise Date] as promise_date,
-      Vendor,
-      [Diff Day],
-      T_ID,
-      reason
+      *
     FROM
       demo.dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL
     WHERE [Diff Day] != 0 AND reason IS NULL
@@ -93,12 +88,7 @@ reason_update.post("/buyerlist_filter_optional", async (req, res) => {
   const result = await sql.query(
     `
     SELECT
-      [Buyer],
-      [Promise Date] as promise_date,
-      Vendor,
-      [Diff Day],
-      T_ID,
-      reason
+      Buyer, [Item No] as item_no, [Item Name] as item_name, [po no] as po, [po release], [Vendor], [Promise Date] as promise_date, [PO QTY] as QTY
     FROM
       demo.dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL
     WHERE [Diff Day] != 0 AND reason IS NULL ${req.body.queryString}
@@ -167,5 +157,10 @@ reason_update.post("/export/data", async (req, res) => {
     const df = new dfd.DataFrame(dataSet);
     saveFile(df, files_type);
   }
+});
+// update reason
+reason_update.put('/buyer/update_reason/:transaction_id', async (req, res)=> {
+  const id = req.params.transaction_id;
+
 });
 export default reason_update;

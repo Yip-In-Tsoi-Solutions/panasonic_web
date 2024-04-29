@@ -44,8 +44,9 @@ const PowerBi_report = () => {
     powerbi.reportName != "" && powerbi.url != "" ? false : true;
   return (
     <div>
-      <h1 className="uppercase font-bold">PowerBi Report</h1>
-      <br />
+      <h1 className="text-2xl font-bold pl-0 p-3 mb-5">
+        Power Bi Report (Admin User)
+      </h1>
       <div className="flex flex-col">
         <Form onFinish={add_powerbi}>
           <div class="grid gap-6 mb-6 md:grid-cols-4">

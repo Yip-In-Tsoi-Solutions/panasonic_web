@@ -1,5 +1,10 @@
-import { UploadOutlined, UserOutlined, VideoCameraOutlined } from "@ant-design/icons";
+import {
+  UploadOutlined,
+  UserOutlined,
+  VideoCameraOutlined,
+} from "@ant-design/icons";
 import { createSlice } from "@reduxjs/toolkit";
+import { render } from "react-dom";
 
 const initialState = {
   items: [
@@ -21,13 +26,14 @@ const initialState = {
     },
     {
       key: "5",
-      label: "Power Bi Report",
+
+      label: "Evaluate Form",
     },
     {
       key: "6",
-      label: "Evaluate Form",
+      label: `Power Bi (Admin User)`,
     },
-  ]
+  ],
 };
 export const navigationSlice = createSlice({
   name: "navigations",
@@ -35,7 +41,7 @@ export const navigationSlice = createSlice({
   reducers: {
     setItems(state, action) {
       state.items = action.payload;
-    }
+    },
   },
 });
 export const { setItems } = navigationSlice.actions;

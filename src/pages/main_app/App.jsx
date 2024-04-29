@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { lazy, useState } from "react";
 import { Layout, theme } from "antd";
 import Navigation from "../../components/navigation/components";
-import Supplier_delivery from "../supplier_delivery/components";
-import Buyer_Reason from "../buyer_reason/components";
-import PriceReport from "../price_report/components";
-import PowerBi_report from "../powerbi_report/components";
-import Evaluate_form from "../evaluate_form/components";
-import Original_delivery from "../original_delivery/components";
+const Supplier_delivery = lazy(() => import("../supplier_delivery/components"));
+const Buyer_Reason = lazy(() => import("../buyer_reason/components"));
+const PriceReport = lazy(() => import("../price_report/components"));
+const PowerBi_report = lazy(() => import("../powerbi_report/components"));
+const Evaluate_form = lazy(() => import("../evaluate_form/components"));
+const Original_delivery = lazy(() => import("../original_delivery/components"));
 const { Content } = Layout;
 const App = () => {
   const {
@@ -36,9 +36,9 @@ const App = () => {
             ) : selected_items === 4 ? (
               <PriceReport />
             ) : selected_items === 5 ? (
-              <PowerBi_report />
-            ) : selected_items === 6 ? (
               <Evaluate_form />
+            ) : selected_items === 6 ? (
+              <PowerBi_report />
             ) : (
               ""
             )}
