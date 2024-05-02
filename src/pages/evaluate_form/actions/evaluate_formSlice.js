@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initial_data = {
   vendor_list: [],
   evaluate_form: [],
+  evaluate_result_table: [],
   temp_state_filter: {
     vendor: "",
   },
@@ -19,8 +20,11 @@ const evaluate_formSlice = createSlice({
     setForm(state, action) {
       state.evaluate_form = action.payload;
     },
+    setEvaluateResultTable(state, action) {
+      state.evaluate_result_table = action.payload;
+    }
   },
 });
-export const { setVendorList, setSelect_VendorList, setForm } =
+export const { setVendorList, setSelect_VendorList, setForm, setEvaluateResultTable } =
   evaluate_formSlice.actions;
 export default evaluate_formSlice.reducer;

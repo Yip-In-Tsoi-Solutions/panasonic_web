@@ -12,6 +12,7 @@ const initialState = {
     vendor: "",
     rootCause: "",
     action: "",
+    production_Shipment: ""
   },
 };
 const buyer_reasonSlice = createSlice({
@@ -51,6 +52,9 @@ const buyer_reasonSlice = createSlice({
     setFilterAction(state, action) {
       state.temp_state_filter.action = action.payload;
     },
+    setProduction_Shipment(state, action) {
+      state.temp_state_filter.production_Shipment = action.payload;
+    },
   },
 });
 export const {
@@ -65,5 +69,6 @@ export const {
   setFilterVendorList,
   setFilterRootCause,
   setFilterAction,
+  setProduction_Shipment
 } = buyer_reasonSlice.actions;
 export default buyer_reasonSlice.reducer;

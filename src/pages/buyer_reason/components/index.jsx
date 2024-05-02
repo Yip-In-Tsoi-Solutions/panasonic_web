@@ -15,6 +15,7 @@ import {
   setDropdownTransaction,
   setDropdownAction,
   setFilterAction,
+  setProduction_Shipment,
 } from "../actions/buyer_reasonSlice";
 import schema from "../../../javascript/print_schema";
 import { FileExcelOutlined, FileTextOutlined } from "@ant-design/icons";
@@ -30,11 +31,18 @@ function Buyer_Reason() {
   const buyer_reason = useSelector((state) => state.buyer_reason_report);
   const [current_selected, setCurrentSelected] = useState({
     promiseDate: "",
+    receive_date: "",
     vendor: "",
+    buyer: "",
+    item_no: "",
+    po_number: 0,
+    po_release: 0,
     transaction_id: "",
     ms_excel: "",
     csv: "",
+    payload: "",
   });
+  const [updateBtn_status, setBtnStatus] = useState(true);
   const dispatch = useDispatch();
   // fetch api data of Dropdown buyer
   async function fetchDropdownBuyer() {
@@ -70,25 +78,25 @@ function Buyer_Reason() {
     }
   }
   // fetch api data of Dropdown transaction_id
-  async function fetchDropdownTransaction_id() {
-    try {
-      const response = await axios.get("/api/dropdown/transaction_id");
-      response.status === 200
-        ? dispatch(setDropdownTransaction(response.data))
-        : dispatch(
-            setDropdownTransaction(...buyer_reason?.dropdown_transaction_id)
-          );
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  // async function fetchDropdownTransaction_id() {
+  //   try {
+  //     const response = await axios.get("/api/dropdown/transaction_id");
+  //     response.status === 200
+  //       ? dispatch(setDropdownTransaction(response.data))
+  //       : dispatch(
+  //           setDropdownTransaction(...buyer_reason?.dropdown_transaction_id)
+  //         );
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
   // API render
   useMemo(() => {
     try {
       fetchDropdownBuyer();
       fetchDropdownRootCause();
       fetchDropdownAction();
-      fetchDropdownTransaction_id();
+      //fetchDropdownTransaction_id();
     } catch (error) {
       console.log(error);
     }
@@ -114,6 +122,9 @@ function Buyer_Reason() {
   };
   const handleActionChange = (value) => {
     dispatch(setFilterAction(value));
+  };
+  const handleProduction_Shipment = (value) => {
+    dispatch(setProduction_Shipment(value));
   };
   //actions of Clear State
   const clearFilter = () => {
@@ -161,38 +172,63 @@ function Buyer_Reason() {
   // action of Update reason
   const updateReasonDetail = (item) => {
     setUpdateForm(true);
-    const { promise_date, Vendor, T_ID } = item;
+    const {
+      promise_date,
+      BUYER,
+      Vendor,
+      item_no,
+      po_number,
+      po_release,
+      T_ID,
+      receive_date,
+    } = item;
     setCurrentSelected({
       promiseDate: promise_date,
+      receive_date: receive_date,
+      buyer: BUYER,
       vendor: Vendor,
+      item_no: item_no,
+      po_number: po_number,
+      po_release: po_release,
+      payload: item,
       transaction_id: T_ID,
     });
   };
+  // insert to PECTH_SUPPLIER_DELIVERY_KPI
+
   const updateReason = async () => {
+    let sql = "";
     let payload = {
-      promise_date: current_selected?.promiseDate,
-      vendor: current_selected?.vendor,
+      promise_date: current_selected.promiseDate,
+      receive_date: current_selected.receive_date,
+      reason: reason,
       root_cause: buyer_reason?.temp_state_filter?.rootCause,
       action: buyer_reason?.temp_state_filter?.action,
-      reason: reason,
+      effect_production_shipment:
+        buyer_reason?.temp_state_filter?.production_Shipment,
+      item_no: current_selected?.item_no,
     };
-    buyer_reason?.buyer_reason_table
-    // const transaction_id = current_selected?.transaction_id;
-    // const response = await axios.put(
-    //   `/api/update_reason/${transaction_id}`,
-    //   payload
-    // );
-    // if (response.status === 200) {
-    //   dispatch(setFilterRootCause(""));
-    //   setCurrentSelected("");
-    //   dispatch(setFilterAction(""));
-    //   setReason("");
-    // }
+    const transaction_id = current_selected?.transaction_id;
+    const response = await axios.put(
+      `/api/buyer/update_reason/${transaction_id}`,
+      payload
+    );
+    if (response.status === 200) {
+      form.resetFields();
+      dispatch(setFilterRootCause(""));
+      setCurrentSelected("");
+      dispatch(setFilterAction(""));
+      dispatch(setProduction_Shipment(""));
+      setReason("");
+      setUpdateForm(false);
+    }
   };
   return (
     <>
       <div>
-        <h1 className="text-2xl font-bold pl-0 p-3 mb-10 float-left">Buyer reason</h1>
+        <h1 className="text-2xl font-bold pl-0 p-3 mb-10 float-left">
+          Buyer reason
+        </h1>
         <Form
           onFinish={manageFilter}
           form={form}
@@ -328,7 +364,7 @@ function Buyer_Reason() {
             }
             columns={
               buyer_reason?.buyer_reason_table.length > 0
-                ? schema(buyer_reason?.buyer_reason_table).concat([
+                ? [
                     {
                       title: "Action",
                       key: "action",
@@ -357,13 +393,11 @@ function Buyer_Reason() {
                                 d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
                               />
                             </svg>
-
-                            <p className="ml-5">Reason</p>
                           </div>
                         </Button>
                       ),
                     },
-                  ])
+                  ].concat(schema(buyer_reason?.buyer_reason_table))
                 : schema(buyer_reason?.buyer_reason_table)
             }
           />
@@ -379,37 +413,49 @@ function Buyer_Reason() {
                 <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
                   promise date
                 </label>
-                <Input
-                  disabled={true}
-                  value={current_selected?.promiseDate}
-                />
+                <Input disabled={true} value={current_selected?.promiseDate} />
               </Form.Item>
               <Form.Item>
                 <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
                   vendor
                 </label>
-                <Input
-                  disabled={true}
-                  value={current_selected?.vendor}
-                />
+                <Input disabled={true} value={current_selected?.vendor} />
               </Form.Item>
               <Form.Item>
                 <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-                  transaction_id
+                  ITEM_NO
                 </label>
-                <Input
-                  disabled={true}
-                  value={current_selected?.transaction_id}
-                />
+                <Input disabled={true} value={current_selected?.item_no} />
+              </Form.Item>
+            </Form>
+            <Form className="grid grid-cols-3 gap-3 clear-both">
+              <Form.Item>
+                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                  BUYER
+                </label>
+                <Input disabled={true} value={current_selected?.buyer} />
+              </Form.Item>
+              <Form.Item>
+                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                  PO_NUMBER
+                </label>
+                <Input disabled={true} value={current_selected?.po_number} />
+              </Form.Item>
+              <Form.Item>
+                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                  PO RELEASE
+                </label>
+                <Input disabled={true} value={current_selected?.po_release} />
               </Form.Item>
             </Form>
             <br />
             <h1 className="italic uppercase">update Information</h1>
-            <Form form={form} className="grid grid-cols-2 gap-2 clear-both">
-              <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-                  root-cause
-                </label>
+            <br />
+            <Form form={form} className="grid grid-cols-3 gap-3 clear-both">
+              <Form.Item
+                label={"root-cause".toUpperCase()}
+                name={"root-cause".toUpperCase()}
+              >
                 <Select
                   value={buyer_reason?.temp_state_filter?.rootCause}
                   onChange={handleRootCauseChange}
@@ -422,10 +468,10 @@ function Buyer_Reason() {
                   ))}
                 </Select>
               </Form.Item>
-              <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-                  action
-                </label>
+              <Form.Item
+                label={"Action".toUpperCase()}
+                name={"Action".toUpperCase()}
+              >
                 <Select
                   value={buyer_reason?.temp_state_filter?.action}
                   onChange={handleActionChange}
@@ -438,9 +484,29 @@ function Buyer_Reason() {
                   ))}
                 </Select>
               </Form.Item>
+
+              <Form.Item
+                label="Effect_Production_Shipment"
+                name={"Effect_Production_Shipment"}
+              >
+                <Select
+                  value={buyer_reason?.temp_state_filter?.production_Shipment}
+                  onChange={handleProduction_Shipment}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                >
+                  {["Yes", "No"].map((item) => (
+                    <Option key={item} value={item}>
+                      {item}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
             </Form>
             <Form>
               <Form.Item>
+                <label className="uppercase font-bold">
+                  write reason (Optional)
+                </label>
                 <TextArea
                   placeholder="write buyer reason here"
                   value={reason}
@@ -451,8 +517,22 @@ function Buyer_Reason() {
                   onChange={(e) => setReason(e.target.value)}
                 />
                 <Button
+                  disabled={
+                    buyer_reason?.temp_state_filter?.rootCause != "" &&
+                    buyer_reason?.temp_state_filter?.action != "" &&
+                    buyer_reason?.temp_state_filter?.production_Shipment != ""
+                      ? false
+                      : true
+                  }
                   type="primary"
-                  style={{ backgroundColor: "#006254" }}
+                  style={{
+                    backgroundColor:
+                      buyer_reason?.temp_state_filter?.rootCause != "" &&
+                      buyer_reason?.temp_state_filter?.action != "" &&
+                      buyer_reason?.temp_state_filter?.production_Shipment != ""
+                        ? "#006254"
+                        : "#eee",
+                  }}
                   onClick={updateReason}
                   className="mt-5 text-[white] font-bold uppercase rounded-2xl border-solid border-2 border-[#006254]"
                 >

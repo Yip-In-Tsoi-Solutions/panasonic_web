@@ -3,6 +3,7 @@ import { useForm } from "antd/es/form/Form";
 import { useMemo, useState } from "react";
 import schema from "../../../javascript/print_schema";
 import {
+  setEvaluateResultTable,
   setForm,
   setSelect_VendorList,
   setVendorList,
@@ -20,7 +21,7 @@ const Evaluate_form = () => {
   // state
   const evaluate_vendors = useSelector((state) => state.evaluate_vendors);
   const [month, setSelectMonth] = useState("");
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState([]);
   const [comments, setComment] = useState("");
   async function fetchDropdownVendor() {
     try {
@@ -42,9 +43,23 @@ const Evaluate_form = () => {
       console.log(error);
     }
   }
+  // fetch api data of Evaluate Form Table
+  async function fetchEvaluate() {
+    try {
+      const response = await axios.get("/api/evaluate");
+      response.status === 200
+        ? dispatch(setEvaluateResultTable(response.data))
+        : dispatch(
+            setEvaluateResultTable(...evaluate_vendors?.evaluate_result_table)
+          );
+    } catch (error) {
+      console.log(error);
+    }
+  }
   useMemo(() => {
     fetchEvaluateTopic();
     fetchDropdownVendor();
+    fetchEvaluate();
   }, []);
   const selectVendor = async (val) => {
     dispatch(setSelect_VendorList(val));
@@ -54,11 +69,18 @@ const Evaluate_form = () => {
   // radio button for Scoring
   const handleScoreChange = (record, e) => {
     const { title } = record;
-    const selectedValue = e.target.value;
-    if (score[title] !== selectedValue) {
-      setScore({ ...score, [title]: selectedValue });
+    const scoring = e.target.value;
+    if (!score.some(item => item.evaluate_title === title)) {
+      // If not present, add the new score entry
+      setScore(prevScore => [...prevScore, { evaluate_title: title, scoring }]);
+    } else {
+      // If present, update the existing entry
+      setScore(prevScore => prevScore.map(item =>
+        item.evaluate_title === title ? { evaluate_title: title, scoring } : item
+      ));
     }
   };
+  // total_score
   const getTotal = () => {
     let total = 0;
     for (const key in score) {
@@ -67,6 +89,18 @@ const Evaluate_form = () => {
       }
     }
     return total;
+  };
+  // total_percentage
+  const getTotal_percentage = () => {
+    let total = 0;
+    let maxScore = 70; //คะแนนเต็ม
+    for (const key in score) {
+      if (score.hasOwnProperty(key)) {
+        total += score[key];
+      }
+    }
+    const percentage = (total / maxScore) * 100;
+    return percentage;
   };
   // action of scoring
   let id = 0;
@@ -123,10 +157,11 @@ const Evaluate_form = () => {
     let payload = {
       supplier: vendor,
       evaluate_date: month,
-      evaluate_scoreTotal: getTotal(),
       comments: comments,
     };
-    const response = await axios.post("/api/evaluate/sending_form", payload);
+    payload.eval_form = score
+    console.log(payload)
+    // const response = await axios.post("/api/evaluate/sending_form", payload);
   };
   return (
     <>
@@ -237,11 +272,7 @@ const Evaluate_form = () => {
                     </Form.Item>
                     <div className="table m-auto mt-5">
                       <Button
-                        disabled={
-                          vendor != "" && month != "" && score != 0
-                            ? false
-                            : true
-                        }
+                        disabled={vendor != "" && month != "" ? false : true}
                         htmlType="submit"
                         className="uppercase ml-2"
                       >
@@ -266,6 +297,11 @@ const Evaluate_form = () => {
                     </div>
                     <br />
                     <GradingTable />
+                    <br />
+                    <Table
+                      dataSource={evaluate_vendors?.evaluate_result_table}
+                      columns={schema(evaluate_vendors?.evaluate_result_table)}
+                    />
                   </div>
                   <br />
                 </div>

@@ -11,7 +11,7 @@ reason_update.post("/load_data_buyer_reason", async (req, res) => {
       const request = sql.request();
       request.query(
         `INSERT INTO PECTH_SUPPLIER_DELIVERY_HISTORICAL ( [Item No], [Item Name], UOM, [Transaction], Buyer, [PO No], [PO release], Vendor, [PO QTY], [Received QTY], [Need By Date], [Promise Date], [Receive Date], [Diff Day], [Days More], [Before 3 Days], [Before 2 Days], [Before 1 Day], [On Time], [Delay 1 Day], [Delay 2 Days], [Delay 3 Days], [Delay 3 ], Status, T_ID ) VALUES ( @item_no, @item_name, @uom, @transaction, @buyer, @po_no, @po_release, @vendor, @po_qty, @received_qty, @need_by_date, @promise_date, @received_date, @diff_day, @days_more, @before_3_days, @before_2_days, @before_1_days, @on_time, @delay_1_day, @delay_2_days, @delay_3_days, @delay_3_days_more, @status, @t_id)`
-      )
+      );
       // request.query(
       //   `
       //   BEGIN
@@ -75,7 +75,15 @@ reason_update.get("/buyerlist", async (req, res) => {
   const result = await sql.query(
     `
     SELECT
-      *
+      [promise date] as promise_date,
+      [Receive Date] as receive_date,
+      [Vendor],
+      [Item No] as item_no, 
+      [Item Name] as item_name,
+      [po no] as po_number,
+      [po release] as po_release,
+      [Received QTY] as QTY,
+      BUYER
     FROM
       demo.dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL
     WHERE [Diff Day] != 0 AND reason IS NULL
@@ -88,9 +96,18 @@ reason_update.post("/buyerlist_filter_optional", async (req, res) => {
   const result = await sql.query(
     `
     SELECT
-      Buyer, [Item No] as item_no, [Item Name] as item_name, [po no] as po, [po release], [Vendor], [Promise Date] as promise_date, [PO QTY] as QTY
+      [promise date] as promise_date,
+      [Receive Date] as receive_date,
+      [Vendor],
+      [Item No] as item_no, 
+      [Item Name] as item_name,
+      [po no] as po_number,
+      [po release] as po_release,
+      [Received QTY] as QTY,
+      BUYER,
+      T_ID
     FROM
-      demo.dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL
+      dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL
     WHERE [Diff Day] != 0 AND reason IS NULL ${req.body.queryString}
     `
   );
@@ -159,8 +176,28 @@ reason_update.post("/export/data", async (req, res) => {
   }
 });
 // update reason
-reason_update.put('/buyer/update_reason/:transaction_id', async (req, res)=> {
-  const id = req.params.transaction_id;
-
+reason_update.put("/buyer/update_reason/:transaction_id", async (req, res) => {
+  try {
+    const sql = await sql_serverConn();
+    const request = sql.request();
+    const transaction_id = req.params.transaction_id;
+    const promise_date = req.body.promise_date;
+    const receive_date = req.body.receive_date;
+    const item_no = req.body.item_no;
+    const root_cause = req.body.root_cause;
+    const action = req.body.action;
+    const effect_production_shipment = req.body.effect_production_shipment;
+    const reason = req.body.reason;
+    request.query(
+      `UPDATE dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL SET root_cause = '${root_cause}', action = '${action}', effect_production_shipment = '${effect_production_shipment}', reason='${reason}' WHERE T_ID = @transaction_id AND [Promise Date] = @promise_date AND [Item No] = @item_no AND [Receive Date] = @receive_date`
+    );
+    request.input('transaction_id', transaction_id);
+    request.input('promise_date', promise_date);
+    request.input('item_no', item_no);
+    request.input('receive_date', receive_date);
+    res.status(200).send("Data is Updated");
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 export default reason_update;
