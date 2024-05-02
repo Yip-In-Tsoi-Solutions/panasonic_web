@@ -44,22 +44,22 @@ const Evaluate_form = () => {
     }
   }
   // fetch api data of Evaluate Form Table
-  async function fetchEvaluate() {
-    try {
-      const response = await axios.get("/api/evaluate");
-      response.status === 200
-        ? dispatch(setEvaluateResultTable(response.data))
-        : dispatch(
-            setEvaluateResultTable(...evaluate_vendors?.evaluate_result_table)
-          );
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  // async function fetchEvaluate() {
+  //   try {
+  //     const response = await axios.get("/api/evaluate");
+  //     response.status === 200
+  //       ? dispatch(setEvaluateResultTable(response.data))
+  //       : dispatch(
+  //           setEvaluateResultTable(...evaluate_vendors?.evaluate_result_table)
+  //         );
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
   useMemo(() => {
     fetchEvaluateTopic();
     fetchDropdownVendor();
-    fetchEvaluate();
+    //fetchEvaluate();
   }, []);
   const selectVendor = async (val) => {
     dispatch(setSelect_VendorList(val));
@@ -158,10 +158,9 @@ const Evaluate_form = () => {
       supplier: vendor,
       evaluate_date: month,
       comments: comments,
+      eval_form: score
     };
-    payload.eval_form = score
-    console.log(payload)
-    // const response = await axios.post("/api/evaluate/sending_form", payload);
+    const response = await axios.post("/api/evaluate/sending_form", payload);
   };
   return (
     <>
@@ -298,10 +297,10 @@ const Evaluate_form = () => {
                     <br />
                     <GradingTable />
                     <br />
-                    <Table
+                    {/* <Table
                       dataSource={evaluate_vendors?.evaluate_result_table}
                       columns={schema(evaluate_vendors?.evaluate_result_table)}
-                    />
+                    /> */}
                   </div>
                   <br />
                 </div>

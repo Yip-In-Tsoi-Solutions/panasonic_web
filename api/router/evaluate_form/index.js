@@ -1,4 +1,4 @@
-import express from "express";
+import express, { request } from "express";
 import sql_serverConn from "../../sql_server_conn/sql_serverConn.js";
 const evaluate_form = express();
 evaluate_form.use(express.json());
@@ -58,46 +58,44 @@ evaluate_form.post("/evaluate/sending_form", async (req, res) => {
   try {
     const sql = await sql_serverConn();
     const request = sql.request();
-    request.query(
-      `INSERT INTO Evaluation(comments, evaluate_date, total_score, score_percentage, supplier) VALUES(@comment_message, @evaluate_date, @evaluate_scoreTotal, @score_percentage, @supplier)`
-    );
-    const comments = req.body.comments;
-    const evaluate_date = req.body.evaluate_date;
-    const evaluate_scoreTotal = req.body.total_score;
-    const score_percentage = req.body.score_percentage;
-    const supplier = req.body.supplier;
-    request.input("comment_message", comments);
-    request.input("evaluate_date", evaluate_date);
-    request.input("evaluate_scoreTotal", evaluate_scoreTotal);
-    request.input("score_percentage", score_percentage);
-    request.input("supplier", supplier);
+    const { supplier, evaluate_date, comments, eval_form } = req.body;
+
+    for (const form of eval_form) {
+      const { evaluate_title, scoring } = form;
+      const queryString = `
+      INSERT INTO EvaluationForm (supplier, evaluate_date, comments, evaluate_title, scoring)
+      VALUES ('${supplier}', '${evaluate_date}', '${comments}', '${evaluate_title}', ${scoring})
+    `;
+      request.query(queryString);
+    }
     res.status(200).send("Data inserted successfully");
   } catch (error) {
-    res.status(500).send(`Internal Server Error ${error}`);
+    console.error("Error:", error.message);
+    res.status(500).send("Internal Server Error");
   }
 });
-evaluate_form.get("/evaluate", async (req, res) => {
-  const sql = await sql_serverConn();
-  const request = sql.request();
-  const result = await request.query(
-    `
-    SELECT
-      supplier,
-      comments,
-      evaluate_date,
-      total_score,
-      ROUND(score_percentage, 2) as score_percentage,
-      CASE
-        WHEN ROUND(score_percentage, 2) BETWEEN 90 AND 100 THEN 'A'
-            WHEN ROUND(score_percentage, 2) BETWEEN 80 AND 89 THEN 'B'
-            WHEN ROUND(score_percentage, 2) BETWEEN 70 AND 79 THEN 'C'
-            ELSE 'D'
-      END AS grade
-    FROM
-      dbo.Evaluation
-    order by grade asc
-    `
-  );
-  res.status(200).send(result.recordset);
-});
+// evaluate_form.get("/evaluate", async (req, res) => {
+//   const sql = await sql_serverConn();
+//   const request = sql.request();
+//   const result = await request.query(
+//     `
+//     SELECT
+//       supplier,
+//       comments,
+//       evaluate_date,
+//       total_score,
+//       ROUND(score_percentage, 2) as score_percentage,
+//       CASE
+//         WHEN ROUND(score_percentage, 2) BETWEEN 90 AND 100 THEN 'A'
+//             WHEN ROUND(score_percentage, 2) BETWEEN 80 AND 89 THEN 'B'
+//             WHEN ROUND(score_percentage, 2) BETWEEN 70 AND 79 THEN 'C'
+//             ELSE 'D'
+//       END AS grade
+//     FROM
+//       dbo.Evaluation
+//     order by grade asc
+//     `
+//   );
+//   res.status(200).send(result.recordset);
+// });
 export default evaluate_form;
