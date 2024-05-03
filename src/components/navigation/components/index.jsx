@@ -5,7 +5,7 @@ const Navigation = (props) => {
   const disPatch = useDispatch();
   const items = useSelector((state) => state?.navigations?.items);
   return (
-    <Sider className="h-screen">
+    <Sider width={260} className="h-screen">
       <img
         className="w-full h-auto object-cover overflow-hidden"
         src={props.logo}

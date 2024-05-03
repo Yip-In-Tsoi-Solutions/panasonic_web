@@ -6,6 +6,7 @@ import buyer_reasonSlice from "../../src/pages/buyer_reason/actions/buyer_reason
 import evaluate_formSlice from "../../src/pages/evaluate_form/actions/evaluate_formSlice";
 import supplier_deliverySlice from "../../src/pages/supplier_delivery/actions/supplier_deliverySlice";
 import original_deliverySlice from "../../src/pages/original_delivery/actions/original_deliverySlice";
+import priceReportSlice from "../../src/pages/price_report/actions/priceReportSlice";
 
 const store = configureStore({
   reducer: {
@@ -15,7 +16,8 @@ const store = configureStore({
     original_delivery_report: original_deliverySlice,
     supplier_delivery_report: supplier_deliverySlice,
     buyer_reason_report: buyer_reasonSlice,
-    evaluate_vendors: evaluate_formSlice
+    evaluate_vendors: evaluate_formSlice,
+    priceReport: priceReportSlice
   },
 });
 export default store;

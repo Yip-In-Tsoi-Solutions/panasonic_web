@@ -287,13 +287,16 @@ const Supplier_delivery = () => {
   return (
     <>
       <div>
-        <h1 className="text-2xl font-bold pl-0 p-3">
-          Supplier Delivery Report
-        </h1>
-        <p className="text-left">
-          The data will be display have value is{" "}
-          <strong className="underline uppercase">diff</strong> only
-        </p>
+        <div className="float-left">
+          <h1 className="text-2xl font-bold pl-0 p-3">
+            Supplier Delivery Report
+          </h1>
+          <p className="text-left">
+            Data would be represent the value is{" "}
+            <strong className="underline uppercase">diff</strong> only
+          </p>
+          <br/>
+        </div>
         <div className="flex flex-row float-right">
           {/* <Button
             type="button"
