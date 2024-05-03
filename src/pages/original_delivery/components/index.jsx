@@ -51,7 +51,9 @@ const Original_delivery = () => {
   }
   async function fetchDropdownBuyer() {
     try {
-      const response = await axios.get("/api/original_delivery_report/dropdown/buyer");
+      const response = await axios.get(
+        "/api/original_delivery_report/dropdown/buyer"
+      );
       response.status === 200
         ? dispatch(setFilterBuyer(response.data))
         : dispatch(setFilterBuyer(...original_delivery_report?.filterBuyer));
@@ -61,7 +63,9 @@ const Original_delivery = () => {
   }
   async function fetchDropdownVendor() {
     try {
-      const response = await axios.get("/api/original_delivery_report/dropdown/vendor");
+      const response = await axios.get(
+        "/api/original_delivery_report/dropdown/vendor"
+      );
       response.status === 200
         ? dispatch(setFilterVendor(response.data))
         : dispatch(setFilterVendor(...original_delivery_report?.filterVendor));
@@ -71,7 +75,9 @@ const Original_delivery = () => {
   }
   async function fetchDropdownPoNumber() {
     try {
-      const response = await axios.get("/api/original_delivery_report/dropdown/po_number");
+      const response = await axios.get(
+        "/api/original_delivery_report/dropdown/po_number"
+      );
       response.status === 200
         ? dispatch(setFilterP0(response.data))
         : dispatch(setFilterP0(...original_delivery_report?.filterPO));
@@ -221,9 +227,12 @@ const Original_delivery = () => {
     if (purchaseNo != "") {
       queryString += ` AND [PO No] = ${purchaseNo}`;
     }
-    const response = await axios.post("/api/original_delivery_report/supplier_list_filter_optional", {
-      queryString,
-    });
+    const response = await axios.post(
+      "/api/original_delivery_report/supplier_list_filter_optional",
+      {
+        queryString,
+      }
+    );
     if (response.status === 200) {
       setOriginal_delivery_report_filter_result(response.data);
       setConfirm(false);
@@ -234,8 +243,8 @@ const Original_delivery = () => {
   return (
     <>
       <div>
-        <h1 className="text-2xl font-bold pl-0 p-3 mb-10 float-left">
-          Original Delivery Report
+        <h1 className="text-2xl font-bold pl-0 p-3 mb-5">
+        Original Delivery Report
         </h1>
         {/* <div className="flex flex-row float-right">
           <Button

@@ -6,7 +6,7 @@ const sql_serverConn = async () => {
     server: "127.0.0.1", // e.g., localhost
     database: "demo",
     options: {
-      encrypt: false, // Disable encryption
+      encrypt: false
     },
   };
   return await sql_server.connect(connectionString);

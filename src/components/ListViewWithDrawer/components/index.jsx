@@ -22,7 +22,7 @@ const ListViewWithDrawer = (props) => {
     <>
       <div>
         <List
-          header={<div className="font-bold">Power Bi Report</div>}
+          header={<div className="font-bold">All Report</div>}
           footer={null}
           bordered
           dataSource={props.listView_data}
@@ -50,14 +50,6 @@ const ListViewWithDrawer = (props) => {
             className="w-full h-screen"
             src={reportURL}
           />
-          <div className="table mx-auto">
-            <br />
-            <h1 className="uppercase text-center text-lg font-bold">
-              Report Export
-            </h1>
-            <FilePdfOutlined className="text-2xl cursor-pointer mr-6" />
-            <FileExcelOutlined className="text-2xl cursor-pointer" />
-          </div>
         </Drawer>
       </div>
     </>

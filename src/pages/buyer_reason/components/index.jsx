@@ -226,9 +226,7 @@ function Buyer_Reason() {
   return (
     <>
       <div>
-        <h1 className="text-2xl font-bold pl-0 p-3 mb-10 float-left">
-          Buyer reason
-        </h1>
+        <h1 className="text-2xl font-bold pl-0 p-3 mb-5">Buyer reason</h1>
         <Form
           onFinish={manageFilter}
           form={form}

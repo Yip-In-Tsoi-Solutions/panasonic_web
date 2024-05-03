@@ -1,27 +1,14 @@
-import { Button, Form, Input, Table } from "antd";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { Button, Form, Input } from "antd";
+import { useState } from "react";
 import axios from "axios";
-import ListViewWithDrawer from "../../../components/ListViewWithDrawer/components";
-import { setListView } from "../../../components/ListViewWithDrawer/actions/list_viewSlice";
-import schema from "../../../javascript/print_schema";
+import { useForm } from "antd/es/form/Form";
 
-const PowerBi_report = () => {
-  const disPatch = useDispatch();
-  const dashboard = useSelector((state) => state.list_view.list_view);
+const PowerBi_reportAdmin = () => {
+  const [form] = useForm();
   const [powerbi, settingPowerBi] = useState({
     reportName: "",
     url: "",
   });
-  async function fetchPowerBi_report() {
-    const response = await axios.get("/api/powerbi_dashboard");
-    response.status === 200
-      ? disPatch(setListView(response.data))
-      : disPatch(setListView(...dashboard));
-  }
-  useEffect(() => {
-    fetchPowerBi_report();
-  }, []);
   const handleChange = (e, key) => {
     settingPowerBi((prevState) => ({
       ...prevState,
@@ -29,15 +16,12 @@ const PowerBi_report = () => {
     }));
   };
   const add_powerbi = async () => {
-    try {
-      let payload = {
-        reportName: powerbi.reportName,
-        url: powerbi.url,
-      };
-      axios.post("/api/powerbi_connect", payload);
-    } catch (error) {
-      console.log(error);
-    }
+    let payload = {
+      reportName: powerbi.reportName,
+      url: powerbi.url,
+    };
+    form.resetFields();
+    await axios.post("/api/powerbi_connect", payload);
   };
   const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
   const powerbi_addCondition =
@@ -48,17 +32,17 @@ const PowerBi_report = () => {
         Power Bi Report (Admin User)
       </h1>
       <div className="flex flex-col">
-        <Form onFinish={add_powerbi}>
+        <Form form={form} onFinish={add_powerbi}>
           <div class="grid gap-6 mb-6 md:grid-cols-4">
-            <Form.Item>
+            <Form.Item label="Report Name" name={"name"}>
               <Input
-                type="text"
-                name="name"
                 placeholder="Report Name"
                 onChange={(e) => handleChange(e, "reportName")}
               />
             </Form.Item>
             <Form.Item
+              label="URL"
+              name={"URL"}
               rules={[
                 { required: true, message: "Please input the URL!" },
                 { pattern: urlPattern, message: "Please enter a valid URL!" },
@@ -90,24 +74,7 @@ const PowerBi_report = () => {
           </div>
         </Form>
       </div>
-      <div className="clear-both">
-        {/* <Table
-          dataSource={dashboard}
-          columns={schema(dashboard)}
-          // columns={[
-          //   {
-          //     title: "platform",
-          //     dataIndex: "platform",
-          //     key: "platform",
-          //     render: ()=> {
-          //       <></>
-          //     }
-          //   },
-          // ].concat(schema(dashboard))}
-        /> */}
-        <ListViewWithDrawer listView_data={dashboard} />
-      </div>
     </div>
   );
 };
-export default PowerBi_report;
+export default PowerBi_reportAdmin;

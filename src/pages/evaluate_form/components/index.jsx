@@ -43,23 +43,23 @@ const Evaluate_form = () => {
       console.log(error);
     }
   }
-  // fetch api data of Evaluate Form Table
-  // async function fetchEvaluate() {
-  //   try {
-  //     const response = await axios.get("/api/evaluate");
-  //     response.status === 200
-  //       ? dispatch(setEvaluateResultTable(response.data))
-  //       : dispatch(
-  //           setEvaluateResultTable(...evaluate_vendors?.evaluate_result_table)
-  //         );
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
+  //fetch api data of Evaluate Form Table
+  async function fetchEvaluate() {
+    try {
+      const response = await axios.get("/api/evaluate");
+      response.status === 200
+        ? dispatch(setEvaluateResultTable(response.data))
+        : dispatch(
+            setEvaluateResultTable(...evaluate_vendors?.evaluate_result_table)
+          );
+    } catch (error) {
+      console.log(error);
+    }
+  }
   useMemo(() => {
     fetchEvaluateTopic();
     fetchDropdownVendor();
-    //fetchEvaluate();
+    fetchEvaluate();
   }, []);
   const selectVendor = async (val) => {
     dispatch(setSelect_VendorList(val));
@@ -271,7 +271,7 @@ const Evaluate_form = () => {
                     </Form.Item>
                     <div className="table m-auto mt-5">
                       <Button
-                        disabled={vendor != "" && month != "" ? false : true}
+                        disabled={vendor != "" && month != "" && score.length > 0 ? false : true}
                         htmlType="submit"
                         className="uppercase ml-2"
                       >
@@ -297,10 +297,10 @@ const Evaluate_form = () => {
                     <br />
                     <GradingTable />
                     <br />
-                    {/* <Table
+                    <Table
                       dataSource={evaluate_vendors?.evaluate_result_table}
                       columns={schema(evaluate_vendors?.evaluate_result_table)}
-                    /> */}
+                    />
                   </div>
                   <br />
                 </div>

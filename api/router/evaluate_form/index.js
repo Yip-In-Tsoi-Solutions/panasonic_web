@@ -74,28 +74,25 @@ evaluate_form.post("/evaluate/sending_form", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-// evaluate_form.get("/evaluate", async (req, res) => {
-//   const sql = await sql_serverConn();
-//   const request = sql.request();
-//   const result = await request.query(
-//     `
-//     SELECT
-//       supplier,
-//       comments,
-//       evaluate_date,
-//       total_score,
-//       ROUND(score_percentage, 2) as score_percentage,
-//       CASE
-//         WHEN ROUND(score_percentage, 2) BETWEEN 90 AND 100 THEN 'A'
-//             WHEN ROUND(score_percentage, 2) BETWEEN 80 AND 89 THEN 'B'
-//             WHEN ROUND(score_percentage, 2) BETWEEN 70 AND 79 THEN 'C'
-//             ELSE 'D'
-//       END AS grade
-//     FROM
-//       dbo.Evaluation
-//     order by grade asc
-//     `
-//   );
-//   res.status(200).send(result.recordset);
-// });
+evaluate_form.get("/evaluate", async (req, res) => {
+  const sql = await sql_serverConn();
+  const request = sql.request();
+  const result = await request.query(
+    `
+    SELECT 
+      supplier,
+      ROUND((sum(scoring) * 100.0) / 70, 2)  as score_percentage,
+      CASE
+        WHEN ROUND((sum(scoring) * 100.0) / 70, 2) BETWEEN 90 AND 100 THEN 'A'
+        WHEN ROUND((sum(scoring) * 100.0) / 70, 2) BETWEEN 80 AND 89 THEN 'B'
+        WHEN ROUND((sum(scoring) * 100.0) / 70, 2) BETWEEN 70 AND 79 THEN 'C'
+        ELSE 'D'
+      END AS grade
+    FROM
+      dbo.EvaluationForm ef
+    group by supplier 
+    `
+  );
+  res.status(200).send(result.recordset);
+});
 export default evaluate_form;

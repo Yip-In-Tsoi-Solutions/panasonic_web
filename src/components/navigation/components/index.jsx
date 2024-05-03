@@ -10,11 +10,7 @@ const Navigation = (props) => {
         className="w-full h-auto object-cover overflow-hidden"
         src={props.logo}
       />
-      <Menu
-        mode="vertical"
-        className="w-full"
-        style={{ height: "100%" }}
-      >
+      <Menu mode="vertical" className="w-full h-screen">
         {items.length > 0 &&
           items.map((i) => (
             <Menu.Item
