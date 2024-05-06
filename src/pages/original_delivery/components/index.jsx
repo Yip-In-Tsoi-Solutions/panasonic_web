@@ -1,6 +1,9 @@
 import { Button, Form, Modal, Select, Table, message } from "antd";
 import { useMemo, useState } from "react";
 import {
+  resetBuyerFilter,
+  resetPurchaseNoFilter,
+  resetVendorFilter,
   setFilterBuyer,
   setFilterP0,
   setFilterResultBuyer,
@@ -8,12 +11,10 @@ import {
   setFilterResultVendor,
   setFilterVendor,
   setSupplieryList,
-} from "../actions/original_deliverySlice";
+} from "../../../components/filter_form/actions/filterSlice";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
-import { setBuyer_reason } from "../../buyer_reason/actions/buyer_reasonSlice";
 import schema from "../../../javascript/print_schema";
 const { Option } = Select;
 // class components
@@ -21,34 +22,13 @@ const Original_delivery = () => {
   // redux/Antd
   const dispatch = useDispatch();
   const [form] = useForm();
-  const [messageApi, contextHolder] = message.useMessage();
   const [
     original_delivery_report_filter_result,
     setOriginal_delivery_report_filter_result,
   ] = useState([]);
   // state
-  const original_delivery_report = useSelector(
-    (state) => state.original_delivery_report
-  );
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [confirm, setConfirm] = useState(true);
-  // date formato f date start & date end
-  const dateFormat = "DD/MM/YYYY";
+  const original_delivery_report = useSelector((state) => state.filter);
 
-  async function fetchSupplierList() {
-    try {
-      const response = await axios.get("/api/original_delivery_report");
-      if (response.status === 200) {
-        dispatch(setSupplieryList(response.data));
-      } else {
-        dispatch(
-          setSupplieryList(...original_delivery_report.original_delivery_report)
-        );
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
   async function fetchDropdownBuyer() {
     try {
       const response = await axios.get(
@@ -85,73 +65,10 @@ const Original_delivery = () => {
       console.log(error);
     }
   }
-  function diff_days(receive_date, promise_date, po_qty, receive_qty) {
-    return receive_date - promise_date === 0 && po_qty - receive_qty === 0
-      ? 0
-      : 1;
-  }
-  // dataset is cleansing after filter
-  const original_delivery_report_cleansing =
-    original_delivery_report_filter_result.map((i) => {
-      const diff_day = diff_days(
-        i["Receive Date"],
-        i["Promise Date"],
-        i["PO QTY"],
-        i["Received QTY"]
-      );
-      return {
-        item_no: i["Item No"],
-        item_name: i["Item Name"],
-        uom: i.UOM,
-        transaction: i.Transaction,
-        buyer: i.Buyer,
-        po_no: i["PO No"],
-        po_release: i["PO release"],
-        vendor: i["Vendor"],
-        po_qty: parseInt(i["PO QTY"]),
-        received_qty: parseInt(i["Received QTY"]),
-        need_by_date: i["Need By Date"],
-        promise_date: i["Promise Date"],
-        received_date: i["Receive Date"],
-        diff_day: diff_day,
-        days_more: diff_day < -3 ? 1 : "",
-        before_3_days: diff_day === -3 ? 1 : "",
-        before_2_days: diff_day === -2 ? 1 : "",
-        before_1_days: diff_day === -1 ? 1 : "",
-        on_time: diff_day === 0 ? 1 : "",
-        delay_1_day: diff_day === 1 ? 1 : "",
-        delay_2_days: diff_day === 2 ? 1 : "",
-        delay_3_days: diff_day === 3 ? 1 : "",
-        delay_3_days_more: diff_day > 3 ? 1 : "",
-        status:
-          diff_day == 0
-            ? "On Time"
-            : diff_day == 1
-            ? "Delay 1 Day"
-            : diff_day == 2
-            ? "Delay 2 Day"
-            : diff_day == 3
-            ? "Delay 3 Day"
-            : diff_day > 3
-            ? "Delay 3 Days More"
-            : diff_day < -3
-            ? "Before 3 Days More"
-            : diff_day === -3
-            ? "Before 3 Days"
-            : diff_day === -2
-            ? "Before 2 Days"
-            : diff_day === -1
-            ? "Before 1 Day"
-            : "",
-        t_id: i["T_ID"],
-      };
-    });
   useMemo(() => {
-    fetchSupplierList();
     fetchDropdownBuyer();
     fetchDropdownVendor();
     fetchDropdownPoNumber();
-    dispatch(setSupplieryList(original_delivery_report_cleansing));
   }, []);
   //actions of buyer dropdown
   const handleBuyerChange = (value) => {
@@ -167,62 +84,24 @@ const Original_delivery = () => {
   };
   const { buyer, vendor, purchaseNo } =
     original_delivery_report?.temp_state_filter;
-  // actions of Clear filter
   const clearFilter = () => {
     form.resetFields();
     dispatch(setSupplieryList([]));
     setOriginal_delivery_report_filter_result([]);
-    handleBuyerChange("");
-    handleVendorChange("");
-    handlePOChange("");
-    setConfirm(true);
-  };
-  const load_toBuyer_reason = () => {
-    const action_inSec = 5000;
-    try {
-      messageApi.open({
-        type: "success",
-        content: `This is a success for loading to Buyer Reason page, and thses message will close in ${
-          action_inSec / 1000
-        } seconds`,
-        duration: action_inSec / 1000,
-      });
-      setTimeout(async () => {
-        const response = await axios.post(
-          "/api/load_data_buyer_reason",
-          original_delivery_report_cleansing
-        );
-        if (response.status === 200) {
-          clearFilter();
-          setIsModalOpen(false);
-        } else {
-          setIsModalOpen(true);
-        }
-      }, action_inSec);
-    } catch (error) {
-      if (error) {
-        messageApi.open({
-          type: "error",
-          content: "This is an error message",
-        });
-        setTimeout(() => {
-          dispatch(setBuyer_reason([]));
-        }, action_inSec);
-      }
-    }
+    dispatch(resetBuyerFilter());
+    dispatch(resetVendorFilter());
+    dispatch(resetPurchaseNoFilter());
   };
   const manageFilter = async (val) => {
     let queryString = "";
     if (buyer != "") {
       queryString += `[Buyer] = ${JSON.stringify(buyer).replace(/"/g, "'")}`;
-      setConfirm(false);
     }
     if (vendor != "") {
       queryString += ` AND [Vendor] = ${JSON.stringify(vendor).replace(
         /"/g,
         "'"
       )}`;
-      setConfirm(false);
     }
     if (purchaseNo != "") {
       queryString += ` AND [PO No] = ${purchaseNo}`;
@@ -235,57 +114,15 @@ const Original_delivery = () => {
     );
     if (response.status === 200) {
       setOriginal_delivery_report_filter_result(response.data);
-      setConfirm(false);
-    } else {
-      setConfirm(true);
     }
   };
+  console.log(original_delivery_report);
   return (
     <>
       <div>
         <h1 className="text-2xl font-bold pl-0 p-3 mb-5">
-        Original Delivery Report
+          Original Delivery Report
         </h1>
-        {/* <div className="flex flex-row float-right">
-          <Button
-            disabled={confirm}
-            onClick={() => setIsModalOpen(true)}
-            className="float-left mt-2 bg-[#006254] text-[white] font-bold uppercase rounded-2xl border-solid border-2 border-[#006254]"
-          >
-            Confirm
-          </Button>
-        </div> */}
-        <Modal open={isModalOpen} footer={null} closeIcon={null}>
-          <div role="alert">
-            <ExclamationCircleOutlined className="text-8xl text-[red] table m-auto mb-5" />
-            <h1 className="text-lg font-bold text-center text-[red]">
-              หมายเหตุ
-            </h1>
-            <p className="text-center">
-              การโอนย้ายรายการทั้งหมดของ {buyer} ไปยังหน้า Buyer Reason
-              เมื่อยืนยันแล้วจะไม่สามารถทำรายการ ที่หน้านี้ได้อีกทุกกรณี
-            </p>
-            <br />
-            <div className="table flex-row m-auto">
-              {contextHolder}
-              <Button
-                type="button"
-                onClick={load_toBuyer_reason}
-                className="bg-[#006254] text-[white] font-bold uppercase rounded-2xl border-solid border-2 border-[#006254] mr-5"
-              >
-                YES
-              </Button>{" "}
-              <Button
-                type="button"
-                className="bg-[white] text-[black] font-bold uppercase rounded-2xl border-solid border-2 border-[black]"
-                onClick={() => setIsModalOpen(false)}
-              >
-                NO
-              </Button>
-            </div>
-            <br />
-          </div>
-        </Modal>
       </div>
       <Form
         onFinish={manageFilter}
