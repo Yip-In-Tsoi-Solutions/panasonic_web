@@ -116,7 +116,6 @@ const Original_delivery = () => {
       setOriginal_delivery_report_filter_result(response.data);
     }
   };
-  console.log(original_delivery_report);
   return (
     <>
       <div>

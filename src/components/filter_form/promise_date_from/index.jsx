@@ -1,8 +1,10 @@
 import { DatePicker, Form } from "antd";
 import moment from "moment";
 import { setFilterResultPromiseStart } from "../actions/filterSlice";
+import { useDispatch } from "react-redux";
 
 const Promise_date_from = (props) => {
+  const dispatch = useDispatch()
   //actions of Promise date Start
   const handlePromiseStartDate = (a, dateString) => {
     dispatch(setFilterResultPromiseStart(dateString));

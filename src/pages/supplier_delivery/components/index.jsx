@@ -1,8 +1,5 @@
 import { Button, Form, Table, message } from "antd";
 import { useMemo, useState } from "react";
-import {
-  setSupplieryList,
-} from "../actions/supplier_deliverySlice";
 import { setConfirmBtnStatus } from "../../../components/confirm_supplier/actions/confirm_modalSlice";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,7 +12,14 @@ import Promise_date_from from "../../../components/filter_form/promise_date_from
 import Promise_date_to from "../../../components/filter_form/promise_date_to";
 import Vendor_filter from "../../../components/filter_form/vendor_filter";
 import PurchaseOrder_filter from "../../../components/filter_form/purchaseOrder_filter";
-import { resetBuyerFilter, resetPromiseEndDateFilter, resetPromiseStartDateFilter, resetPurchaseNoFilter, resetVendorFilter } from "../../../components/filter_form/actions/filterSlice";
+import {
+  resetBuyerFilter,
+  resetPromiseEndDateFilter,
+  resetPromiseStartDateFilter,
+  resetPurchaseNoFilter,
+  resetVendorFilter,
+  setSupplieryList,
+} from "../../../components/filter_form/actions/filterSlice";
 
 // class components
 const Supplier_delivery = () => {

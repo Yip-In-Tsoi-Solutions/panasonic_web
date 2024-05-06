@@ -96,6 +96,7 @@ reason_update.post("/buyerlist_filter_optional", async (req, res) => {
   const result = await sql.query(
     `
     SELECT
+      BUYER,
       [promise date] as promise_date,
       [Receive Date] as receive_date,
       [Vendor],
@@ -104,7 +105,6 @@ reason_update.post("/buyerlist_filter_optional", async (req, res) => {
       [po no] as po_number,
       [po release] as po_release,
       [Received QTY] as QTY,
-      BUYER,
       T_ID
     FROM
       dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL
@@ -191,10 +191,10 @@ reason_update.put("/buyer/update_reason/:transaction_id", async (req, res) => {
     request.query(
       `UPDATE dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL SET root_cause = '${root_cause}', action = '${action}', effect_production_shipment = '${effect_production_shipment}', reason='${reason}' WHERE T_ID = @transaction_id AND [Promise Date] = @promise_date AND [Item No] = @item_no AND [Receive Date] = @receive_date`
     );
-    request.input('transaction_id', transaction_id);
-    request.input('promise_date', promise_date);
-    request.input('item_no', item_no);
-    request.input('receive_date', receive_date);
+    request.input("transaction_id", transaction_id);
+    request.input("promise_date", promise_date);
+    request.input("item_no", item_no);
+    request.input("receive_date", receive_date);
     res.status(200).send("Data is Updated");
   } catch (error) {
     res.status(500).send(error);

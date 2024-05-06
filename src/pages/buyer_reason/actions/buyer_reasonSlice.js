@@ -6,13 +6,9 @@ const initialState = {
   dropdown_action: [],
   dropdown_transaction_id: [],
   temp_state_filter: {
-    promise_start_date: "",
-    promise_end_date: "",
-    buyer: "",
-    vendor: "",
     rootCause: "",
     action: "",
-    production_Shipment: ""
+    production_Shipment: "",
   },
 };
 const buyer_reasonSlice = createSlice({
@@ -34,18 +30,7 @@ const buyer_reasonSlice = createSlice({
     setDropdownTransaction(state, action) {
       state.dropdown_transaction_id = action.payload;
     },
-    setBuyerPromiseStart(state, action) {
-      state.temp_state_filter.promise_start_date = action.payload;
-    },
-    setBuyerPromiseEnd(state, action) {
-      state.temp_state_filter.promise_end_date = action.payload;
-    },
-    setFilterBuyerList(state, action) {
-      state.temp_state_filter.buyer = action.payload;
-    },
-    setFilterVendorList(state, action) {
-      state.temp_state_filter.vendor = action.payload;
-    },
+
     setFilterRootCause(state, action) {
       state.temp_state_filter.rootCause = action.payload;
     },
@@ -55,6 +40,17 @@ const buyer_reasonSlice = createSlice({
     setProduction_Shipment(state, action) {
       state.temp_state_filter.production_Shipment = action.payload;
     },
+    resetRootCause(state) {
+      state.temp_state_filter.rootCause =
+        initialState.temp_state_filter.rootCause;
+    },
+    resetAction(state) {
+      state.temp_state_filter.action = initialState.temp_state_filter.action;
+    },
+    resetProduction_Ship(state) {
+      state.temp_state_filter.production_Shipment =
+        initialState.temp_state_filter.production_Shipment;
+    },
   },
 });
 export const {
@@ -63,12 +59,11 @@ export const {
   setDropdownRootCause,
   setDropdownAction,
   setDropdownTransaction,
-  setBuyerPromiseStart,
-  setBuyerPromiseEnd,
-  setFilterBuyerList,
-  setFilterVendorList,
   setFilterRootCause,
   setFilterAction,
-  setProduction_Shipment
+  setProduction_Shipment,
+  resetRootCause,
+  resetAction,
+  resetProduction_Ship
 } = buyer_reasonSlice.actions;
 export default buyer_reasonSlice.reducer;

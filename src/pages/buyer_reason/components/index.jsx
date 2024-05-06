@@ -6,20 +6,27 @@ import { useForm } from "antd/es/form/Form";
 import moment from "moment";
 import {
   setDropdownBuyer,
-  setBuyerPromiseStart,
-  setBuyerPromiseEnd,
-  setFilterBuyerList,
   setBuyer_reason,
   setDropdownRootCause,
   setFilterRootCause,
-  setDropdownTransaction,
   setDropdownAction,
   setFilterAction,
   setProduction_Shipment,
+  resetRootCause,
+  resetAction,
+  resetProduction_Ship,
 } from "../actions/buyer_reasonSlice";
 import schema from "../../../javascript/print_schema";
 import { FileExcelOutlined, FileTextOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
+import Buyer_filter from "../../../components/filter_form/buyer_filter";
+import Promise_date_to from "../../../components/filter_form/promise_date_to";
+import Promise_date_from from "../../../components/filter_form/promise_date_from";
+import {
+  resetBuyerFilter,
+  resetPromiseEndDateFilter,
+  resetPromiseStartDateFilter,
+} from "../../../components/filter_form/actions/filterSlice";
 function Buyer_Reason() {
   const [form] = useForm();
   // State of Components
@@ -29,6 +36,7 @@ function Buyer_Reason() {
   const [reason, setReason] = useState("");
   // state
   const buyer_reason = useSelector((state) => state.buyer_reason_report);
+  const filter = useSelector((state) => state.filter);
   const [current_selected, setCurrentSelected] = useState({
     promiseDate: "",
     receive_date: "",
@@ -103,20 +111,8 @@ function Buyer_Reason() {
   }, []);
   // Action of Components
   const { promise_start_date, promise_end_date, buyer } =
-    buyer_reason?.temp_state_filter;
-  //actions of Promise date Start
-  const handlePromiseStartDate = (a, dateString) => {
-    dispatch(setBuyerPromiseStart(dateString));
-  };
-  //actions of Promise date to
-  const handlePromisetoDate = (a, dateString) => {
-    dispatch(setBuyerPromiseEnd(dateString));
-  };
+    filter?.temp_state_filter;
 
-  //actions of buyer dropdown
-  const handleBuyerChange = (value) => {
-    dispatch(setFilterBuyerList(value));
-  };
   const handleRootCauseChange = (value) => {
     dispatch(setFilterRootCause(value));
   };
@@ -125,15 +121,6 @@ function Buyer_Reason() {
   };
   const handleProduction_Shipment = (value) => {
     dispatch(setProduction_Shipment(value));
-  };
-  //actions of Clear State
-  const clearFilter = () => {
-    form.resetFields();
-    dispatch(setBuyer_reason([]));
-    dispatch(setBuyerPromiseStart(""));
-    dispatch(setBuyerPromiseEnd(""));
-    dispatch(setFilterBuyerList(""));
-    //dispatch(setFilterRootCause(""));
   };
   // action of Buyer select & Optional select
   const manageFilter = async () => {
@@ -160,6 +147,14 @@ function Buyer_Reason() {
     } else {
       dispatch(setBuyer_reason(...buyer_reason?.buyer_reason_table));
     }
+  };
+  //actions of Clear State
+  const clearFilter = () => {
+    form.resetFields();
+    dispatch(setBuyer_reason([]));
+    dispatch(resetBuyerFilter());
+    dispatch(resetPromiseStartDateFilter());
+    dispatch(resetPromiseEndDateFilter());
   };
   // action of Export Data of filter result to Excel, CSV files
   const export_to = async (val) => {
@@ -215,10 +210,10 @@ function Buyer_Reason() {
     );
     if (response.status === 200) {
       form.resetFields();
-      dispatch(setFilterRootCause(""));
       setCurrentSelected("");
-      dispatch(setFilterAction(""));
-      dispatch(setProduction_Shipment(""));
+      dispatch(resetRootCause());
+      dispatch(resetAction());
+      dispatch(resetProduction_Ship());
       setReason("");
       setUpdateForm(false);
     }
@@ -232,54 +227,15 @@ function Buyer_Reason() {
           form={form}
           className="grid grid-cols-3 gap-3 clear-both"
         >
-          <Form.Item
-            label={"Buyer"}
-            name={"buyer"}
-            rules={[
-              {
-                required: true,
-                message: "Please select an Buyer",
-              },
-            ]}
-          >
-            <Select
-              value={buyer}
-              onChange={handleBuyerChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            >
-              {buyer_reason?.dropdown_buyerlist.map((item) => (
-                <Option key={item.Buyer} value={item.Buyer}>
-                  {item.Buyer}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item label={"Promise DATE FROM"} name={"Promise DATE FROM"}>
-            <DatePicker
-              type="date"
-              format={dateFormat}
-              className="w-full"
-              value={
-                promise_start_date !== ""
-                  ? moment(promise_start_date, dateFormat)
-                  : ""
-              }
-              onChange={handlePromiseStartDate}
-            />
-          </Form.Item>
-          <Form.Item label={"Promise DATE TO"} name={"Promise DATE TO"}>
-            <DatePicker
-              type="date"
-              format={dateFormat}
-              className="w-full"
-              value={
-                promise_end_date !== ""
-                  ? moment(promise_end_date, dateFormat)
-                  : ""
-              }
-              onChange={handlePromisetoDate}
-            />
-          </Form.Item>
+          <Buyer_filter />
+          <Promise_date_from
+            dateFormat={dateFormat}
+            promise_start_date={promise_start_date}
+          />
+          <Promise_date_to
+            dateFormat={dateFormat}
+            promise_start_date={promise_start_date}
+          />
           <Form.Item>
             <div className="flex flex-row">
               <Button htmlType="submit" className="uppercase">

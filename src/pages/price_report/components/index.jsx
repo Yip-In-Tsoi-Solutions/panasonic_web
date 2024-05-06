@@ -1,33 +1,28 @@
-import { Button, DatePicker, Form } from "antd";
-import moment from "moment";
+import { Button, Form } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setFilterResultPromiseEnd,
-  setFilterResultPromiseStart,
-} from "../actions/priceReportSlice";
 import { useForm } from "antd/es/form/Form";
+import Promise_date_from from "../../../components/filter_form/promise_date_from";
+import Promise_date_to from "../../../components/filter_form/promise_date_to";
+import {
+  resetPromiseEndDateFilter,
+  resetPromiseStartDateFilter,
+} from "../../../components/filter_form/actions/filterSlice";
 
 const PriceReport = () => {
   const [form] = useForm();
   const priceReport = useSelector((state) => state.priceReport);
-  const disPatch = useDispatch();
+  const filter = useSelector((state) => state?.filter?.temp_state_filter);
+  const dispatch = useDispatch();
   const dateFormat = "DD/MM/YYYY";
-  const { promise_start_date, promise_end_date } =
-    priceReport?.temp_state_filter;
-  //actions of Promise date Start
-  const handlePromiseStartDate = (a, dateString) => {
-    disPatch(setFilterResultPromiseStart(dateString));
-  };
-  //actions of Promise date to
-  const handlePromisetoDate = (a, dateString) => {
-    disPatch(setFilterResultPromiseEnd(dateString));
-  };
+  const { promise_start_date, promise_end_date } = filter;
   const manageFilter = async (val) => {
     console.log(promise_start_date);
     console.log(promise_end_date);
   };
   const clearFilter = async () => {
     form.resetFields();
+    dispatch(resetPromiseStartDateFilter());
+    dispatch(resetPromiseEndDateFilter());
   };
   return (
     <div>
@@ -37,32 +32,14 @@ const PriceReport = () => {
         form={form}
         className="grid grid-cols-3 gap-3 clear-both"
       >
-        <Form.Item label="Promise DATE FROM" name={"Promise DATE FROM"}>
-          <DatePicker
-            type="date"
-            format={dateFormat}
-            className="w-full"
-            value={
-              promise_start_date !== ""
-                ? moment(promise_start_date, dateFormat)
-                : ""
-            }
-            onChange={handlePromiseStartDate}
-          />
-        </Form.Item>
-        <Form.Item label="Promise DATE TO" name={"Promise DATE TO"}>
-          <DatePicker
-            type="date"
-            format={dateFormat}
-            className="w-full"
-            value={
-              promise_end_date !== ""
-                ? moment(promise_end_date, dateFormat)
-                : ""
-            }
-            onChange={handlePromisetoDate}
-          />
-        </Form.Item>
+        <Promise_date_from
+          dateFormat={dateFormat}
+          promise_start_date={promise_start_date}
+        />
+        <Promise_date_to
+          dateFormat={dateFormat}
+          promise_start_date={promise_start_date}
+        />
         <Form.Item>
           <div className="flex flex-row">
             <Button htmlType="submit" className="uppercase">
