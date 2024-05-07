@@ -56,39 +56,43 @@ const Supplier_delivery = () => {
     filter?.temp_state_filter;
   let queryString = "";
   const manageFilter = async (val) => {
-    if (buyer != "") {
-      queryString += `[Buyer] = ${JSON.stringify(buyer).replace(/"/g, "'")}`;
-      dispatch(setConfirmBtnStatus(false));
-    }
-    if (promise_start_date != "" && promise_end_date != "") {
-      queryString += ` AND [Promise Date] BETWEEN ${JSON.stringify(
-        promise_start_date
-      ).replace(/"/g, "'")} AND ${JSON.stringify(promise_end_date).replace(
-        /"/g,
-        "'"
-      )}`;
-      dispatch(setConfirmBtnStatus(false));
-    }
-    if (vendor != "") {
-      queryString += ` AND [Vendor] = ${JSON.stringify(vendor).replace(
-        /"/g,
-        "'"
-      )}`;
-      dispatch(setConfirmBtnStatus(false));
-    }
-    if (purchaseNo != "") {
-      queryString += ` AND [PO No] = ${purchaseNo}`;
-      dispatch(setConfirmBtnStatus(false));
-    }
-    const response = await axios.post("/api/supplier_list_filter_optional", {
-      queryString,
-    });
-    if (response.status === 200) {
-      setSuppliery_list_filter_result(response.data);
-      dispatch(setConfirmBtnStatus(false));
-    } else {
-      setSuppliery_list_filter_result(...suppliery_list_filter_result);
-      dispatch(setConfirmBtnStatus(true));
+    try {
+      if (buyer != "") {
+        queryString += `[Buyer] = ${JSON.stringify(buyer).replace(/"/g, "'")}`;
+        dispatch(setConfirmBtnStatus(false));
+      }
+      if (promise_start_date != "" && promise_end_date != "") {
+        queryString += ` AND [Promise Date] BETWEEN ${JSON.stringify(
+          promise_start_date
+        ).replace(/"/g, "'")} AND ${JSON.stringify(promise_end_date).replace(
+          /"/g,
+          "'"
+        )}`;
+        dispatch(setConfirmBtnStatus(false));
+      }
+      if (vendor != "") {
+        queryString += ` AND [Vendor] = ${JSON.stringify(vendor).replace(
+          /"/g,
+          "'"
+        )}`;
+        dispatch(setConfirmBtnStatus(false));
+      }
+      if (purchaseNo != "") {
+        queryString += ` AND [PO No] = ${purchaseNo}`;
+        dispatch(setConfirmBtnStatus(false));
+      }
+      const response = await axios.post("/api/supplier_list_filter_optional", {
+        queryString,
+      });
+      if (response.status === 200) {
+        setSuppliery_list_filter_result(response.data);
+        dispatch(setConfirmBtnStatus(false));
+      } else {
+        setSuppliery_list_filter_result(...suppliery_list_filter_result);
+        dispatch(setConfirmBtnStatus(true));
+      }
+    } catch (error) {
+      console.log(error)
     }
   };
 

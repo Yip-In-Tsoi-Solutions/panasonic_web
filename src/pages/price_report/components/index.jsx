@@ -37,22 +37,24 @@ const PriceReport = () => {
   const { promise_start_date, promise_end_date } = filter;
   //Action of Filter
   const manageFilter = async () => {
-    let queryString = "";
-    if (promise_start_date != "" && promise_end_date != "") {
-      queryString += `INVOICE_DATE BETWEEN ${JSON.stringify(
-        promise_start_date
-      ).replace(/"/g, "'")} AND ${JSON.stringify(promise_end_date).replace(
-        /"/g,
-        "'"
-      )}`;
-    }
-    const response = await axios.post("/api/price_report/data", {
-      queryString,
-    });
-    if (response.status === 200) {
-      dispatch(setSupplieryList(response.data));
-      dispatch(resetPromiseStartDateFilter());
-      dispatch(resetPromiseEndDateFilter());
+    try {
+      let queryString = "";
+      if (promise_start_date != "" && promise_end_date != "") {
+        queryString += `INVOICE_DATE BETWEEN ${JSON.stringify(
+          promise_start_date
+        ).replace(/"/g, "'")} AND ${JSON.stringify(promise_end_date).replace(
+          /"/g,
+          "'"
+        )}`;
+      }
+      const response = await axios.post("/api/price_report/data", {
+        queryString,
+      });
+      if (response.status === 200) {
+        dispatch(setSupplieryList(response.data));
+      }
+    } catch (error) {
+      console.log(error)
     }
   };
   const clearFilter = async () => {

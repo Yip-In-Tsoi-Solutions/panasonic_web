@@ -1,6 +1,15 @@
 import React, { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Form, DatePicker, Select, Table, Drawer, Input, Tooltip } from "antd";
+import {
+  Button,
+  Form,
+  DatePicker,
+  Select,
+  Table,
+  Drawer,
+  Input,
+  Tooltip,
+} from "antd";
 import axios from "axios";
 import { useForm } from "antd/es/form/Form";
 import moment from "moment";
@@ -124,28 +133,32 @@ function Buyer_Reason() {
   };
   // action of Buyer select & Optional select
   const manageFilter = async () => {
-    let queryString = "";
-    if (buyer != "") {
-      queryString += `AND [Buyer] = ${JSON.stringify(buyer).replace(
-        /"/g,
-        "'"
-      )}`;
-    }
-    if (promise_start_date != "" && promise_end_date != "") {
-      queryString += ` AND [Promise Date] BETWEEN ${JSON.stringify(
-        promise_start_date
-      ).replace(/"/g, "'")} AND ${JSON.stringify(promise_end_date).replace(
-        /"/g,
-        "'"
-      )}`;
-    }
-    const response = await axios.post("/api/buyerlist_filter_optional", {
-      queryString,
-    });
-    if (response.status === 200) {
-      dispatch(setBuyer_reason(response.data));
-    } else {
-      dispatch(setBuyer_reason(...buyer_reason?.buyer_reason_table));
+    try {
+      let queryString = "";
+      if (buyer != "") {
+        queryString += `AND [Buyer] = ${JSON.stringify(buyer).replace(
+          /"/g,
+          "'"
+        )}`;
+      }
+      if (promise_start_date != "" && promise_end_date != "") {
+        queryString += ` AND [Promise Date] BETWEEN ${JSON.stringify(
+          promise_start_date
+        ).replace(/"/g, "'")} AND ${JSON.stringify(promise_end_date).replace(
+          /"/g,
+          "'"
+        )}`;
+      }
+      const response = await axios.post("/api/buyerlist_filter_optional", {
+        queryString,
+      });
+      if (response.status === 200) {
+        dispatch(setBuyer_reason(response.data));
+      } else {
+        dispatch(setBuyer_reason(...buyer_reason?.buyer_reason_table));
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   //actions of Clear State
@@ -323,7 +336,10 @@ function Buyer_Reason() {
                       title: "Action".toUpperCase(),
                       key: "action",
                       render: (record) => (
-                        <Tooltip placement="top" title={"Update Reason".toUpperCase()}>
+                        <Tooltip
+                          placement="top"
+                          title={"Update Reason".toUpperCase()}
+                        >
                           <Button
                             onClick={updateReasonDetail.bind(this, record)}
                             className="uppercase"
