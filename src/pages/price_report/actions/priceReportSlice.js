@@ -10,7 +10,7 @@ const initial_state = {
     promise_end_date: "",
     buyer: "",
     vendor: "",
-    purchaseNo: "",
+    purchaseNo: ""
   },
 };
 export const priceReportSlice = createSlice({

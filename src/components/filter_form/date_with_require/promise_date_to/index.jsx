@@ -1,7 +1,7 @@
 import { DatePicker, Form } from "antd";
 import moment from "moment";
-import { setFilterResultPromiseEnd } from "../actions/filterSlice";
 import { useDispatch } from "react-redux";
+import { setFilterResultPromiseEnd } from "../../actions/filterSlice";
 
 const Promise_date_to = (props) => {
   const dispatch = useDispatch()
@@ -11,7 +11,12 @@ const Promise_date_to = (props) => {
   };
   return (
     <>
-      <Form.Item label="DATE TO" name={"DATE TO"}>
+      <Form.Item label="DATE TO" name={"DATE TO"} rules={[
+          {
+            required: true,
+            message: "Please select an DATE TO",
+          },
+        ]}>
         <DatePicker
           type="date"
           format={props.dateFormat}

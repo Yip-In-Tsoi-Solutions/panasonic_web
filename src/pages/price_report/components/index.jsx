@@ -1,26 +1,54 @@
-import { Button, Form } from "antd";
+import { Button, Form, Table } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
-import Promise_date_from from "../../../components/filter_form/promise_date_from";
-import Promise_date_to from "../../../components/filter_form/promise_date_to";
+import Promise_date_from from "../../../components/filter_form/date_with_require/promise_date_from";
+import Promise_date_to from "../../../components/filter_form/date_with_require/promise_date_to";
 import {
   resetPromiseEndDateFilter,
-  resetPromiseStartDateFilter,
+  resetPromiseStartDateFilter
 } from "../../../components/filter_form/actions/filterSlice";
-
+import {setSupplieryList} from "../actions/priceReportSlice";
+import schema from "../../../javascript/print_schema"
+import axios from "axios";
 const PriceReport = () => {
   const [form] = useForm();
-  const priceReport = useSelector((state) => state.priceReport);
+  const priceReport = useSelector(
+    (state) => state?.priceReport?.suppliery_list
+  );
   const filter = useSelector((state) => state?.filter?.temp_state_filter);
   const dispatch = useDispatch();
   const dateFormat = "DD/MM/YYYY";
   const { promise_start_date, promise_end_date } = filter;
-  const manageFilter = async (val) => {
-    console.log(promise_start_date);
-    console.log(promise_end_date);
+  //Action of Filter
+  const manageFilter = async () => {
+    let queryString = "";
+    if (promise_start_date != "" && promise_end_date != "") {
+      queryString += `INVOICE_DATE BETWEEN ${JSON.stringify(
+        promise_start_date
+      ).replace(/"/g, "'")} AND ${JSON.stringify(promise_end_date).replace(
+        /"/g,
+        "'"
+      )}`;
+    }
+    const response = await axios.post("/api/price_report/data", {
+      queryString,
+    });
+    if (response.status === 200) {
+      dispatch(setSupplieryList(response.data));
+    }
+    // if (report_type === "PRICE REPORT") {
+    // } else if (report_type === "MATCHING INVOICE") {
+    //   const response = await axios.post("/api/matching_inv/data", {
+    //     queryString,
+    //   });
+    //   if (response.status === 200) {
+    //     dispatch(setMatching_inv(response.data));
+    //   }
+    // }
   };
   const clearFilter = async () => {
     form.resetFields();
+    dispatch(setSupplieryList([]));
     dispatch(resetPromiseStartDateFilter());
     dispatch(resetPromiseEndDateFilter());
   };
@@ -83,6 +111,8 @@ const PriceReport = () => {
           </div>
         </Form.Item>
       </Form>
+      <br />
+      <Table className="overflow-y-hidden" dataSource={priceReport} columns={schema(priceReport)}/>
     </div>
   );
 };
