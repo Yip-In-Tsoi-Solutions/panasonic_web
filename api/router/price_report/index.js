@@ -17,7 +17,7 @@ price_report.post("/price_report/data", async (req, res) => {
         VENDOR_NAME,
         INV_QTY as INVOICE_QTY,
         ROUND(INV_UNIT_PRICE, 2) as INVOICE_UNIT_PRICE,
-        INV_QTY * INV_UNIT_PRICE as AMOUNT,
+        INV_QTY * ROUND(INV_UNIT_PRICE, 2) as AMOUNT,
         INV_CURRENCY_CODE as INV_CURRENCY
     FROM
         demo.dbo.MATCHING_INVOICE
