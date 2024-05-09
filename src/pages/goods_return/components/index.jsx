@@ -6,11 +6,7 @@ import Promise_date_to from "../../../components/filter_form/date_with_require/p
 import { useDispatch, useSelector } from "react-redux";
 import { setBuyer_reason } from "../../buyer_reason/actions/buyer_reasonSlice";
 import {
-  resetBuyerFilter,
-  resetPromiseEndDateFilter,
-  resetPromiseStartDateFilter,
-  resetPurchaseNoFilter,
-  resetVendorFilter,
+  resetAllState,
 } from "../../../components/filter_form/actions/filterSlice";
 import Supplier_filter from "../../../components/filter_form/supplier_filter_require";
 import PurchaseOrder_filter from "../../../components/filter_form/purchaseOrder_filter";
@@ -28,11 +24,7 @@ const GoodsReturn = () => {
   const clearFilter = () => {
     form.resetFields();
     dispatch(setBuyer_reason([]));
-    dispatch(resetBuyerFilter());
-    dispatch(resetPromiseStartDateFilter());
-    dispatch(resetPromiseEndDateFilter());
-    dispatch(resetVendorFilter());
-    dispatch(resetPurchaseNoFilter());
+    dispatch(resetAllState())
   };
   const manageFilter = async () => {
     try {

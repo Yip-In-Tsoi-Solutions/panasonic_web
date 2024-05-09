@@ -44,23 +44,9 @@ export const filterSlice = createSlice({
     setFilterResultPO(state, action) {
       state.temp_state_filter.purchaseNo = action.payload;
     },
-    resetBuyerFilter(state) {
-      state.temp_state_filter.buyer = initial_state.temp_state_filter.buyer;
-    },
-    resetPromiseStartDateFilter(state) {
-      state.temp_state_filter.promise_start_date =
-        initial_state.temp_state_filter.promise_start_date;
-    },
-    resetPromiseEndDateFilter(state) {
-      state.temp_state_filter.promise_end_date =
-        initial_state.temp_state_filter.promise_end_date;
-    },
-    resetVendorFilter(state) {
-      state.temp_state_filter.vendor = initial_state.temp_state_filter.vendor;
-    },
-    resetPurchaseNoFilter(state) {
-      state.temp_state_filter.purchaseNo =
-        initial_state.temp_state_filter.purchaseNo;
+    resetAllState: (state) => {
+      // Reset all state properties to their initial values
+      state.temp_state_filter = initial_state.temp_state_filter;
     },
   },
 });
@@ -74,10 +60,6 @@ export const {
   setFilterResultBuyer,
   setFilterResultVendor,
   setFilterResultPO,
-  resetBuyerFilter,
-  resetPromiseStartDateFilter,
-  resetPromiseEndDateFilter,
-  resetVendorFilter,
-  resetPurchaseNoFilter,
+  resetAllState
 } = filterSlice.actions;
 export default filterSlice.reducer;

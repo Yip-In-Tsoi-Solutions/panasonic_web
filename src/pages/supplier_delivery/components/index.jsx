@@ -13,11 +13,7 @@ import Promise_date_to from "../../../components/filter_form/promise_date_to";
 import Vendor_filter from "../../../components/filter_form/vendor_filter";
 import PurchaseOrder_filter from "../../../components/filter_form/purchaseOrder_filter";
 import {
-  resetBuyerFilter,
-  resetPromiseEndDateFilter,
-  resetPromiseStartDateFilter,
-  resetPurchaseNoFilter,
-  resetVendorFilter,
+  resetAllState,
   setSupplieryList,
 } from "../../../components/filter_form/actions/filterSlice";
 
@@ -98,11 +94,7 @@ const Supplier_delivery = () => {
   const clearFilter = () => {
     form.resetFields();
     setSuppliery_list_filter_result([]);
-    dispatch(resetBuyerFilter());
-    dispatch(resetPromiseStartDateFilter());
-    dispatch(resetPromiseEndDateFilter());
-    dispatch(resetVendorFilter());
-    dispatch(resetPurchaseNoFilter());
+    dispatch(resetAllState());
     dispatch(setConfirmBtnStatus(true));
   };
   return (

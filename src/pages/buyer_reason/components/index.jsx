@@ -30,9 +30,7 @@ import Buyer_filter from "../../../components/filter_form/buyer_filter";
 import Promise_date_to from "../../../components/filter_form/promise_date_to";
 import Promise_date_from from "../../../components/filter_form/promise_date_from";
 import {
-  resetBuyerFilter,
-  resetPromiseEndDateFilter,
-  resetPromiseStartDateFilter,
+  resetAllState,
 } from "../../../components/filter_form/actions/filterSlice";
 function Buyer_Reason() {
   const [form] = useForm();
@@ -144,10 +142,8 @@ function Buyer_Reason() {
   //actions of Clear State
   const clearFilter = () => {
     form.resetFields();
-    dispatch(setBuyer_reason([]));
-    dispatch(resetBuyerFilter());
-    dispatch(resetPromiseStartDateFilter());
-    dispatch(resetPromiseEndDateFilter());
+    dispatch(setBuyer_reason([]))
+    dispatch(resetAllState())
   };
   // action of Export Data of filter result to Excel, CSV files
   const export_to = async (val) => {

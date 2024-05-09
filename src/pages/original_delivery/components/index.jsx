@@ -1,9 +1,7 @@
 import { Button, Form, Modal, Select, Table, message } from "antd";
 import { useMemo, useState } from "react";
 import {
-  resetBuyerFilter,
-  resetPurchaseNoFilter,
-  resetVendorFilter,
+  resetAllState,
   setFilterBuyer,
   setFilterP0,
   setFilterResultBuyer,
@@ -88,9 +86,7 @@ const Original_delivery = () => {
     form.resetFields();
     dispatch(setSupplieryList([]));
     setOriginal_delivery_report_filter_result([]);
-    dispatch(resetBuyerFilter());
-    dispatch(resetVendorFilter());
-    dispatch(resetPurchaseNoFilter());
+    dispatch(resetAllState());
   };
   const manageFilter = async (val) => {
     let queryString = "";

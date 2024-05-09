@@ -4,9 +4,7 @@ import { useForm } from "antd/es/form/Form";
 import Promise_date_from from "../../../components/filter_form/date_with_require/promise_date_from";
 import Promise_date_to from "../../../components/filter_form/date_with_require/promise_date_to";
 import {
-  resetBuyerFilter,
-  resetPromiseEndDateFilter,
-  resetPromiseStartDateFilter,
+  resetAllState,
 } from "../../../components/filter_form/actions/filterSlice";
 import { setSupplieryList } from "../actions/priceReportSlice";
 import schema from "../../../javascript/print_schema";
@@ -60,8 +58,7 @@ const PriceReport = () => {
   const clearFilter = async () => {
     form.resetFields();
     dispatch(setSupplieryList([]));
-    dispatch(resetPromiseStartDateFilter());
-    dispatch(resetPromiseEndDateFilter());
+    dispatch(resetAllState())
   };
   const selectRemarkForm = (item) => {
     setCurrentSelected({
