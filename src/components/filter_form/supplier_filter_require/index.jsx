@@ -4,7 +4,7 @@ import { Form, Select } from "antd";
 import { useMemo } from "react";
 import axios from "axios";
 
-const Vendor_filter = (props) => {
+const Supplier_filter = () => {
   const dispatch = useDispatch();
   const filter = useSelector((state) => state.filter);
   async function fetchDropdownVendor() {
@@ -26,7 +26,12 @@ const Vendor_filter = (props) => {
   };
   return (
     <>
-      <Form.Item label={"VENDOR"} name={"VENDOR"}>
+      <Form.Item label={"Supplier"} name={"Supplier"} rules={[
+          {
+            required: true,
+            message: "Please select an Supplier",
+          },
+        ]}>
         <Select
           value={filter.temp_state_filter.vendor} // Set the value of the Select component
           onChange={handleVendorChange}
@@ -42,4 +47,4 @@ const Vendor_filter = (props) => {
     </>
   );
 };
-export default Vendor_filter;
+export default Supplier_filter;

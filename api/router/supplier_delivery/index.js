@@ -1,5 +1,5 @@
-import express from "express";
-import sql_serverConn from "../../sql_server_conn/sql_serverConn.js";
+const express = require("express");
+const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const supplier_api = express();
 supplier_api.get("/supplier_list", async (req, res) => {
   try {
@@ -45,4 +45,4 @@ supplier_api.get("/dropdown/po_number", async (req, res) => {
   res.status(200).json(result.recordset);
 });
 // Export the router
-export default supplier_api;
+module.exports = supplier_api;

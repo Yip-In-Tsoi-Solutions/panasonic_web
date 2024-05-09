@@ -1,6 +1,6 @@
-import express from "express";
-import dfd from "danfojs-node";
-import sql_serverConn from "../../sql_server_conn/sql_serverConn.js";
+const express = require("express");
+const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
+const dfd = require('danfojs-node');
 const reason_update = express();
 reason_update.use(express.json());
 //load data from supplier to Buyer reason
@@ -108,7 +108,7 @@ reason_update.post("/buyerlist_filter_optional", async (req, res) => {
       T_ID
     FROM
       dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL
-    WHERE [Diff Day] != 0 AND reason IS NULL ${req.body.queryString}
+    WHERE [Diff Day] != 0 AND reason = '' ${req.body.queryString}
     `
   );
   res.status(200).json(result.recordset);
@@ -200,4 +200,4 @@ reason_update.put("/buyer/update_reason/:transaction_id", async (req, res) => {
     res.status(500).send(error);
   }
 });
-export default reason_update;
+module.exports = reason_update;

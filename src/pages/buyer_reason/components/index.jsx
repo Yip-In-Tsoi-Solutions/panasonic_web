@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   Button,
   Form,
-  DatePicker,
   Select,
   Table,
   Drawer,
@@ -12,7 +11,6 @@ import {
 } from "antd";
 import axios from "axios";
 import { useForm } from "antd/es/form/Form";
-import moment from "moment";
 import {
   setDropdownBuyer,
   setBuyer_reason,
@@ -64,7 +62,7 @@ function Buyer_Reason() {
   // fetch api data of Dropdown buyer
   async function fetchDropdownBuyer() {
     try {
-      const response = await axios.get("/api/dropdown/buyer");
+      const response = await axios.get("http://localhost:8080/api/dropdown/buyer");
       response.status === 200
         ? dispatch(setDropdownBuyer(response.data))
         : dispatch(setDropdownBuyer(...buyer_reason?.dropdown_buyerlist));
@@ -75,7 +73,7 @@ function Buyer_Reason() {
   // fetch api data of Dropdown Root-cause
   async function fetchDropdownRootCause() {
     try {
-      const response = await axios.get("/api/dropdown/root_cause");
+      const response = await axios.get("http://localhost:8080/api/dropdown/root_cause");
       response.status === 200
         ? dispatch(setDropdownRootCause(response.data))
         : dispatch(setDropdownRootCause(...buyer_reason?.dropdown_rootCause));
@@ -86,7 +84,7 @@ function Buyer_Reason() {
   // fetch api data of Dropdown Action
   async function fetchDropdownAction() {
     try {
-      const response = await axios.get("/api/dropdown/actions");
+      const response = await axios.get("http://localhost:8080/api/dropdown/actions");
       response.status === 200
         ? dispatch(setDropdownAction(response.data))
         : dispatch(setDropdownAction(...buyer_reason?.dropdown_action));
@@ -94,29 +92,11 @@ function Buyer_Reason() {
       console.log(error);
     }
   }
-  // fetch api data of Dropdown transaction_id
-  // async function fetchDropdownTransaction_id() {
-  //   try {
-  //     const response = await axios.get("/api/dropdown/transaction_id");
-  //     response.status === 200
-  //       ? dispatch(setDropdownTransaction(response.data))
-  //       : dispatch(
-  //           setDropdownTransaction(...buyer_reason?.dropdown_transaction_id)
-  //         );
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
   // API render
   useMemo(() => {
-    try {
-      fetchDropdownBuyer();
+    fetchDropdownBuyer();
       fetchDropdownRootCause();
       fetchDropdownAction();
-      //fetchDropdownTransaction_id();
-    } catch (error) {
-      console.log(error);
-    }
   }, []);
   // Action of Components
   const { promise_start_date, promise_end_date, buyer } =
@@ -149,7 +129,7 @@ function Buyer_Reason() {
           "'"
         )}`;
       }
-      const response = await axios.post("/api/buyerlist_filter_optional", {
+      const response = await axios.post("http://localhost:8080/api/buyerlist_filter_optional", {
         queryString,
       });
       if (response.status === 200) {
@@ -175,7 +155,7 @@ function Buyer_Reason() {
       dataset: buyer_reason?.buyer_reason_table,
       files_type: String(val).toLowerCase(),
     };
-    await axios.post("/api/export/data", payload);
+    await axios.post("http://localhost:8080/api/export/data", payload);
   };
   // action of Update reason
   const updateReasonDetail = (item) => {
@@ -218,7 +198,7 @@ function Buyer_Reason() {
     };
     const transaction_id = current_selected?.transaction_id;
     const response = await axios.put(
-      `/api/buyer/update_reason/${transaction_id}`,
+      `http://localhost:8080/api/buyer/update_reason/${transaction_id}`,
       payload
     );
     if (response.status === 200) {
@@ -518,5 +498,4 @@ function Buyer_Reason() {
     </>
   );
 }
-
 export default Buyer_Reason;

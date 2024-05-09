@@ -1,5 +1,5 @@
-import express from "express";
-import sql_serverConn from "../../sql_server_conn/sql_serverConn.js";
+const express = require("express");
+const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 
 const power_bi_report = express();
 // get all dashboard
@@ -27,4 +27,4 @@ power_bi_report.post("/powerbi_connect", async (req, res) => {
 
 power_bi_report.use(express.json());
 
-export default power_bi_report;
+module.exports = power_bi_report;

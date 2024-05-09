@@ -16,12 +16,16 @@ const PowerBi_reportAdmin = () => {
     }));
   };
   const add_powerbi = async () => {
-    let payload = {
-      reportName: powerbi.reportName,
-      url: powerbi.url,
-    };
-    form.resetFields();
-    await axios.post("/api/powerbi_connect", payload);
+    try {
+      let payload = {
+        reportName: powerbi.reportName,
+        url: powerbi.url,
+      };
+      form.resetFields();
+      await axios.post("http://localhost:8080/api/powerbi_connect", payload);
+    } catch (error) {
+      console.log(error)
+    }
   };
   const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
   const powerbi_addCondition =

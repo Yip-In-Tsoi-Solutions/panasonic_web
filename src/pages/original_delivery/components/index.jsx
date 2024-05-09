@@ -32,7 +32,7 @@ const Original_delivery = () => {
   async function fetchDropdownBuyer() {
     try {
       const response = await axios.get(
-        "/api/original_delivery_report/dropdown/buyer"
+        "http://localhost:8080/api/original_delivery_report/dropdown/buyer"
       );
       response.status === 200
         ? dispatch(setFilterBuyer(response.data))
@@ -44,7 +44,7 @@ const Original_delivery = () => {
   async function fetchDropdownVendor() {
     try {
       const response = await axios.get(
-        "/api/original_delivery_report/dropdown/vendor"
+        "http://localhost:8080/api/original_delivery_report/dropdown/vendor"
       );
       response.status === 200
         ? dispatch(setFilterVendor(response.data))
@@ -56,7 +56,7 @@ const Original_delivery = () => {
   async function fetchDropdownPoNumber() {
     try {
       const response = await axios.get(
-        "/api/original_delivery_report/dropdown/po_number"
+        "http://localhost:8080/api/original_delivery_report/dropdown/po_number"
       );
       response.status === 200
         ? dispatch(setFilterP0(response.data))
@@ -107,7 +107,7 @@ const Original_delivery = () => {
       queryString += ` AND [PO No] = ${purchaseNo}`;
     }
     const response = await axios.post(
-      "/api/original_delivery_report/supplier_list_filter_optional",
+      "http://localhost:8080/api/original_delivery_report/supplier_list_filter_optional",
       {
         queryString,
       }

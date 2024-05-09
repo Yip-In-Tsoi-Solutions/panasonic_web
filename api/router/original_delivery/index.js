@@ -1,5 +1,5 @@
-import express from "express";
-import sql_serverConn from "../../sql_server_conn/sql_serverConn.js";
+const express = require("express");
+const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const original_delivery_api = express();
 original_delivery_api.get("/original_delivery_report", async (req, res) => {
   try {
@@ -45,4 +45,4 @@ original_delivery_api.get("/original_delivery_report/dropdown/po_number", async 
   res.status(200).json(result.recordset);
 });
 // Export the router
-export default original_delivery_api;
+module.exports = original_delivery_api;

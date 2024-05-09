@@ -47,7 +47,7 @@ const PriceReport = () => {
           "'"
         )}`;
       }
-      const response = await axios.post("/api/price_report/data", {
+      const response = await axios.post("http://localhost:8080/api/price_report/data", {
         queryString,
       });
       if (response.status === 200) {

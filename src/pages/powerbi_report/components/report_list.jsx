@@ -8,10 +8,14 @@ const PowerBi_report_list = () => {
   const disPatch = useDispatch();
   const dashboard = useSelector((state) => state.list_view.list_view);
   async function fetchPowerBi_report() {
-    const response = await axios.get("/api/powerbi_dashboard");
-    response.status === 200
-      ? disPatch(setListView(response.data))
-      : disPatch(setListView(...dashboard));
+    try {
+      const response = await axios.get("http://localhost:8080/api/powerbi_dashboard");
+      response.status === 200
+        ? disPatch(setListView(response.data))
+        : disPatch(setListView(...dashboard));
+    } catch (error) {
+      console.log(error)
+    }
   }
   useMemo(() => {
     fetchPowerBi_report();

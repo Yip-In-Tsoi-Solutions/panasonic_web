@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  back_end:
+    build: 
+      context: .
+    image: panasonic_back_end
+    ports:
+      - "8080:8080"
+    restart: always

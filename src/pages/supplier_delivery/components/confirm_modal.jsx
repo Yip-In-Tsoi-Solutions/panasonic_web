@@ -23,7 +23,7 @@ const Confirm_Modal = (props) => {
       });
       setTimeout(async () => {
         const response = await axios.post(
-          "/api/load_data_buyer_reason",
+          "http://localhost:8080/api/load_data_buyer_reason",
           props.payload
         );
         if (response.status === 200) {

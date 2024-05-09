@@ -1,10 +1,4 @@
-import {
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-} from "@ant-design/icons";
 import { createSlice } from "@reduxjs/toolkit";
-import { render } from "react-dom";
 
 const initialState = {
   items: [

@@ -9,10 +9,10 @@ const Buyer_filter = () => {
   const filter = useSelector((state) => state.filter);
   async function fetchDropdownBuyer() {
     try {
-      const response = await axios.get("/api/dropdown/buyer");
+      const response = await axios.get("http://localhost:8080/api/dropdown/buyer");
       response.status === 200
         ? dispatch(setFilterBuyer(response.data))
-        : dispatch(setFilterBuyer(...suppliery_list?.filterBuyer));
+        : dispatch(setFilterBuyer(...filter?.filterBuyer));
     } catch (error) {
       console.log(error);
     }

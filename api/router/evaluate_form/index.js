@@ -1,5 +1,5 @@
-import express, { request } from "express";
-import sql_serverConn from "../../sql_server_conn/sql_serverConn.js";
+const express = require("express");
+const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const evaluate_form = express();
 evaluate_form.use(express.json());
 evaluate_form.get("/evaluate/topic", async (req, res) => {
@@ -95,4 +95,4 @@ evaluate_form.get("/evaluate", async (req, res) => {
   );
   res.status(200).send(result.recordset);
 });
-export default evaluate_form;
+module.exports = evaluate_form;

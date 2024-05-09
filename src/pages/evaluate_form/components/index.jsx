@@ -25,7 +25,7 @@ const Evaluate_form = () => {
   const [comments, setComment] = useState("");
   async function fetchDropdownVendor() {
     try {
-      const response = await axios.get("/api/dropdown/vendor");
+      const response = await axios.get("http://localhost:8080/api/dropdown/vendor");
       response.status === 200
         ? dispatch(setVendorList(response.data))
         : dispatch(setVendorList(...evaluate_vendors?.vendor_list));
@@ -35,7 +35,7 @@ const Evaluate_form = () => {
   }
   async function fetchEvaluateTopic() {
     try {
-      const response = await axios.get("/api/evaluate/topic");
+      const response = await axios.get("http://localhost:8080/api/evaluate/topic");
       response.status === 200
         ? dispatch(setForm(response.data))
         : dispatch(setForm(...evaluate_vendors?.evaluate_form));
@@ -46,7 +46,7 @@ const Evaluate_form = () => {
   //fetch api data of Evaluate Form Table
   async function fetchEvaluate() {
     try {
-      const response = await axios.get("/api/evaluate");
+      const response = await axios.get("http://localhost:8080/api/evaluate");
       response.status === 200
         ? dispatch(setEvaluateResultTable(response.data))
         : dispatch(
@@ -70,14 +70,21 @@ const Evaluate_form = () => {
   const handleScoreChange = (record, e) => {
     const { title } = record;
     const scoring = e.target.value;
-    if (!score.some(item => item.evaluate_title === title)) {
+    if (!score.some((item) => item.evaluate_title === title)) {
       // If not present, add the new score entry
-      setScore(prevScore => [...prevScore, { evaluate_title: title, scoring }]);
+      setScore((prevScore) => [
+        ...prevScore,
+        { evaluate_title: title, scoring },
+      ]);
     } else {
       // If present, update the existing entry
-      setScore(prevScore => prevScore.map(item =>
-        item.evaluate_title === title ? { evaluate_title: title, scoring } : item
-      ));
+      setScore((prevScore) =>
+        prevScore.map((item) =>
+          item.evaluate_title === title
+            ? { evaluate_title: title, scoring }
+            : item
+        )
+      );
     }
   };
   // total_score
@@ -153,14 +160,18 @@ const Evaluate_form = () => {
     },
   ];
   const submitForm = async (val) => {
-    form.resetFields();
-    let payload = {
-      supplier: vendor,
-      evaluate_date: month,
-      comments: comments,
-      eval_form: score
-    };
-    const response = await axios.post("/api/evaluate/sending_form", payload);
+    try {
+      form.resetFields();
+      let payload = {
+        supplier: vendor,
+        evaluate_date: month,
+        comments: comments,
+        eval_form: score,
+      };
+      await axios.post("http://localhost:8080/api/evaluate/sending_form", payload);
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <>
@@ -271,7 +282,11 @@ const Evaluate_form = () => {
                     </Form.Item>
                     <div className="table m-auto mt-5">
                       <Button
-                        disabled={vendor != "" && month != "" && score.length > 0 ? false : true}
+                        disabled={
+                          vendor != "" && month != "" && score.length > 0
+                            ? false
+                            : true
+                        }
                         htmlType="submit"
                         className="uppercase ml-2"
                       >

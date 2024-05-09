@@ -13,6 +13,7 @@ const PowerBi_report_list = lazy(() =>
 const PowerBi_reportAdmin = lazy(() =>
   import("../powerbi_report/components/add_report")
 );
+
 const { Content } = Layout;
 const App = () => {
   const {

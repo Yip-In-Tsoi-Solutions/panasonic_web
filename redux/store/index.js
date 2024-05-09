@@ -7,7 +7,7 @@ import evaluate_formSlice from "../../src/pages/evaluate_form/actions/evaluate_f
 import priceReportSlice from "../../src/pages/price_report/actions/priceReportSlice";
 import confirm_modalSlice from "../../src/components/confirm_supplier/actions/confirm_modalSlice";
 import filterSlice from "../../src/components/filter_form/actions/filterSlice";
-
+import goods_returnSlice from "../../src/pages/goods_return/actions/goods_returnSlice";
 const store = configureStore({
   reducer: {
     navigations: navigationSlice,
@@ -17,7 +17,8 @@ const store = configureStore({
     confirm_supplier: confirm_modalSlice,
     buyer_reason_report: buyer_reasonSlice,
     evaluate_vendors: evaluate_formSlice,
-    priceReport: priceReportSlice
+    priceReport: priceReportSlice,
+    goods_return_list: goods_returnSlice
   },
 });
 export default store;

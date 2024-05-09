@@ -1,14 +1,14 @@
-import sql_server from "mssql";
+const sql_server = require("mssql");
 const sql_serverConn = async () => {
   const connectionString = {
     user: "sa",
     password: "P@ssw0rd",
-    server: "127.0.0.1", // e.g., localhost
+    server: "0.0.0.0", // ใช้ชื่อคอนเทนเนอร์
     database: "demo",
     options: {
-      encrypt: false
-    },
+      encrypt: false,
+    }
   };
   return await sql_server.connect(connectionString);
 };
-export default sql_serverConn;
+module.exports = sql_serverConn;

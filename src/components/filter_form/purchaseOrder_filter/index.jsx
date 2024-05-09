@@ -10,7 +10,7 @@ const PurchaseOrder_filter = () => {
 
   async function fetchDropdownPoNumber() {
     try {
-      const response = await axios.get("/api/dropdown/po_number");
+      const response = await axios.get("http://localhost:8080/api/dropdown/po_number");
       response.status === 200
         ? dispatch(setFilterP0(response.data))
         : dispatch(setFilterP0(...filter?.filterPO));

@@ -38,11 +38,9 @@ const Supplier_delivery = () => {
 
   async function fetchSupplierList() {
     try {
-      const response = await axios.get("/api/supplier_list");
+      const response = await axios.get("http://localhost:8080/api/supplier_list");
       if (response.status === 200) {
         dispatch(setSupplieryList(response.data));
-      } else {
-        dispatch(setSupplieryList(...filter.suppliery_list));
       }
     } catch (error) {
       console.log(error);
@@ -81,7 +79,7 @@ const Supplier_delivery = () => {
         queryString += ` AND [PO No] = ${purchaseNo}`;
         dispatch(setConfirmBtnStatus(false));
       }
-      const response = await axios.post("/api/supplier_list_filter_optional", {
+      const response = await axios.post("http://localhost:8080/api/supplier_list_filter_optional", {
         queryString,
       });
       if (response.status === 200) {
