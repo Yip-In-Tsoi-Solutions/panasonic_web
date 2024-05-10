@@ -3,9 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
 import Promise_date_from from "../../../components/filter_form/date_with_require/promise_date_from";
 import Promise_date_to from "../../../components/filter_form/date_with_require/promise_date_to";
-import {
-  resetAllState,
-} from "../../../components/filter_form/actions/filterSlice";
+import { resetAllState } from "../../../components/filter_form/actions/filterSlice";
 import { setSupplieryList } from "../actions/priceReportSlice";
 import schema from "../../../javascript/print_schema";
 import axios from "axios";
@@ -45,20 +43,23 @@ const PriceReport = () => {
           "'"
         )}`;
       }
-      const response = await axios.post("http://localhost:8080/api/price_report/data", {
-        queryString,
-      });
+      const response = await axios.post(
+        "http://localhost:8080/api/price_report",
+        {
+          queryString,
+        }
+      );
       if (response.status === 200) {
         dispatch(setSupplieryList(response.data));
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
   const clearFilter = async () => {
     form.resetFields();
     dispatch(setSupplieryList([]));
-    dispatch(resetAllState())
+    dispatch(resetAllState());
   };
   const selectRemarkForm = (item) => {
     setCurrentSelected({
@@ -74,10 +75,19 @@ const PriceReport = () => {
     });
     setUpdateForm(true);
   };
-  const submitRemark = () => {
+  const submitRemark = async () => {
     form.resetFields();
-    // console.log(remark)
+    let payload = {
+      remark: remark,
+      invoice_date: current_selected.invoice_date,
+      invoice_num: current_selected.invoice_num
+    };
+    await axios.put(
+      `http://localhost:8080/api/price_report/${current_selected.item_no}/${current_selected.po_release}`,
+      payload
+    );
     setRemark("");
+    setUpdateForm(false);
   };
   return (
     <div>
@@ -186,95 +196,93 @@ const PriceReport = () => {
         width={window.innerWidth / 1.5}
       >
         <h1 className="italic uppercase">Current data</h1>
-        <Form
-          form={form}
-          onFinish={submitRemark}
-          className="grid grid-cols-3 gap-3 clear-both"
-        >
-          <Form.Item>
-            <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-              invoice_date
-            </label>
-            <Input disabled={true} value={current_selected?.invoice_date} />
-          </Form.Item>
-          <Form.Item>
-            <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-              Item No
-            </label>
-            <Input disabled={true} value={current_selected?.item_no} />
-          </Form.Item>
-          <Form.Item>
-            <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-              invoice_num
-            </label>
-            <Input disabled={true} value={current_selected?.invoice_num} />
-          </Form.Item>
-          <Form.Item>
-            <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-              po_number
-            </label>
-            <Input disabled={true} value={current_selected?.po_number} />
-          </Form.Item>
-          <Form.Item>
-            <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-              po_release
-            </label>
-            <Input disabled={true} value={current_selected?.po_release} />
-          </Form.Item>
-          <Form.Item>
-            <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-              vendor
-            </label>
-            <Input disabled={true} value={current_selected?.vendor} />
-          </Form.Item>
-          <Form.Item>
-            <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-              invoice_unit_price
-            </label>
-            <Input
-              disabled={true}
-              value={current_selected?.invoice_unit_price}
-            />
-          </Form.Item>
-          <Form.Item>
-            <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-              amount
-            </label>
-            <Input disabled={true} value={current_selected?.amount} />
-          </Form.Item>
-          <Form.Item>
-            <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
-              currency
-            </label>
-            <Input disabled={true} value={current_selected?.currency} />
-          </Form.Item>
+        <Form form={form} onFinish={submitRemark}>
+          <div className="grid grid-cols-3 gap-3 clear-both">
+            <Form.Item>
+              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                invoice_date
+              </label>
+              <Input disabled={true} value={current_selected?.invoice_date} />
+            </Form.Item>
+            <Form.Item>
+              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                Item No
+              </label>
+              <Input disabled={true} value={current_selected?.item_no} />
+            </Form.Item>
+            <Form.Item>
+              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                invoice_num
+              </label>
+              <Input disabled={true} value={current_selected?.invoice_num} />
+            </Form.Item>
+            <Form.Item>
+              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                po_number
+              </label>
+              <Input disabled={true} value={current_selected?.po_number} />
+            </Form.Item>
+            <Form.Item>
+              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                po_release
+              </label>
+              <Input disabled={true} value={current_selected?.po_release} />
+            </Form.Item>
+            <Form.Item>
+              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                vendor
+              </label>
+              <Input disabled={true} value={current_selected?.vendor} />
+            </Form.Item>
+            <Form.Item>
+              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                invoice_unit_price
+              </label>
+              <Input
+                disabled={true}
+                value={current_selected?.invoice_unit_price}
+              />
+            </Form.Item>
+            <Form.Item>
+              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                amount
+              </label>
+              <Input disabled={true} value={current_selected?.amount} />
+            </Form.Item>
+            <Form.Item>
+              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                currency
+              </label>
+              <Input disabled={true} value={current_selected?.currency} />
+            </Form.Item>
+          </div>
+          <div className="grid grid-cols-1 gap-1 clear-both">
+            <Form.Item>
+              <label className="uppercase font-bold">write remark</label>
+              <TextArea
+                className="w-full"
+                placeholder="remark here"
+                value={remark}
+                autoSize={{
+                  minRows: 6,
+                  maxRows: 12,
+                }}
+                onChange={(e) => setRemark(e.target.value)}
+              />
+              <Button
+                htmlType="submit"
+                disabled={remark != "" ? false : true}
+                type="primary"
+                style={{
+                  backgroundColor: remark ? "#006254" : "#eee",
+                }}
+                className="mt-5 text-[white] font-bold uppercase rounded-2xl border-solid border-2 border-[#006254]"
+              >
+                UPDATE
+              </Button>
+            </Form.Item>
+          </div>
         </Form>
-        <div className="grid grid-cols-1 gap-1 clear-both">
-          <Form.Item>
-            <label className="uppercase font-bold">write remark</label>
-            <TextArea
-              className="w-full"
-              placeholder="remark here"
-              value={remark}
-              autoSize={{
-                minRows: 6,
-                maxRows: 12,
-              }}
-              onChange={(e) => setRemark(e.target.value)}
-            />
-            <Button
-              htmlType="submit"
-              disabled={remark != "" ? false : true}
-              type="primary"
-              style={{
-                backgroundColor: remark ? "#006254" : "#eee",
-              }}
-              className="mt-5 text-[white] font-bold uppercase rounded-2xl border-solid border-2 border-[#006254]"
-            >
-              UPDATE
-            </Button>
-          </Form.Item>
-        </div>
       </Drawer>
     </div>
   );

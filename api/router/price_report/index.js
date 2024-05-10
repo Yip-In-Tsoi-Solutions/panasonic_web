@@ -3,13 +3,13 @@ const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const price_report = express();
 price_report.use(express.json());
 // get all data from db
-price_report.post("/price_report/data", async (req, res) => {
+price_report.post("/price_report", async (req, res) => {
   const sql = await sql_serverConn();
   const result = await sql.query(
     `
     SELECT
         ITEM,
-        DESCRIPTION,
+        REMARKS,
         INVOICE_DATE,
         INVOICE_NUM,
         PO_NUMBER,
@@ -21,34 +21,36 @@ price_report.post("/price_report/data", async (req, res) => {
         PO_UNIT_PRICE-INV_UNIT_PRICE as price_diff,
         INV_CURRENCY_CODE as INV_CURRENCY
     FROM
-        demo.dbo.MATCHING_INVOICE
+        dbo.PECTH_SUPPLIER_PRICEDIFF_HISTORICAL
     WHERE ${req.body.queryString}
     `
   );
   res.status(200).send(result.recordset);
 });
-price_report.post("/price_report/matching", async (req, res) => {
+price_report.put("/price_report/:item_no/:po_release", async (req, res) => {
   try {
+    const item_no = req.params.item_no;
+    const po_release = req.params.po_release;
     const sql = await sql_serverConn();
-    const result = await sql.query(
+    const request = sql.request();
+    request.query(
       `
-    SELECT
-      PO_NUMBER,
-      RELEASE_NUM as PO_RELEASE,
-      ITEM as ITEM_CODE,
-      DESCRIPTION,
-      INV_CURRENCY_CODE,
-      INVOICE_DATE,
-      BATCH_NAME,
-      UOM,
-      INV_QTY,
-      INV_UNIT_PRICE
-    FROM
-      dbo.MATCHING_INVOICE
-    WHERE ${req.body.queryString}
-    `
+      UPDATE
+        dbo.PECTH_SUPPLIER_PRICEDIFF_HISTORICAL
+      SET
+        REMARKS = '${req.body.remark}'
+      WHERE
+        ITEM = @item_no
+        AND INVOICE_DATE = @invoice_date
+        AND INVOICE_NUM = @invoice_num
+        AND RELEASE_NUM = @po_release
+      `
     );
-    res.status(200).send(result.recordset);
+    request.input("item_no", item_no);
+    request.input("invoice_date", req.body.invoice_date);
+    request.input("invoice_num", req.body.invoice_num);
+    request.input("po_release", po_release);
+    res.status(200).send("Data is Updated");
   } catch (error) {
     res.status(500).send(error);
   }
