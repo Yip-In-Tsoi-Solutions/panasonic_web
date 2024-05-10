@@ -11,6 +11,7 @@ import PurchaseOrder_filter from "../../../components/filter_form/purchaseOrder_
 import axios from "axios";
 import schema from "../../../javascript/print_schema";
 import { setGoodsList } from "../actions/goods_returnSlice";
+import Export from "../../../components/export_data";
 const GoodsReturn = (props) => {
   const [form] = useForm();
   const dispatch = useDispatch();
@@ -72,6 +73,7 @@ const GoodsReturn = (props) => {
       );
       if (response.status === 200) {
         dispatch(setGoodsList(response.data));
+        dispatch(resetAllState())
       } else {
         dispatch(setGoodsList(...goods_return_list));
       }
@@ -162,6 +164,7 @@ const GoodsReturn = (props) => {
                 Clear Filter
               </div>
             </Button>
+            <Export baseUrl={props.baseUrl} dataset={goods_return_list} />
           </div>
         </Form.Item>
       </Form>

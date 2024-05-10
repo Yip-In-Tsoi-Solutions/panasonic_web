@@ -10,13 +10,14 @@ const evaluate_form = require("./router/evaluate_form");
 const original_delivery_api = require("./router/original_delivery");
 const price_report = require("./router/price_report");
 const matching_invoice = require("./router/matching_invoice");
+const export_file = require("./router/export_files");
 app.use(
   cors({
     methods: ["*"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: 'Infinity'}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   "/api",
@@ -26,7 +27,8 @@ app.use(
   power_bi_report,
   evaluate_form,
   price_report,
-  matching_invoice
+  matching_invoice,
+  export_file
 );
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);

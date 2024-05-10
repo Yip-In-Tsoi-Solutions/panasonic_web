@@ -132,6 +132,7 @@ function Buyer_Reason(props) {
       });
       if (response.status === 200) {
         dispatch(setBuyer_reason(response.data));
+        dispatch(resetAllState());
       } else {
         dispatch(setBuyer_reason(...buyer_reason?.buyer_reason_table));
       }
@@ -196,6 +197,7 @@ function Buyer_Reason(props) {
       dispatch(resetAction());
       dispatch(resetProduction_Ship());
       setReason("");
+      dispatch(resetAllState())
       setUpdateForm(false);
     }
   };
@@ -258,7 +260,7 @@ function Buyer_Reason(props) {
                   Clear Filter
                 </div>
               </Button>
-              <Export baseUrl={export_url} dataset={buyer_reason?.buyer_reason_table}/>
+              <Export baseUrl={props.baseUrl} dataset={buyer_reason?.buyer_reason_table}/>
             </div>
           </Form.Item>
         </Form>

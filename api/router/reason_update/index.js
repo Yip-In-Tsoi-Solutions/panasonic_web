@@ -1,6 +1,5 @@
 const express = require("express");
 const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
-const dfd = require('danfojs-node');
 const reason_update = express();
 reason_update.use(express.json());
 //load data from supplier to Buyer reason
@@ -148,32 +147,6 @@ reason_update.get("/dropdown/transaction_id", async (req, res) => {
     `SELECT DISTINCT T_ID from demo.dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL order by T_ID asc`
   );
   res.status(200).json(result.recordset);
-});
-async function saveFile(df, files_type) {
-  if (files_type === "xlsx") {
-    dfd.toExcel(df, { filePath: `./storage/dataset/sample.${files_type}` });
-  } else if (files_type === "csv") {
-    dfd.toCSV(df, { filePath: `./storage/dataset/sample.${files_type}` });
-  }
-}
-reason_update.post("/export/data", async (req, res) => {
-  let dataSet = [];
-  let files_type = "";
-  if (req.body.files_type === "excel") {
-    req.body.dataset.forEach((item) => {
-      dataSet.push(item);
-    });
-    files_type += "xlsx";
-    const df = new dfd.DataFrame(dataSet);
-    saveFile(df, files_type);
-  } else if (req.body.files_type === "csv") {
-    req.body.dataset.forEach((item) => {
-      dataSet.push(item);
-    });
-    files_type += "csv";
-    const df = new dfd.DataFrame(dataSet);
-    saveFile(df, files_type);
-  }
 });
 // update reason
 reason_update.put("/buyer/update_reason/:transaction_id", async (req, res) => {

@@ -22,7 +22,7 @@ const App = () => {
   // original report
   const logo = "src/assets/Panasonic_ENERGY_Logo.jpg";
   const [selected_items, setSelected] = useState(1);
-  const url = "http://localhost:8080";
+  const url = window.location.protocol + "//" + window.location.hostname + ":8080";
   return (
     <Layout>
       <Navigation logo={logo} setSelected={setSelected} />
@@ -35,14 +35,14 @@ const App = () => {
               borderRadius: borderRadiusLG,
             }}
           >
-            {selected_items === 1 && <Original_delivery baseUrl={url}/>}
-            {selected_items === 2 && <Supplier_delivery baseUrl={url}/>}
-            {selected_items === 3 && <Buyer_Reason baseUrl={url}/>}
-            {selected_items === 4 && <PriceReport baseUrl={url}/>}
-            {selected_items === 5 && <GoodsReturn baseUrl={url}/>}
-            {selected_items === 6 && <Evaluate_form baseUrl={url}/>}
-            {selected_items === 7 && <PowerBi_report_list baseUrl={url}/>}
-            {selected_items === 8 && <PowerBi_reportAdmin baseUrl={url}/>}
+            {selected_items === 1 && <Original_delivery baseUrl={url} />}
+            {selected_items === 2 && <Supplier_delivery baseUrl={url} />}
+            {selected_items === 3 && <Buyer_Reason baseUrl={url} />}
+            {selected_items === 4 && <PriceReport baseUrl={url} />}
+            {selected_items === 5 && <GoodsReturn baseUrl={url} />}
+            {selected_items === 6 && <Evaluate_form baseUrl={url} />}
+            {selected_items === 7 && <PowerBi_report_list baseUrl={url} />}
+            {selected_items === 8 && <PowerBi_reportAdmin baseUrl={url} />}
           </Content>
         </div>
       </Layout>

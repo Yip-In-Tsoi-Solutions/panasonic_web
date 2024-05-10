@@ -16,6 +16,7 @@ import {
   resetAllState,
   setSupplieryList,
 } from "../../../components/filter_form/actions/filterSlice";
+import Export from "../../../components/export_data";
 
 // class components
 const Supplier_delivery = (props) => {
@@ -75,18 +76,22 @@ const Supplier_delivery = (props) => {
         queryString += ` AND [PO No] = ${purchaseNo}`;
         dispatch(setConfirmBtnStatus(false));
       }
-      const response = await axios.post(`${props.baseUrl}/api/supplier_list_filter_optional`, {
-        queryString,
-      });
+      const response = await axios.post(
+        `${props.baseUrl}/api/supplier_list_filter_optional`,
+        {
+          queryString,
+        }
+      );
       if (response.status === 200) {
         setSuppliery_list_filter_result(response.data);
+        dispatch(resetAllState());
         dispatch(setConfirmBtnStatus(false));
       } else {
         setSuppliery_list_filter_result(...suppliery_list_filter_result);
         dispatch(setConfirmBtnStatus(true));
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -111,27 +116,28 @@ const Supplier_delivery = (props) => {
           <br />
         </div>
         <div className="flex flex-row float-right">
-          <Confirm_btn  confirmBtnStatus={confirmBtnStatus} />
+          <Confirm_btn confirmBtnStatus={confirmBtnStatus} />
         </div>
-        <Confirm_Modal baseUrl={props.baseUrl} payload={suppliery_list_filter_result} />
+        <Confirm_Modal
+          baseUrl={props.baseUrl}
+          payload={suppliery_list_filter_result}
+        />
       </div>
-      <Form
-        onFinish={manageFilter}
-        form={form}
-        className="grid grid-cols-3 gap-3 clear-both"
-      >
-        <Buyer_filter baseUrl={props.baseUrl}/>
-        <Promise_date_from
-          dateFormat={dateFormat}
-          promise_start_date={promise_start_date}
-        />
-        <Promise_date_to
-          dateFormat={dateFormat}
-          promise_start_date={promise_start_date}
-        />
-        <Vendor_filter baseUrl={props.baseUrl}/>
-        <PurchaseOrder_filter baseUrl={props.baseUrl}/>
-        <Form.Item>
+      <Form onFinish={manageFilter} form={form}>
+        <div className="grid grid-cols-3 gap-3 clear-both">
+          <Buyer_filter baseUrl={props.baseUrl} />
+          <Promise_date_from
+            dateFormat={dateFormat}
+            promise_start_date={promise_start_date}
+          />
+          <Promise_date_to
+            dateFormat={dateFormat}
+            promise_start_date={promise_start_date}
+          />
+          <Vendor_filter baseUrl={props.baseUrl} />
+          <PurchaseOrder_filter baseUrl={props.baseUrl} />
+        </div>
+        <Form.Item className="grid grid-cols-3 gap-3">
           <div className="flex flex-row">
             <Button htmlType="submit" className="uppercase ml-2">
               <div className="flex flex-row">
@@ -171,6 +177,10 @@ const Supplier_delivery = (props) => {
                 Clear Filter
               </div>
             </Button>
+            <Export
+              baseUrl={props.baseUrl}
+              dataset={suppliery_list_filter_result}
+            />
           </div>
         </Form.Item>
       </Form>

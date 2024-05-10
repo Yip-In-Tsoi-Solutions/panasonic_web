@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 80;
 const app = express();
 // config API Rules  
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
+app.use(express.static(path.join(__dirname, 'storage')));
 // app.use(express.static(path.join(__dirname, 'dist')));
 // app.use("/", express.static(path.join(__dirname, '/')));
 app.use(bodyParser.json());

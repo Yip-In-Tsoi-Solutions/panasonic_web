@@ -14,6 +14,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
 import schema from "../../../javascript/print_schema";
+import Export from "../../../components/export_data";
 const { Option } = Select;
 // class components
 const Original_delivery = (props) => {
@@ -109,6 +110,7 @@ const Original_delivery = (props) => {
     );
     if (response.status === 200) {
       setOriginal_delivery_report_filter_result(response.data);
+      dispatch(resetAllState())
     }
   };
   return (
@@ -145,7 +147,6 @@ const Original_delivery = (props) => {
             ))}
           </Select>
         </Form.Item>
-
         <Form.Item label="VENDOR" name={"VENDOR"}>
           <Select
             value={original_delivery_report.temp_state_filter.vendor} // Set the value of the Select component
@@ -212,6 +213,7 @@ const Original_delivery = (props) => {
                 Clear Filter
               </div>
             </Button>
+            <Export baseUrl={props.baseUrl} dataset={original_delivery_report_filter_result}/>
           </div>
         </Form.Item>
       </Form>
