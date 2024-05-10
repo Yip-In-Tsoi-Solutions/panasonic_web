@@ -3,7 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useForm } from "antd/es/form/Form";
 
-const PowerBi_reportAdmin = () => {
+const PowerBi_reportAdmin = (props) => {
   const [form] = useForm();
   const [powerbi, settingPowerBi] = useState({
     reportName: "",
@@ -22,7 +22,7 @@ const PowerBi_reportAdmin = () => {
         url: powerbi.url,
       };
       form.resetFields();
-      await axios.post("http://localhost:8080/api/powerbi_connect", payload);
+      await axios.post(`${props.baseUrl}/api/powerbi_connect`, payload);
     } catch (error) {
       console.log(error)
     }

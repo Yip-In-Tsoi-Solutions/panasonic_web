@@ -11,7 +11,7 @@ import PurchaseOrder_filter from "../../../components/filter_form/purchaseOrder_
 import axios from "axios";
 import schema from "../../../javascript/print_schema";
 import { setGoodsList } from "../actions/goods_returnSlice";
-const GoodsReturn = () => {
+const GoodsReturn = (props) => {
   const [form] = useForm();
   const dispatch = useDispatch();
   const dateFormat = "DD/MM/YYYY";
@@ -65,7 +65,7 @@ const GoodsReturn = () => {
         )}`;
       }
       const response = await axios.post(
-        "http://localhost:8080/api/matching_invoice",
+        `${props.baseUrl}/api/matching_invoice`,
         {
           queryString,
         }
@@ -100,8 +100,8 @@ const GoodsReturn = () => {
   };
   const submitReturnForm = async () => {
     let payload = {
-      curentSelect
-    }
+      curentSelect,
+    };
     console.log(payload?.curentSelect);
   };
   return (
@@ -120,8 +120,8 @@ const GoodsReturn = () => {
           dateFormat={dateFormat}
           promise_start_date={promise_start_date}
         />
-        <Supplier_filter />
-        <PurchaseOrder_filter />
+        <Supplier_filter baseUrl={props.baseUrl}/>
+        <PurchaseOrder_filter baseUrl={props.baseUrl}/>
         <Form.Item>
           <div className="flex flex-row">
             <Button htmlType="submit" className="uppercase">

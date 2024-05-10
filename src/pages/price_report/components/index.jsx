@@ -9,7 +9,7 @@ import schema from "../../../javascript/print_schema";
 import axios from "axios";
 import { useState } from "react";
 import TextArea from "antd/es/input/TextArea";
-const PriceReport = () => {
+const PriceReport = (props) => {
   const [form] = useForm();
   const [openUpdateForm, setUpdateForm] = useState(false);
   const [current_selected, setCurrentSelected] = useState({
@@ -44,7 +44,7 @@ const PriceReport = () => {
         )}`;
       }
       const response = await axios.post(
-        "http://localhost:8080/api/price_report",
+        `${props.baseUrl}/api/price_report`,
         {
           queryString,
         }
@@ -83,7 +83,7 @@ const PriceReport = () => {
       invoice_num: current_selected.invoice_num
     };
     await axios.put(
-      `http://localhost:8080/api/price_report/${current_selected.item_no}/${current_selected.po_release}`,
+      `${props.baseUrl}/api/price_report/${current_selected.item_no}/${current_selected.po_release}`,
       payload
     );
     setRemark("");

@@ -4,13 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { setFilterP0, setFilterResultPO } from "../actions/filterSlice";
 import axios from "axios";
 
-const PurchaseOrder_filter = () => {
+const PurchaseOrder_filter = (props) => {
     const dispatch = useDispatch();
   const filter = useSelector((state) => state.filter);
 
   async function fetchDropdownPoNumber() {
     try {
-      const response = await axios.get("http://localhost:8080/api/dropdown/po_number");
+      const response = await axios.get(`${props.baseUrl}/api/dropdown/po_number`);
       response.status === 200
         ? dispatch(setFilterP0(response.data))
         : dispatch(setFilterP0(...filter?.filterPO));

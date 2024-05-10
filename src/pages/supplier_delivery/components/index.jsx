@@ -18,7 +18,7 @@ import {
 } from "../../../components/filter_form/actions/filterSlice";
 
 // class components
-const Supplier_delivery = () => {
+const Supplier_delivery = (props) => {
   // redux/Antd
   const dispatch = useDispatch();
   const [form] = useForm();
@@ -34,7 +34,7 @@ const Supplier_delivery = () => {
 
   async function fetchSupplierList() {
     try {
-      const response = await axios.get("http://localhost:8080/api/supplier_list");
+      const response = await axios.get(`${props.baseUrl}/api/supplier_list`);
       if (response.status === 200) {
         dispatch(setSupplieryList(response.data));
       }
@@ -75,7 +75,7 @@ const Supplier_delivery = () => {
         queryString += ` AND [PO No] = ${purchaseNo}`;
         dispatch(setConfirmBtnStatus(false));
       }
-      const response = await axios.post("http://localhost:8080/api/supplier_list_filter_optional", {
+      const response = await axios.post(`${props.baseUrl}/api/supplier_list_filter_optional`, {
         queryString,
       });
       if (response.status === 200) {
@@ -111,16 +111,16 @@ const Supplier_delivery = () => {
           <br />
         </div>
         <div className="flex flex-row float-right">
-          <Confirm_btn confirmBtnStatus={confirmBtnStatus} />
+          <Confirm_btn  confirmBtnStatus={confirmBtnStatus} />
         </div>
-        <Confirm_Modal payload={suppliery_list_filter_result} />
+        <Confirm_Modal baseUrl={props.baseUrl} payload={suppliery_list_filter_result} />
       </div>
       <Form
         onFinish={manageFilter}
         form={form}
         className="grid grid-cols-3 gap-3 clear-both"
       >
-        <Buyer_filter />
+        <Buyer_filter baseUrl={props.baseUrl}/>
         <Promise_date_from
           dateFormat={dateFormat}
           promise_start_date={promise_start_date}
@@ -129,8 +129,8 @@ const Supplier_delivery = () => {
           dateFormat={dateFormat}
           promise_start_date={promise_start_date}
         />
-        <Vendor_filter />
-        <PurchaseOrder_filter />
+        <Vendor_filter baseUrl={props.baseUrl}/>
+        <PurchaseOrder_filter baseUrl={props.baseUrl}/>
         <Form.Item>
           <div className="flex flex-row">
             <Button htmlType="submit" className="uppercase ml-2">

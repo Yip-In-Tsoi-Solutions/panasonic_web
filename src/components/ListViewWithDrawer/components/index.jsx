@@ -1,19 +1,16 @@
 import React, { useState } from "react";
-import { Button, Drawer, List, Tag } from "antd";
+import { Drawer, List, Tag } from "antd";
 import Iframe from "react-iframe";
-import { FileExcelOutlined, FilePdfOutlined } from "@ant-design/icons";
 
 const ListViewWithDrawer = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reportName, setReportName] = useState("");
   const [reportURL, setReportURL] = useState("");
-
   const popUp = (e) => {
     setIsModalOpen(true);
     setReportName(e.report_name);
     setReportURL(e.report_url);
   };
-
   const closedPop = () => {
     setIsModalOpen(false);
   };

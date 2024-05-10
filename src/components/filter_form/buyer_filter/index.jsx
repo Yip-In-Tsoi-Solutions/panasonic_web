@@ -4,12 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useMemo } from "react";
 import axios from "axios";
 const { Option } = Select;
-const Buyer_filter = () => {
+const Buyer_filter = (props) => {
   const dispatch = useDispatch();
   const filter = useSelector((state) => state.filter);
   async function fetchDropdownBuyer() {
     try {
-      const response = await axios.get("http://localhost:8080/api/dropdown/buyer");
+      const response = await axios.get(`${props.baseUrl}/api/dropdown/buyer`);
       response.status === 200
         ? dispatch(setFilterBuyer(response.data))
         : dispatch(setFilterBuyer(...filter?.filterBuyer));

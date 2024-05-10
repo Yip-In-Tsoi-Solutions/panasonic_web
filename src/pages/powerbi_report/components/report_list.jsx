@@ -4,12 +4,12 @@ import { setListView } from "../../../components/ListViewWithDrawer/actions/list
 import ListViewWithDrawer from "../../../components/ListViewWithDrawer/components";
 import axios from "axios";
 
-const PowerBi_report_list = () => {
+const PowerBi_report_list = (props) => {
   const disPatch = useDispatch();
   const dashboard = useSelector((state) => state.list_view.list_view);
   async function fetchPowerBi_report() {
     try {
-      const response = await axios.get("http://localhost:8080/api/powerbi_dashboard");
+      const response = await axios.get(`${props.baseUrl}/api/powerbi_dashboard`);
       response.status === 200
         ? disPatch(setListView(response.data))
         : disPatch(setListView(...dashboard));
@@ -22,7 +22,7 @@ const PowerBi_report_list = () => {
   }, []);
   return (
     <div>
-      <h1 className="text-2xl font-bold pl-0 p-3 mb-5">Power Bi Report</h1>
+      <h1 className="text-2xl font-bold pl-0 p-3 mb-5">Report Summarize (Delivery)</h1>
       <div className="clear-both">
         <ListViewWithDrawer listView_data={dashboard} />
       </div>

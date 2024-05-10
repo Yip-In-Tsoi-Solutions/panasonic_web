@@ -4,12 +4,12 @@ import { Form, Select } from "antd";
 import { useMemo } from "react";
 import axios from "axios";
 
-const Supplier_filter = () => {
+const Supplier_filter = (props) => {
   const dispatch = useDispatch();
   const filter = useSelector((state) => state.filter);
   async function fetchDropdownVendor() {
     try {
-      const response = await axios.get("http://localhost:8080/api/dropdown/vendor");
+      const response = await axios.get(`${props.baseUrl}/api/dropdown/vendor`);
       response.status === 200
         ? dispatch(setFilterVendor(response.data))
         : dispatch(setFilterVendor(...filter?.filterVendor));

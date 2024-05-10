@@ -16,7 +16,7 @@ import { useForm } from "antd/es/form/Form";
 import schema from "../../../javascript/print_schema";
 const { Option } = Select;
 // class components
-const Original_delivery = () => {
+const Original_delivery = (props) => {
   // redux/Antd
   const dispatch = useDispatch();
   const [form] = useForm();
@@ -26,11 +26,10 @@ const Original_delivery = () => {
   ] = useState([]);
   // state
   const original_delivery_report = useSelector((state) => state.filter);
-
   async function fetchDropdownBuyer() {
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/original_delivery_report/dropdown/buyer"
+        `${props.baseUrl}/api/original_delivery_report/dropdown/buyer`
       );
       response.status === 200
         ? dispatch(setFilterBuyer(response.data))
@@ -42,7 +41,7 @@ const Original_delivery = () => {
   async function fetchDropdownVendor() {
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/original_delivery_report/dropdown/vendor"
+        `${props.baseUrl}/api/original_delivery_report/dropdown/vendor`
       );
       response.status === 200
         ? dispatch(setFilterVendor(response.data))
@@ -54,7 +53,7 @@ const Original_delivery = () => {
   async function fetchDropdownPoNumber() {
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/original_delivery_report/dropdown/po_number"
+        `${props.baseUrl}/api/original_delivery_report/dropdown/po_number`
       );
       response.status === 200
         ? dispatch(setFilterP0(response.data))
@@ -103,7 +102,7 @@ const Original_delivery = () => {
       queryString += ` AND [PO No] = ${purchaseNo}`;
     }
     const response = await axios.post(
-      "http://localhost:8080/api/original_delivery_report/supplier_list_filter_optional",
+      `${props.baseUrl}/api/original_delivery_report/supplier_list_filter_optional`,
       {
         queryString,
       }

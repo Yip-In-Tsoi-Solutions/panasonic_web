@@ -14,7 +14,7 @@ import TextArea from "antd/es/input/TextArea";
 import GradingTable from "../../../components/grading/components/grading";
 const { Option } = Select;
 
-const Evaluate_form = () => {
+const Evaluate_form = (props) => {
   // action
   const [form] = useForm();
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ const Evaluate_form = () => {
   const [comments, setComment] = useState("");
   async function fetchDropdownVendor() {
     try {
-      const response = await axios.get("http://localhost:8080/api/dropdown/vendor");
+      const response = await axios.get(`${props.baseUrl}/api/dropdown/vendor`);
       response.status === 200
         ? dispatch(setVendorList(response.data))
         : dispatch(setVendorList(...evaluate_vendors?.vendor_list));
@@ -35,7 +35,7 @@ const Evaluate_form = () => {
   }
   async function fetchEvaluateTopic() {
     try {
-      const response = await axios.get("http://localhost:8080/api/evaluate/topic");
+      const response = await axios.get(`${props.baseUrl}/api/evaluate/topic`);
       response.status === 200
         ? dispatch(setForm(response.data))
         : dispatch(setForm(...evaluate_vendors?.evaluate_form));
@@ -46,7 +46,7 @@ const Evaluate_form = () => {
   //fetch api data of Evaluate Form Table
   async function fetchEvaluate() {
     try {
-      const response = await axios.get("http://localhost:8080/api/evaluate");
+      const response = await axios.get(`${props.baseUrl}/api/evaluate`);
       response.status === 200
         ? dispatch(setEvaluateResultTable(response.data))
         : dispatch(
@@ -168,7 +168,7 @@ const Evaluate_form = () => {
         comments: comments,
         eval_form: score,
       };
-      await axios.post("http://localhost:8080/api/evaluate/sending_form", payload);
+      await axios.post(`${props.baseUrl}/api/evaluate/sending_form`, payload);
     } catch (error) {
       console.log(error);
     }

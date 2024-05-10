@@ -24,7 +24,6 @@ import {
   resetProduction_Ship,
 } from "../actions/buyer_reasonSlice";
 import schema from "../../../javascript/print_schema";
-import { FileExcelOutlined, FileTextOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 import Buyer_filter from "../../../components/filter_form/buyer_filter";
 import Promise_date_to from "../../../components/filter_form/promise_date_to";
@@ -32,7 +31,8 @@ import Promise_date_from from "../../../components/filter_form/promise_date_from
 import {
   resetAllState,
 } from "../../../components/filter_form/actions/filterSlice";
-function Buyer_Reason() {
+import Export from "../../../components/export_data";
+function Buyer_Reason(props) {
   const [form] = useForm();
   // State of Components
   const dateFormat = "DD/MM/YYYY";
@@ -60,7 +60,7 @@ function Buyer_Reason() {
   // fetch api data of Dropdown buyer
   async function fetchDropdownBuyer() {
     try {
-      const response = await axios.get("http://localhost:8080/api/dropdown/buyer");
+      const response = await axios.get(`${props.baseUrl}/api/dropdown/buyer`);
       response.status === 200
         ? dispatch(setDropdownBuyer(response.data))
         : dispatch(setDropdownBuyer(...buyer_reason?.dropdown_buyerlist));
@@ -71,7 +71,7 @@ function Buyer_Reason() {
   // fetch api data of Dropdown Root-cause
   async function fetchDropdownRootCause() {
     try {
-      const response = await axios.get("http://localhost:8080/api/dropdown/root_cause");
+      const response = await axios.get(`${props.baseUrl}/api/dropdown/root_cause`);
       response.status === 200
         ? dispatch(setDropdownRootCause(response.data))
         : dispatch(setDropdownRootCause(...buyer_reason?.dropdown_rootCause));
@@ -82,7 +82,7 @@ function Buyer_Reason() {
   // fetch api data of Dropdown Action
   async function fetchDropdownAction() {
     try {
-      const response = await axios.get("http://localhost:8080/api/dropdown/actions");
+      const response = await axios.get(`${props.baseUrl}/api/dropdown/actions`);
       response.status === 200
         ? dispatch(setDropdownAction(response.data))
         : dispatch(setDropdownAction(...buyer_reason?.dropdown_action));
@@ -127,7 +127,7 @@ function Buyer_Reason() {
           "'"
         )}`;
       }
-      const response = await axios.post("http://localhost:8080/api/buyerlist_filter_optional", {
+      const response = await axios.post(`${props.baseUrl}/api/buyerlist_filter_optional`, {
         queryString,
       });
       if (response.status === 200) {
@@ -144,14 +144,6 @@ function Buyer_Reason() {
     form.resetFields();
     dispatch(setBuyer_reason([]))
     dispatch(resetAllState())
-  };
-  // action of Export Data of filter result to Excel, CSV files
-  const export_to = async (val) => {
-    let payload = {
-      dataset: buyer_reason?.buyer_reason_table,
-      files_type: String(val).toLowerCase(),
-    };
-    await axios.post("http://localhost:8080/api/export/data", payload);
   };
   // action of Update reason
   const updateReasonDetail = (item) => {
@@ -194,7 +186,7 @@ function Buyer_Reason() {
     };
     const transaction_id = current_selected?.transaction_id;
     const response = await axios.put(
-      `http://localhost:8080/api/buyer/update_reason/${transaction_id}`,
+      `${props.baseUrl}/api/buyer/update_reason/${transaction_id}`,
       payload
     );
     if (response.status === 200) {
@@ -207,6 +199,7 @@ function Buyer_Reason() {
       setUpdateForm(false);
     }
   };
+  const export_url = props.baseUrl;
   return (
     <>
       <div>
@@ -216,7 +209,7 @@ function Buyer_Reason() {
           form={form}
           className="grid grid-cols-3 gap-3 clear-both"
         >
-          <Buyer_filter />
+          <Buyer_filter baseUrl={export_url}/>
           <Promise_date_from
             dateFormat={dateFormat}
             promise_start_date={promise_start_date}
@@ -265,35 +258,7 @@ function Buyer_Reason() {
                   Clear Filter
                 </div>
               </Button>
-              <Select
-                className="w-full ml-5"
-                defaultValue="EXPORT DATA"
-                onChange={export_to}
-                options={[
-                  {
-                    value: "Excel",
-                    label: (
-                      <>
-                        <div className="flex flex-row uppercase">
-                          <FileExcelOutlined className="text-xl mr-2" />
-                          Excel
-                        </div>
-                      </>
-                    ),
-                  },
-                  {
-                    value: "CSV",
-                    label: (
-                      <>
-                        <div className="flex flex-row uppercase">
-                          <FileTextOutlined className="text-xl mr-2" />
-                          csv
-                        </div>
-                      </>
-                    ),
-                  },
-                ]}
-              />
+              <Export baseUrl={export_url} dataset={buyer_reason?.buyer_reason_table}/>
             </div>
           </Form.Item>
         </Form>
