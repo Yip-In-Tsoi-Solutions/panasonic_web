@@ -2,17 +2,10 @@ const express = require("express");
 const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const authenticateToken = require("../../secure/jwt");
 const original_delivery_api = express();
-// original_delivery_api.get("/original_delivery_report", authenticateToken, async (req, res) => {
-//   try {
-//     const sql = await sql_serverConn();
-//     const result = await sql.query(`SELECT * from dbo.[tbSupplierDelivery]`);
-//     res.status(200).json(result.recordset);
-//   } catch (error) {
-//     if (error) {
-//       res.status(500).json({ message: error });
-//     }
-//   }
-// });
+const NodeCache = require("node-cache");
+
+//initial variable
+const cache = new NodeCache({ stdTTL: 60 });
 // display all data from Buyer
 original_delivery_api.post(
   "/original_delivery_report/supplier_list_filter_optional",
@@ -23,7 +16,7 @@ original_delivery_api.post(
       const query = `SELECT * FROM dbo.[tbSupplierDelivery] WHERE ${req.body.queryString}`;
       // Execute the SQL query
       const result = await sql.query(query);
-      res.status(200).json(result.recordset);
+      res.status(200).send(result.recordset);
     } catch (error) {
       console.error("Error:", error.message);
       res.status(500).send("Internal Server Error");
@@ -36,11 +29,18 @@ original_delivery_api.get(
   authenticateToken,
   async (req, res) => {
     try {
-      const sql = await sql_serverConn();
-      const result = await sql.query(
-        `SELECT DISTINCT [Buyer] from dbo.[tbSupplierDelivery] order by Buyer asc`
-      );
-      res.status(200).json(result.recordset);
+      const cacheKey = "buyer";
+      const cachedData = cache.get(cacheKey);
+      if (cachedData) {
+        res.status(200).send(cachedData);
+      } else {
+        const sql = await sql_serverConn();
+        const result = await sql.query(
+          `SELECT DISTINCT [Buyer] from dbo.[tbSupplierDelivery] order by Buyer asc`
+        );
+        cache.set(cacheKey, result.recordset);
+        res.status(200).json(result.recordset);
+      }
     } catch (error) {
       console.error("Error:", error.message);
       res.status(500).send("Internal Server Error");
@@ -53,11 +53,18 @@ original_delivery_api.get(
   authenticateToken,
   async (req, res) => {
     try {
-      const sql = await sql_serverConn();
-      const result = await sql.query(
-        `SELECT DISTINCT SUPPLIER from dbo.[tbSupplierDelivery] order by SUPPLIER asc`
-      );
-      res.status(200).json(result.recordset);
+      const cacheKey = "vendor";
+      const cachedData = cache.get(cacheKey); // Get cached data
+      if (cachedData) {
+        res.status(200).json(cachedData); // Send cached data if available
+      } else {
+        const sql = await sql_serverConn(); // Connect to SQL Server
+        const result = await sql.query(
+          `SELECT DISTINCT SUPPLIER FROM dbo.tbSupplierDelivery ORDER BY SUPPLIER ASC`
+        );
+        cache.set(cacheKey, result.recordset); // Cache the result
+        res.status(200).send(result.recordset); // Send JSON response with distinct vendors
+      }
     } catch (error) {
       console.error("Error:", error.message);
       res.status(500).send("Internal Server Error");
@@ -70,11 +77,18 @@ original_delivery_api.get(
   authenticateToken,
   async (req, res) => {
     try {
-      const sql = await sql_serverConn();
-      const result = await sql.query(
-        `SELECT DISTINCT [PO_NUMBER] from dbo.[tbSupplierDelivery] order by [PO_NUMBER] asc`
-      );
-      res.status(200).json(result.recordset);
+      const cacheKey = "po_number";
+      const cachedData = cache.get(cacheKey);
+      if (cachedData) {
+        res.status(200).send(cachedData);
+      } else {
+        const sql = await sql_serverConn();
+        const result = await sql.query(
+          `SELECT DISTINCT [PO_NUMBER] from dbo.[tbSupplierDelivery] order by [PO_NUMBER] asc`
+        );
+        cache.set(cacheKey, result.recordset);
+        res.status(200).send(result.recordset);
+      }
     } catch (error) {
       console.error("Error:", error.message);
       res.status(500).send("Internal Server Error");

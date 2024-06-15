@@ -88,7 +88,7 @@ const Evaluate = (props) => {
 
   async function fetchEvaluate() {
     try {
-      const response = await axios.get(`${props.baseUrl}/api/evaluate`, {
+      const response = await axios.get(`${props.baseUrl}/api/evaluate/summary_score`, {
         headers: {
           Authorization: `Bearer ${props.token_id}`,
         },
@@ -103,10 +103,10 @@ const Evaluate = (props) => {
     }
   }
 
-  async function fetchEvaluatePending() {
+  async function fetchEvaluateDraft() {
     try {
       const response = await axios.get(
-        `${props.baseUrl}/api/evaluate/pending`,
+        `${props.baseUrl}/api/evaluate/draft`,
         {
           headers: {
             Authorization: `Bearer ${props.token_id}`,
@@ -126,7 +126,7 @@ const Evaluate = (props) => {
     fetchEvaluateTopic();
     fetchDropdownVendor();
     fetchEvaluate();
-    fetchEvaluatePending();
+    fetchEvaluateDraft();
   }, []);
 
   const { vendor } = evaluate_vendors.temp_state_filter;
