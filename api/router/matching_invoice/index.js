@@ -3,40 +3,52 @@ const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const authenticateToken = require("../../secure/jwt");
 const matching_invoice = express();
 matching_invoice.use(express.json());
-matching_invoice.post("/matching_invoice", authenticateToken, async (req, res) => {
-  try {
-    const sql = await sql_serverConn();
-    const result = await sql.query(
-      `
-      SELECT
-        ID,
-        VENDOR_NAME as SUPPLIER,
-        PO_NUMBER,
-        RELEASE_NUM as PO_RELEASE,
-        ITEM as ITEM_CODE,
-        DESCRIPTION,
-        LINE_NUM,
-        INVOICE_DATE,
-        BATCH_NAME,
-        UOM,
-        INVOICE_NUM,
-        INV_QTY,
-        round(INV_UNIT_PRICE, 2) as UNIT_PRICE,
-        INV_CURRENCY_CODE
-      FROM
-        dbo.[PECTH_SUPPLIER_PRICEDIFF_HISTORICAL]
-      WHERE ${req.body.queryString}
-      `
-    );
-    res.status(200).send(result.recordset);
-  } catch (error) {
-    res.status(500).send(error);
+const NodeCache = require("node-cache");
+const cache = new NodeCache({ stdTTL: 60 });
+
+// filter of matching_invoice
+matching_invoice.post(
+  "/matching_invoice",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const result = await sql.query(
+        `
+          SELECT
+            ID,
+            VENDOR_NAME as SUPPLIER,
+            PO_NUMBER,
+            RELEASE_NUM as PO_RELEASE,
+            ITEM as ITEM_CODE,
+            DESCRIPTION,
+            LINE_NUM,
+            INVOICE_DATE,
+            BATCH_NAME,
+            UOM,
+            INVOICE_NUM,
+            INV_QTY,
+            round(INV_UNIT_PRICE, 2) as UNIT_PRICE,
+            INV_CURRENCY_CODE
+          FROM
+            dbo.[PECTH_SUPPLIER_PRICEDIFF_HISTORICAL]
+          WHERE ${req.body.queryString}
+        `
+      );
+      res.status(200).send(result.recordset);
+    } catch (error) {
+      res.status(500).send(error);
+    }
   }
-});
-matching_invoice.post("/matching_invoice/createform", authenticateToken, async (req, res) => {
-  try {
-    const sql = await sql_serverConn();
-    const latestIdResult = await sql.query(`
+);
+// insert goods needs to return for creating reuturn PDF
+matching_invoice.post(
+  "/matching_invoice/createform",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const latestIdResult = await sql.query(`
     SELECT
       CASE 
           WHEN SUBSTRING(RETURN_NO,3,6) = SUBSTRING(CONVERT(varchar, SYSDATETIME(), 112),1,6) THEN CONCAT('SP',SUBSTRING(RETURN_NO,3,6),'/',RIGHT('000'+CAST(CONVERT(int,SUBSTRING(RETURN_NO,10,3))+1 as varchar(3)),3)) 
@@ -44,47 +56,47 @@ matching_invoice.post("/matching_invoice/createform", authenticateToken, async (
           END AS RETURN_NO
     FROM dbo.[RETURN_NO_CONTROL]
     `);
-    let returnID = latestIdResult.recordset[0].RETURN_NO;
-    for (let i = 0; i < req.body.length; i++) {
-      const request = sql.request();
-      const {
-        supplier,
-        po_number,
-        po_release,
-        item_no,
-        description,
-        batchName,
-        unit,
-        inv_qty,
-        unitPrice,
-        curency,
-        invoice_no,
-        invoice_date,
-        return_qty,
-        return_line_no,
-        id,
-        cause,
-      } = req.body[i];
-      request.input("return_id", returnID);
-      request.input("ID", id);
-      request.input("item_no", item_no);
-      request.input("description", description);
-      request.input("invoice_date", invoice_date);
-      request.input("invoice_no", invoice_no);
-      request.input("po_number", po_number);
-      request.input("po_release", po_release);
-      request.input("supplier", supplier);
-      request.input("batchName", batchName);
-      request.input("unit", unit);
-      request.input("inv_qty", inv_qty);
-      request.input("unitPrice", unitPrice);
-      request.input("currency", curency);
-      request.input("return_qty", return_qty);
-      request.input("return_amount", return_qty * unitPrice);
-      request.input("return_line_no", return_line_no);
-      request.input("cause", cause);
-      await request.query(
-        `
+      let returnID = latestIdResult.recordset[0].RETURN_NO;
+      for (let i = 0; i < req.body.length; i++) {
+        const request = sql.request();
+        const {
+          supplier,
+          po_number,
+          po_release,
+          item_no,
+          description,
+          batchName,
+          unit,
+          inv_qty,
+          unitPrice,
+          curency,
+          invoice_no,
+          invoice_date,
+          return_qty,
+          return_line_no,
+          id,
+          cause,
+        } = req.body[i];
+        request.input("return_id", returnID);
+        request.input("ID", id);
+        request.input("item_no", item_no);
+        request.input("description", description);
+        request.input("invoice_date", invoice_date);
+        request.input("invoice_no", invoice_no);
+        request.input("po_number", po_number);
+        request.input("po_release", po_release);
+        request.input("supplier", supplier);
+        request.input("batchName", batchName);
+        request.input("unit", unit);
+        request.input("inv_qty", inv_qty);
+        request.input("unitPrice", unitPrice);
+        request.input("currency", curency);
+        request.input("return_qty", return_qty);
+        request.input("return_amount", return_qty * unitPrice);
+        request.input("return_line_no", return_line_no);
+        request.input("cause", cause);
+        await request.query(
+          `
             INSERT INTO dbo.[PECTH_SUPPLIER_RETURN_HISTORICAL]
             (
               [RETURN_DATE],
@@ -133,11 +145,11 @@ matching_invoice.post("/matching_invoice/createform", authenticateToken, async (
                 SYSDATETIME()
             )
           `
-      );
-    }
-    const updateReturnControl = sql.request();
-    await updateReturnControl.query(
-      `
+        );
+      }
+      const updateReturnControl = sql.request();
+      await updateReturnControl.query(
+        `
       UPDATE RETURN_NO_CONTROL SET RETURN_NO = 
       (SELECT
           CASE 
@@ -147,38 +159,48 @@ matching_invoice.post("/matching_invoice/createform", authenticateToken, async (
       FROM RETURN_NO_CONTROL )
       , MODIFIED_DATE=SYSDATETIME()
       `
-    );
-    console.log("Data successfully inserted into the database.");
-    res.status(200).send("Data Inserted");
-  } catch (error) {
-    res.status(500).send(error);
+      );
+      console.log("Data successfully inserted into the database.");
+      res.status(200).send("Data Inserted");
+    } catch (error) {
+      res.status(500).send(error);
+    }
   }
-});
-matching_invoice.get("/matching_invoice/form/docs_no", authenticateToken, async (req, res) => {
-  try {
-    const sql = await sql_serverConn();
-    const result = await sql.query(
-      `
-      SELECT
-        CASE 
-            WHEN SUBSTRING(RETURN_NO,3,6) = SUBSTRING(CONVERT(varchar, SYSDATETIME(), 112),1,6) THEN CONCAT('SP',SUBSTRING(RETURN_NO,3,6),'/',RIGHT('000'+CAST(CONVERT(int,SUBSTRING(RETURN_NO,10,3))+1 as varchar(3)),3)) 
-            WHEN SUBSTRING(RETURN_NO,3,6) < SUBSTRING(CONVERT(varchar, SYSDATETIME(), 112),1,6) THEN CONCAT('SP',SUBSTRING(CONVERT(varchar, SYSDATETIME(), 112),1,6),'/001')
-            END AS RETURN_NO
-      FROM dbo.[RETURN_NO_CONTROL]
-      `
-    );
-    res.status(200).send(result.recordset);
-  } catch (error) {
-    res.status(500).send(error);
+);
+// queries all return documents
+matching_invoice.get(
+  "/matching_invoice/form/docs_no",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const result = await sql.query(
+        `
+          SELECT
+            CASE 
+                WHEN SUBSTRING(RETURN_NO,3,6) = SUBSTRING(CONVERT(varchar, SYSDATETIME(), 112),1,6) THEN CONCAT('SP',SUBSTRING(RETURN_NO,3,6),'/',RIGHT('000'+CAST(CONVERT(int,SUBSTRING(RETURN_NO,10,3))+1 as varchar(3)),3)) 
+                WHEN SUBSTRING(RETURN_NO,3,6) < SUBSTRING(CONVERT(varchar, SYSDATETIME(), 112),1,6) THEN CONCAT('SP',SUBSTRING(CONVERT(varchar, SYSDATETIME(), 112),1,6),'/001')
+                END AS RETURN_NO
+          FROM dbo.[RETURN_NO_CONTROL]
+          `
+      );
+      res.status(200).send(result.recordset);
+    } catch (error) {
+      res.status(500).send(error);
+    }
   }
-});
-matching_invoice.post("/matching_invoice/form", authenticateToken, async (req, res) => {
-  try {
-    const sql = await sql_serverConn();
-    const request = sql.request();
-    const { supplier } = req.body;
-    request.input("supplier", supplier);
-    const query = `
+);
+// insert to PECTH_SUPPLIER_RETURN_HISTORICAL
+matching_invoice.post(
+  "/matching_invoice/form",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const request = sql.request();
+      const { supplier } = req.body;
+      request.input("supplier", supplier);
+      const query = `
       SELECT
         VENDOR_NAME,
         ITEM,
@@ -198,10 +220,11 @@ matching_invoice.post("/matching_invoice/form", authenticateToken, async (req, r
         [VENDOR_NAME] = @supplier
     `;
 
-    const response = await request.query(query);
-    res.status(200).send(response.recordset);
-  } catch (error) {
-    res.status(500).send(error);
+      const response = await request.query(query);
+      res.status(200).send(response.recordset);
+    } catch (error) {
+      res.status(500).send(error);
+    }
   }
-});
+);
 module.exports = matching_invoice;

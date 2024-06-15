@@ -1,31 +1,41 @@
 const express = require("express");
 const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const authenticateToken = require("../../secure/jwt");
+const NodeCache = require("node-cache");
 const evaluate_form = express();
 evaluate_form.use(express.json());
 
+//initial variable
+const cache = new NodeCache({ stdTTL: 60 });
 // display all questionaire
 evaluate_form.get("/evaluate/topic", authenticateToken, async (req, res) => {
   try {
-    const sql = await sql_serverConn();
-    const result = sql.query(
-      `
-    SELECT
-      [TOPIC_NAME_TH],
-      [TOPIC_NAME_EN],
-      [HEADER_INDEX]
-        , [TOPIC_HEADER_NAME_TH]
-        , [TOPIC_HEADER_NAME_ENG]
-        , [TOPIC_KEY_ID]
-        , [TOPIC_LINE]
-        , CONCAT([TOPIC_NAME_TH], ' (', [TOPIC_NAME_EN], ')') as TOPIC_NAME  
-        , [CREATED_DATE]
-        , [ACTIVE_DATE_FROM]
-        , [ACTIVE_DATE_TO]
-      FROM [dbo].[PECTH_EVALUATION_MASTER]
-    `
-    );
-    res.status(200).send((await result).recordset);
+    const cacheKey = "evaluate_topic";
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      res.status(200).send(cachedData);
+    } else {
+      const sql = await sql_serverConn();
+      const result = sql.query(
+        `
+        SELECT
+        [TOPIC_NAME_TH],
+        [TOPIC_NAME_EN],
+        [HEADER_INDEX]
+          , [TOPIC_HEADER_NAME_TH]
+          , [TOPIC_HEADER_NAME_ENG]
+          , [TOPIC_KEY_ID]
+          , [TOPIC_LINE]
+          , CONCAT([TOPIC_NAME_TH], ' (', [TOPIC_NAME_EN], ')') as TOPIC_NAME  
+          , [CREATED_DATE]
+          , [ACTIVE_DATE_FROM]
+          , [ACTIVE_DATE_TO]
+        FROM [dbo].[PECTH_EVALUATION_MASTER]
+        `
+      );
+      cache.set(cacheKey, result.recordset);
+      res.status(200).send((await result).recordset);
+    }
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).send("Internal Server Error");
@@ -118,30 +128,64 @@ evaluate_form.post(
 );
 
 //Evaluation FORM of Pending
-evaluate_form.get("/evaluate/pending", authenticateToken, async (req, res) => {
+evaluate_form.get("/evaluate/draft", authenticateToken, async (req, res) => {
   try {
     const sql = await sql_serverConn();
     const request = sql.request();
     const result = await request.query(
       `
-      SELECT
-          upper(a.[EVALUATE_ID]) as EVALUATE_ID,
-          a.[SUPPLIER],
-          a.[EVALUATE_DATE],
-          CONCAT(
-              COUNT(CASE WHEN b.EVALUATE_TOPIC_SCORE != 0 THEN 1 END), 
-              '/', 
-              COUNT(*)
-          ) AS 'EVALUATED AMOUNT',
-          a.[FLAG_STATUS]
-      FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER] a
-          JOIN [dbo].[PECTH_EVALUATION_SCORE_DETAIL] b
-          ON a.EVALUATE_ID = b.EVALUATE_ID
-      GROUP BY a.[EVALUATE_ID], 
-              a.[SUPPLIER], 
-              a.[EVALUATE_DATE], 
-              a.[FLAG_STATUS]
-      HAVING a.FLAG_STATUS = 'draft'
+        SELECT
+            upper(a.[EVALUATE_ID]) as EVALUATE_ID,
+            a.[SUPPLIER],
+            a.[EVALUATE_DATE],
+            CONCAT(
+                COUNT(CASE WHEN b.EVALUATE_TOPIC_SCORE != 0 THEN 1 END), 
+                '/', 
+                COUNT(*)
+            ) AS 'EVALUATED AMOUNT',
+            a.[FLAG_STATUS]
+        FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER] a
+            JOIN [dbo].[PECTH_EVALUATION_SCORE_DETAIL] b
+            ON a.EVALUATE_ID = b.EVALUATE_ID
+        GROUP BY a.[EVALUATE_ID], 
+                a.[SUPPLIER], 
+                a.[EVALUATE_DATE], 
+                a.[FLAG_STATUS]
+        HAVING LOWER(a.FLAG_STATUS) = 'draft'
+      `
+    );
+    res.status(200).send(result.recordset);
+  } catch (error) {
+    console.error("Error:", error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+//Evaluation FORM of Confirm
+evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
+  try {
+    const sql = await sql_serverConn();
+    const request = sql.request();
+    const result = await request.query(
+      `
+        SELECT
+            upper(a.[EVALUATE_ID]) as EVALUATE_ID,
+            a.[SUPPLIER],
+            a.[EVALUATE_DATE],
+            CONCAT(
+                COUNT(CASE WHEN b.EVALUATE_TOPIC_SCORE != 0 THEN 1 END), 
+                '/', 
+                COUNT(*)
+            ) AS 'EVALUATED AMOUNT',
+            a.[FLAG_STATUS]
+        FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER] a
+            JOIN [dbo].[PECTH_EVALUATION_SCORE_DETAIL] b
+            ON a.EVALUATE_ID = b.EVALUATE_ID
+        GROUP BY a.[EVALUATE_ID], 
+                a.[SUPPLIER], 
+                a.[EVALUATE_DATE], 
+                a.[FLAG_STATUS]
+        HAVING LOWER(a.FLAG_STATUS) = 'confirm'
       `
     );
     res.status(200).send(result.recordset);
@@ -152,28 +196,32 @@ evaluate_form.get("/evaluate/pending", authenticateToken, async (req, res) => {
 });
 
 //display SUMMARY SCORE
-evaluate_form.get("/evaluate", authenticateToken, async (req, res) => {
-  try {
-    const sql = await sql_serverConn();
-    const request = sql.request();
-    const result = await request.query(
-      `
-    SELECT
-      UPPER(EVALUATE_ID) as EVALUATE_ID, 
-      SUPPLIER, 
-      ROUND(EVALUATE_PERCENT, 2) as EVALUATE_PERCENT,
-      EVALUATE_GRADE, 
-      EVALUATE_COMMENT
-    FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER]
-    GROUP BY EVALUATE_ID, SUPPLIER, EVALUATE_PERCENT, EVALUATE_GRADE, EVALUATE_COMMENT
-    `
-    );
-    res.status(200).send(result.recordset);
-  } catch (error) {
-    console.error("Error:", error.message);
-    res.status(500).send("Internal Server Error");
+evaluate_form.get(
+  "/evaluate/summary_score",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const request = sql.request();
+      const result = await request.query(
+        `
+        SELECT
+          UPPER(EVALUATE_ID) as EVALUATE_ID, 
+          SUPPLIER, 
+          ROUND(EVALUATE_PERCENT, 2) as EVALUATE_PERCENT,
+          EVALUATE_GRADE, 
+          EVALUATE_COMMENT
+        FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER]
+        GROUP BY EVALUATE_ID, SUPPLIER, EVALUATE_PERCENT, EVALUATE_GRADE, EVALUATE_COMMENT
+        `
+      );
+      res.status(200).send(result.recordset);
+    } catch (error) {
+      console.error("Error:", error.message);
+      res.status(500).send("Internal Server Error");
+    }
   }
-});
+);
 // display for using to update evaluateForm
 evaluate_form.post(
   "/evaluate/update_form",
@@ -200,7 +248,7 @@ evaluate_form.post(
         ORDER BY a.TOPIC_KEY_ID
         `
       );
-      res.status(200).send(result.recordset)
+      res.status(200).send(result.recordset);
     } catch (error) {
       console.error("Error:", error.message);
       res.status(500).send("Internal Server Error");

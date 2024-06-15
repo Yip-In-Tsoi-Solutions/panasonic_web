@@ -88,11 +88,14 @@ const Evaluate = (props) => {
 
   async function fetchEvaluate() {
     try {
-      const response = await axios.get(`${props.baseUrl}/api/evaluate`, {
-        headers: {
-          Authorization: `Bearer ${props.token_id}`,
-        },
-      });
+      const response = await axios.get(
+        `${props.baseUrl}/api/evaluate/summary_score`,
+        {
+          headers: {
+            Authorization: `Bearer ${props.token_id}`,
+          },
+        }
+      );
       response.status === 200
         ? dispatch(setEvaluateResultTable(response.data))
         : dispatch(
@@ -103,16 +106,13 @@ const Evaluate = (props) => {
     }
   }
 
-  async function fetchEvaluatePending() {
+  async function fetchEvaluateDraft() {
     try {
-      const response = await axios.get(
-        `${props.baseUrl}/api/evaluate/pending`,
-        {
-          headers: {
-            Authorization: `Bearer ${props.token_id}`,
-          },
-        }
-      );
+      const response = await axios.get(`${props.baseUrl}/api/evaluate/draft`, {
+        headers: {
+          Authorization: `Bearer ${props.token_id}`,
+        },
+      });
       response.status === 200
         ? dispatch(setEvaluatePending(response.data))
         : dispatch(setEvaluatePending(...evaluate_vendors?.evaluate_pending));
@@ -126,7 +126,7 @@ const Evaluate = (props) => {
     fetchEvaluateTopic();
     fetchDropdownVendor();
     fetchEvaluate();
-    fetchEvaluatePending();
+    fetchEvaluateDraft();
   }, []);
 
   const { vendor } = evaluate_vendors.temp_state_filter;
@@ -195,7 +195,6 @@ const Evaluate = (props) => {
           },
         }
       );
-
       // Check if the response status is 200 (OK)
       if (response.status === 200) {
         setEvaContinuteForm(true);
@@ -263,11 +262,6 @@ const Evaluate = (props) => {
                     children: (
                       <>
                         <br />
-                        {/* <GroupedSupplierList
-                          evaluate_vendors={evaluate_vendors?.evaluate_pending}
-                          score={score}
-                          setScore={setScore}
-                        /> */}
                         <Table
                           dataSource={evaluate_vendors?.evaluate_pending}
                           columns={schema(
@@ -319,16 +313,6 @@ const Evaluate = (props) => {
                                       onFinish={submitUpdateEvaluate}
                                       form={EvaluateUpdateForm}
                                     >
-                                      {/* <Supplier_Eva
-                                        value={
-                                          evaluate_vendors.temp_state_filter
-                                            .vendor
-                                        }
-                                        supplier_list={
-                                          evaluate_vendors?.vendor_list
-                                        }
-                                      /> */}
-
                                       <ReportMonth
                                         dateFormat={dateFormat}
                                         month={month}
