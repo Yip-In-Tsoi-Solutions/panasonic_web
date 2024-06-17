@@ -9,7 +9,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
   const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Months are 0-based in JavaScript
   const day = String(date.getUTCDate()).padStart(2, "0");
   const formattedDate = `${year}-${month}-${day}`;
-  const doc = new jsPDF("l", "mm", "a4");
+  const doc = new jsPDF("p", "mm", "a4");
   const width = doc.internal.pageSize.getWidth();
 
   doc.addFileToVFS("tahoma.ttf", font);
@@ -72,7 +72,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
         "หัวข้อประเมิน Assessment topic":
           `${questionCounter}. ` +
           topic.TOPIC_NAME_TH +
-          ` (${topic.TOPIC_NAME_EN})`,
+          `\n(${topic.TOPIC_NAME_EN})`,
         1: topic.EVALUATE_TOPIC_SCORE === 1 ? "●" : "",
         2: topic.EVALUATE_TOPIC_SCORE === 2 ? "●" : "",
         3: topic.EVALUATE_TOPIC_SCORE === 3 ? "●" : "",
@@ -103,7 +103,11 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
       fontSize: 9,
       font: "tahoma",
     },
-    headStyles: { fillColor: [0, 57, 107], font: "tahoma", fontSize: 9 }, // Customize header style if needed
+    headerStyles: {
+      fillColor: "#016255",
+      font: "tahoma",
+      fontSize: 11,
+    },
     margin: { left: 15, right: 15 },
   });
 
