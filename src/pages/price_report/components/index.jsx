@@ -133,8 +133,7 @@ const PriceReport = (props) => {
           currency: "",
           remark: null,
         });
-        dispatch(resetAllState()); // Example of resetting all related state
-        const reply = await axios.get(`${props.baseUrl}/api/price_report/latest_data`, {
+        const reply = await axios.post(`${props.baseUrl}/api/price_report/latest_data`, payload, {
           headers: {
             Authorization: `Bearer ${props.token_id}`,
           },
@@ -142,17 +141,12 @@ const PriceReport = (props) => {
         if (reply.status === 200) {
           dispatch(setSupplieryList(reply.data));
           setUpdateForm(false);
+          dispatch(resetAllState());
         }
       }
     } catch (error) {
-      console.error("Error while updating data:", error);
-      // Handle specific error cases or redirect to error page
-      if (error.response && error.response.status === 401) {
-        // Redirect to login page if unauthorized
+      if (error) {
         window.location.href = "/error_login";
-      } else {
-        // Handle other errors
-        // Example: setErrorMessage('Failed to update data. Please try again.');
       }
     }
   };

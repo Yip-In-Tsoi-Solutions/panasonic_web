@@ -4,17 +4,34 @@ const authenticateToken = require("../../secure/jwt");
 const price_report = express();
 price_report.use(express.json());
 // get all data from db
-price_report.get("/price_report/latest_data", authenticateToken, async (req, res) => {
+price_report.post("/price_report/latest_data", authenticateToken, async (req, res) => {
   try {
+    const { invoice_num, po_number, vendor } = req.body;
+
+    // Establish SQL Server connection
     const sql = await sql_serverConn();
-    const result = await sql.query(
-      `
-      SELECT * FROM [dbo].[v_PECTH_SUPPLIER_PRICEDIFF] WHERE REMARK IS NOT NULL ORDER BY id desc
-      `
-    );
-    res.status(200).send(result.recordset);
+    const request = sql.request();
+
+    // Set SQL query parameters
+    request.input("INVOICE_NUM", invoice_num);
+    request.input("po_number", po_number);
+    request.input("supplier", String(vendor).toLowerCase());
+
+    // Execute SQL query
+    const result = await request.query(`
+      SELECT * FROM [dbo].[v_PECTH_SUPPLIER_PRICEDIFF]
+      WHERE [INVOICE_NUM]=@INVOICE_NUM AND [PO_NUMBER]=@po_number AND LOWER([VENDOR_NAME])=@supplier AND REMARK IS NOT NULL
+      ORDER BY id DESC
+    `);
+
+    // Send query results as JSON response
+    res.status(200).json(result.recordset);
   } catch (error) {
-    res.status(500).send(error)
+    // Log error for debugging
+    console.error('Error retrieving price report data:', error);
+    
+    // Send internal server error response
+    res.status(500).send('Internal Server Error');
   }
 });
 price_report.post("/price_report", authenticateToken, async (req, res) => {
@@ -25,7 +42,7 @@ price_report.post("/price_report", authenticateToken, async (req, res) => {
       SELECT 
         *
       FROM [dbo].[v_PECTH_SUPPLIER_PRICEDIFF]
-      WHERE ${req.body.queryString}
+      WHERE ${req.body.queryString} AND REMARK IS NOT NULL ORDER BY id desc
     `
     );
     res.status(200).send(result.recordset);
