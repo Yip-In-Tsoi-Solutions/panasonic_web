@@ -42,7 +42,7 @@ price_report.post("/price_report", authenticateToken, async (req, res) => {
       SELECT 
         *
       FROM [dbo].[v_PECTH_SUPPLIER_PRICEDIFF]
-      WHERE ${req.body.queryString} AND REMARK IS NOT NULL ORDER BY id desc
+      WHERE ${req.body.queryString} ORDER BY id, remark asc
     `
     );
     res.status(200).send(result.recordset);
