@@ -3,8 +3,6 @@ const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const authenticateToken = require("../../secure/jwt");
 const matching_invoice = express();
 matching_invoice.use(express.json());
-const NodeCache = require("node-cache");
-const cache = new NodeCache({ stdTTL: 60 });
 
 // filter of matching_invoice
 matching_invoice.post(

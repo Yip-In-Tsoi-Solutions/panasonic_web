@@ -4,6 +4,19 @@ const authenticateToken = require("../../secure/jwt");
 const price_report = express();
 price_report.use(express.json());
 // get all data from db
+price_report.get("/price_report/latest_data", authenticateToken, async (req, res) => {
+  try {
+    const sql = await sql_serverConn();
+    const result = await sql.query(
+      `
+      SELECT * FROM [dbo].[v_PECTH_SUPPLIER_PRICEDIFF] WHERE REMARK IS NOT NULL ORDER BY id desc
+      `
+    );
+    res.status(200).send(result.recordset);
+  } catch (error) {
+    res.status(500).send(error)
+  }
+});
 price_report.post("/price_report", authenticateToken, async (req, res) => {
   try {
     const sql = await sql_serverConn();
