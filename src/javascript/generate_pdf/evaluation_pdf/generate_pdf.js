@@ -17,33 +17,36 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
   doc.setFont("tahoma");
 
   // Titles
-  doc.setFontSize(20);
+  doc.setFontSize(18);
   doc.setFont("tahoma", "bold");
-  doc.text(`Panasonic Energy (Thailand) Co.,Ltd.`, width / 2, 30, {
+  doc.text(`Panasonic Energy (Thailand) Co.,Ltd.`, width / 2, 15, {
     align: "center",
+    top: 0,
+    margin: 0
   });
 
-  doc.setFontSize(12);
+  doc.setFontSize(11);
   doc.setFont("tahoma", "normal");
   doc.text(
     "การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ",
     15,
-    50
+    30
   );
 
-  doc.setFontSize(12);
+  doc.setFontSize(11);
   doc.setFont("tahoma", "normal");
-  doc.text(`หน่วยงาน / แผนก : ${supplier}`, 15, 65);
-  doc.text(`ประจำเดือน : ${formattedDate}`, width - 60, 65);
-  doc.text(`ชื่อผู้ส่งมอบ :`, 15, 75);
+  doc.text(`หน่วยงาน / แผนก : ${supplier}`, 15, 40);
+  doc.text(`ประจำเดือน : ${formattedDate}`, width - 60, 40);
+  doc.text(`ชื่อผู้ส่งมอบ :`, 15, 50);
 
-  let startY = 85; // Initial Y position for table
+  let startY = 55; // Initial Y position for table
 
-  doc.text("ระดับความพึงพอใจ (Satisfaction Level)", width - 85, 75);
+  // doc.text("ระดับความพึงพอใจ (Satisfaction Level)", width - 85, 75);
 
   // Group topics by TOPIC_HEADER_NAME_TH
   const groupedTopics = questionaire.reduce((groups, item) => {
-    const headerName = item.TOPIC_HEADER_NAME_TH + " / " + item.TOPIC_HEADER_NAME_ENG;
+    const headerName =
+      item.TOPIC_HEADER_NAME_TH + " / " + item.TOPIC_HEADER_NAME_ENG;
     if (!groups[headerName]) {
       groups[headerName] = [];
     }
@@ -65,7 +68,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
       2: "",
       3: "",
       4: "",
-      5: "",
+      5: ""
     });
     topics.forEach((topic) => {
       tableData.push({
@@ -84,8 +87,21 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
   });
 
   // Create table
+  const headers = [
+    [
+      { content: "หัวข้อประเมิน Assessment topic", rowSpan: 2 },
+      {
+        content: "ระดับความพึงพอใจ (Satisfaction Level)",
+        styles: { fontSize: 8 },
+        colSpan: 5,
+      },
+    ],
+    ["1", "2", "3", "4", "5"],
+  ];
+
   doc.autoTable({
     startY: startY,
+    head: headers,
     body: tableData,
     columns: [
       {
@@ -106,7 +122,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
     headerStyles: {
       fillColor: "#016255",
       font: "tahoma",
-      fontSize: 10,
+      fontSize: 9,
     },
     margin: { left: 15, right: 15 },
   });
