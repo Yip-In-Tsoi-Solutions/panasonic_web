@@ -187,15 +187,24 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
     15,
     doc.autoTable.previous.finalY + 15
   );
+
   const pageHeight = doc.internal.pageSize.height;
-  if (pageHeight >= 270) {
+  let startYComment = doc.autoTable.previous.finalY + 20;
+
+  // Check if we need a new page for the comment
+  if (startYComment > pageHeight - 30) {
     doc.addPage();
+    startYComment = 20;
   }
+
+  // Print comment
   doc.text(
     `ข้อเสนอแนะ ( Comment ): ${questionaire[0].EVALUATE_COMMENT}`,
     15,
-    20
+    startYComment
   );
+
+  // Grade condition table
   const gradeConditionHeaders = [
     [
       {
@@ -217,7 +226,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
     ["D", "น้อยกว่า 70", "ควรปรับปรุง"],
   ];
 
-  const startYGradeCondition = 30;
+  const startYGradeCondition = startYComment + 10;
   doc.autoTable({
     startY: startYGradeCondition,
     head: gradeConditionHeaders,
@@ -235,6 +244,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
       lineWidth: 0.1,
     },
   });
+
   // Save the PDF
   doc.save(`evaluate_${supplier}.pdf`);
 }
