@@ -267,21 +267,23 @@ evaluate_form.post("/evaluate/generate_pdf", authenticateToken, async (req, res)
     request.input("status", flag_status);
     const result = await request.query(
       `
-        SELECT
-            DISTINCT
-            a.TOPIC_NAME_TH,
-            a.TOPIC_NAME_EN,
-            b.EVALUATE_TOPIC_SCORE,
-            a.TOPIC_HEADER_NAME_TH,
-            a.TOPIC_HEADER_NAME_ENG
-        FROM [dbo].PECTH_EVALUATION_MASTER a
-            JOIN dbo.PECTH_EVALUATION_SCORE_DETAIL b
-            ON a.TOPIC_KEY_ID = b.TOPIC_KEY_ID
-            JOIN dbo.PECTH_EVALUATION_SCORE_HEADER c
-            ON b.EVALUATE_ID = c.EVALUATE_ID
-        GROUP BY a.TOPIC_NAME_TH,a.TOPIC_NAME_EN,b.EVALUATE_TOPIC_SCORE,a.TOPIC_HEADER_NAME_TH,a.TOPIC_HEADER_NAME_ENG, c.FLAG_STATUS, c.SUPPLIER, convert(nvarchar(10), b.EVALUATE_DATE, 120)
-        HAVING LOWER(c.FLAG_STATUS)=@status and LOWER(c.SUPPLIER)=@supplier AND convert(nvarchar(10), b.EVALUATE_DATE, 120)=convert(nvarchar(10), @evaluate_date, 120)
-        `
+      SELECT
+          DISTINCT
+          a.TOPIC_NAME_TH,
+          a.TOPIC_NAME_EN,
+          b.EVALUATE_TOPIC_SCORE,
+          a.TOPIC_HEADER_NAME_TH,
+          a.TOPIC_HEADER_NAME_ENG,
+          a.HEADER_INDEX, a.TOPIC_LINE
+      FROM [dbo].PECTH_EVALUATION_MASTER a
+          JOIN dbo.PECTH_EVALUATION_SCORE_DETAIL b
+          ON a.TOPIC_KEY_ID = b.TOPIC_KEY_ID
+          JOIN dbo.PECTH_EVALUATION_SCORE_HEADER c
+          ON b.EVALUATE_ID = c.EVALUATE_ID
+      GROUP BY a.HEADER_INDEX, a.TOPIC_LINE, c.EVALUATE_ID, a.TOPIC_NAME_TH,a.TOPIC_NAME_EN,b.EVALUATE_TOPIC_SCORE,a.TOPIC_HEADER_NAME_TH,a.TOPIC_HEADER_NAME_ENG, c.FLAG_STATUS, c.SUPPLIER, convert(nvarchar(10), b.EVALUATE_DATE, 120)
+      HAVING LOWER(c.FLAG_STATUS)=@status and LOWER(c.SUPPLIER)=@supplier AND convert(nvarchar(10), b.EVALUATE_DATE, 120)=convert(nvarchar(10), @evaluate_date, 120)
+      ORDER BY a.HEADER_INDEX, a.TOPIC_LINE
+      `
     );
     res.status(200).send(result.recordset);
   } catch (error) {

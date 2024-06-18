@@ -23,7 +23,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
     align: "center",
   });
 
-  doc.setFontSize(14);
+  doc.setFontSize(12);
   doc.setFont("tahoma", "normal");
   doc.text(
     "การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ",
@@ -34,7 +34,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
   doc.setFontSize(12);
   doc.setFont("tahoma", "normal");
   doc.text(`หน่วยงาน / แผนก : ${supplier}`, 15, 65);
-  doc.text(`ประจำเดือน : ${formattedDate}`, width - 70, 65);
+  doc.text(`ประจำเดือน : ${formattedDate}`, width - 60, 65);
   doc.text(`ชื่อผู้ส่งมอบ :`, 15, 75);
 
   let startY = 85; // Initial Y position for table
@@ -43,7 +43,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
 
   // Group topics by TOPIC_HEADER_NAME_TH
   const groupedTopics = questionaire.reduce((groups, item) => {
-    const headerName = item.TOPIC_HEADER_NAME_TH;
+    const headerName = item.TOPIC_HEADER_NAME_TH + " / " + item.TOPIC_HEADER_NAME_ENG;
     if (!groups[headerName]) {
       groups[headerName] = [];
     }
@@ -70,7 +70,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
     topics.forEach((topic) => {
       tableData.push({
         "หัวข้อประเมิน Assessment topic":
-          `${questionCounter}. ` +
+          `${topic.TOPIC_LINE}. ` +
           topic.TOPIC_NAME_TH +
           `\n(${topic.TOPIC_NAME_EN})`,
         1: topic.EVALUATE_TOPIC_SCORE === 1 ? "●" : "",
@@ -100,13 +100,13 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
     ],
     theme: "grid",
     styles: {
-      fontSize: 9,
+      fontSize: 9.3,
       font: "tahoma",
     },
     headerStyles: {
       fillColor: "#016255",
       font: "tahoma",
-      fontSize: 11,
+      fontSize: 10,
     },
     margin: { left: 15, right: 15 },
   });
