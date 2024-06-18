@@ -272,6 +272,7 @@ evaluate_form.post("/evaluate/generate_pdf", authenticateToken, async (req, res)
           a.TOPIC_NAME_TH,
           a.TOPIC_NAME_EN,
           b.EVALUATE_TOPIC_SCORE,
+          c.EVALUATE_PERCENT,
           a.TOPIC_HEADER_NAME_TH,
           a.TOPIC_HEADER_NAME_ENG,
           a.HEADER_INDEX, a.TOPIC_LINE
@@ -280,7 +281,7 @@ evaluate_form.post("/evaluate/generate_pdf", authenticateToken, async (req, res)
           ON a.TOPIC_KEY_ID = b.TOPIC_KEY_ID
           JOIN dbo.PECTH_EVALUATION_SCORE_HEADER c
           ON b.EVALUATE_ID = c.EVALUATE_ID
-      GROUP BY a.HEADER_INDEX, a.TOPIC_LINE, c.EVALUATE_ID, a.TOPIC_NAME_TH,a.TOPIC_NAME_EN,b.EVALUATE_TOPIC_SCORE,a.TOPIC_HEADER_NAME_TH,a.TOPIC_HEADER_NAME_ENG, c.FLAG_STATUS, c.SUPPLIER, convert(nvarchar(10), b.EVALUATE_DATE, 120)
+      GROUP BY a.HEADER_INDEX, a.TOPIC_LINE, c.EVALUATE_ID, a.TOPIC_NAME_TH,a.TOPIC_NAME_EN,b.EVALUATE_TOPIC_SCORE,a.TOPIC_HEADER_NAME_TH,a.TOPIC_HEADER_NAME_ENG, c.EVALUATE_PERCENT, c.FLAG_STATUS, c.SUPPLIER, convert(nvarchar(10), b.EVALUATE_DATE, 120)
       HAVING LOWER(c.FLAG_STATUS)=@status and LOWER(c.SUPPLIER)=@supplier AND convert(nvarchar(10), b.EVALUATE_DATE, 120)=convert(nvarchar(10), @evaluate_date, 120)
       ORDER BY a.HEADER_INDEX, a.TOPIC_LINE
       `

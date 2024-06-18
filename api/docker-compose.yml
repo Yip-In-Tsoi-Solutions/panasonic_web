@@ -4,8 +4,6 @@ services:
   api:
     build: .
     image: panasonic_back_end
-    deploy:
-      replicas: 3
     ports:
       - "9000:9000"
     network_mode: host

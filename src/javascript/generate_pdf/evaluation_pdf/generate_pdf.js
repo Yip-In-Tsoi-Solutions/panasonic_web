@@ -43,7 +43,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
   ];
   doc.autoTable({
     startY: 25,
-    margin: { left: width-75 },
+    margin: { left: width - 75 },
     body: table2Data,
     columnStyles: {
       0: {
@@ -69,7 +69,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
 
   // Texts below the table
   doc.text(`ประจำเดือน : ${formattedDate}`, width - 60, 50);
-  doc.text(`หน่วยงาน / แผนก : ${supplier}`, 15, 50);
+  doc.text(`หน่วยงาน / แผนก : ${String(supplier).toUpperCase()}`, 15, 50);
   doc.text(`ชื่อผู้ส่งมอบ :`, 15, 60);
 
   // Group topics by TOPIC_HEADER_NAME_TH
@@ -154,7 +154,47 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
     margin: { left: 15, right: 15 },
   });
 
+  // Calculate total score based on EVALUATE_TOPIC_SCORE
+  const totalScore = questionaire.reduce((total, topic) => {
+    if (topic.EVALUATE_TOPIC_SCORE) {
+      return total + parseInt(topic.EVALUATE_TOPIC_SCORE);
+    }
+    return total;
+  }, 0);
+
+  // Calculate total percentage based on EVALUATE_PERCENT
+  const totalPercentage = questionaire[0].EVALUATE_PERCENT.toFixed(3);
+  let grade = "";
+
+  if (totalPercentage >= 90 && totalPercentage < 100) {
+    grade += "A ดีมาก";
+  }
+  if (totalPercentage >= 80 && totalPercentage < 89) {
+    grade += "B ดี";
+  }
+  if (totalPercentage >= 70 && totalPercentage < 79) {
+    grade += "C พอใช้";
+  }
+  else {
+    grade += "D ควรปรับปรุง";
+  }
+
+  // Print total score and total percentage
+  doc.setFontSize(11);
+  doc.setFont("tahoma", "normal");
+  doc.text(
+    `คะแนนรวม  / Total Score:  ${totalScore} คะแนน`,
+    15,
+    doc.autoTable.previous.finalY + 10
+  );
+  doc.text(
+    `คะแนนรวม (%) : ${totalPercentage}% (${grade})`,
+    15,
+    doc.autoTable.previous.finalY + 15
+  );
+
   // Save the PDF
   doc.save(`evaluate_${supplier}.pdf`);
 }
+
 export default generatePDF;
