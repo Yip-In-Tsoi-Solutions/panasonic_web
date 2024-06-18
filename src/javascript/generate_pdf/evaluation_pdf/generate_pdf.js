@@ -26,8 +26,6 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
   doc.setFont("tahoma", "bold");
   doc.text(`Panasonic Energy (Thailand) Co.,Ltd.`, width / 2, 15, {
     align: "center",
-    top: 0,
-    margin: 0,
   });
   doc.setFontSize(11);
   doc.setFont("tahoma", "normal");
@@ -168,14 +166,11 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
 
   if (totalPercentage >= 90 && totalPercentage < 100) {
     grade += "A ดีมาก";
-  }
-  if (totalPercentage >= 80 && totalPercentage < 89) {
+  } else if (totalPercentage >= 80 && totalPercentage < 89) {
     grade += "B ดี";
-  }
-  if (totalPercentage >= 70 && totalPercentage < 79) {
+  } else if (totalPercentage >= 70 && totalPercentage < 79) {
     grade += "C พอใช้";
-  }
-  else {
+  } else {
     grade += "D ควรปรับปรุง";
   }
 
@@ -192,7 +187,54 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
     15,
     doc.autoTable.previous.finalY + 15
   );
+  const pageHeight = doc.internal.pageSize.height;
+  if (pageHeight >= 270) {
+    doc.addPage();
+  }
+  doc.text(
+    `ข้อเสนอแนะ ( Comment ): ${questionaire[0].EVALUATE_COMMENT}`,
+    15,
+    20
+  );
+  const gradeConditionHeaders = [
+    [
+      {
+        content: "เกณฑ์การให้คะแนน",
+        colSpan: 3,
+        styles: {
+          halign: "center",
+          fillColor: ["#f5f5f5"], // Gray background
+          textColor: ["black"], // Black text
+        },
+      },
+    ],
+    ["เกรด", "คะแนน (%)", "ผลสรุป"], // Header row
+  ];
+  const gradeConditionBody = [
+    ["A", "90-100", "ดีมาก"],
+    ["B", "80-89", "ดี"],
+    ["C", "70-79", "พอใช้"],
+    ["D", "น้อยกว่า 70", "ควรปรับปรุง"],
+  ];
 
+  const startYGradeCondition = 30;
+  doc.autoTable({
+    startY: startYGradeCondition,
+    head: gradeConditionHeaders,
+    body: gradeConditionBody,
+    styles: {
+      lineColor: [0, 0, 0], // Black border color
+      halign: "center",
+      font: "tahoma",
+      lineWidth: 0.1,
+    },
+    headerStyles: {
+      fillColor: ["white"], // White background for headers
+      textColor: ["black"], // Black text for headers
+      fontSize: 10,
+      lineWidth: 0.1,
+    },
+  });
   // Save the PDF
   doc.save(`evaluate_${supplier}.pdf`);
 }
