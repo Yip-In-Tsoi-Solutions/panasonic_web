@@ -1,47 +1,76 @@
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { font } from "../../tahoma-normal";
+import schema from "../../print_schema";
 
 // Function to generate the PDF
 async function generatePDF(supplier, evaluate_date, questionaire) {
+  // Date formatting
   const date = new Date(evaluate_date);
   const year = date.getUTCFullYear();
-  const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Months are 0-based in JavaScript
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
   const day = String(date.getUTCDate()).padStart(2, "0");
   const formattedDate = `${year}-${month}-${day}`;
+
+  // Create a new jsPDF document
   const doc = new jsPDF("p", "mm", "a4");
   const width = doc.internal.pageSize.getWidth();
 
+  // Load and set custom font (Tahoma)
   doc.addFileToVFS("tahoma.ttf", font);
   doc.addFont("tahoma.ttf", "tahoma", "normal");
   doc.setFont("tahoma");
 
-  // Titles
+  // Document title and headers
   doc.setFontSize(18);
   doc.setFont("tahoma", "bold");
   doc.text(`Panasonic Energy (Thailand) Co.,Ltd.`, width / 2, 15, {
     align: "center",
     top: 0,
-    margin: 0
+    margin: 0,
+  });
+  doc.setFontSize(11);
+  doc.setFont("tahoma", "normal");
+  const titleText =
+    "การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ";
+  doc.text(titleText, 15, 30);
+
+  // Table for REVIEWER and PIC
+  const columnWidth2 = 60 / 2;
+  const table2Data = [
+    ["REVIEWER", "PIC"], // Header row
+    ["", ""], // Empty row, you can remove this line if you don't need it
+  ];
+  doc.autoTable({
+    startY: 25,
+    margin: { left: width-75 },
+    body: table2Data,
+    columnStyles: {
+      0: {
+        columnWidth: columnWidth2,
+        halign: "center",
+        lineWidth: 0.1,
+        fontSize: 8,
+        fontWeight: "bold",
+      },
+      1: {
+        columnWidth: columnWidth2,
+        halign: "center",
+        lineWidth: 0.1,
+        fontSize: 8,
+        fontWeight: "bold",
+      },
+    },
+    styles: {
+      lineColor: [0, 0, 0], // Black border color
+      halign: "center",
+    },
   });
 
-  doc.setFontSize(11);
-  doc.setFont("tahoma", "normal");
-  doc.text(
-    "การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ",
-    15,
-    30
-  );
-
-  doc.setFontSize(11);
-  doc.setFont("tahoma", "normal");
-  doc.text(`หน่วยงาน / แผนก : ${supplier}`, 15, 40);
-  doc.text(`ประจำเดือน : ${formattedDate}`, width - 60, 40);
-  doc.text(`ชื่อผู้ส่งมอบ :`, 15, 50);
-
-  let startY = 55; // Initial Y position for table
-
-  // doc.text("ระดับความพึงพอใจ (Satisfaction Level)", width - 85, 75);
+  // Texts below the table
+  doc.text(`ประจำเดือน : ${formattedDate}`, width - 60, 50);
+  doc.text(`หน่วยงาน / แผนก : ${supplier}`, 15, 50);
+  doc.text(`ชื่อผู้ส่งมอบ :`, 15, 60);
 
   // Group topics by TOPIC_HEADER_NAME_TH
   const groupedTopics = questionaire.reduce((groups, item) => {
@@ -57,10 +86,8 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
   // Prepare table content
   const tableData = [];
   let questionCounter = 1;
-  const uniqueHeaderNames = new Set();
 
   Object.keys(groupedTopics).forEach((headerName) => {
-    uniqueHeaderNames.add(headerName);
     const topics = groupedTopics[headerName];
     tableData.push({
       "หัวข้อประเมิน Assessment topic": `${headerName}`,
@@ -68,7 +95,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
       2: "",
       3: "",
       4: "",
-      5: ""
+      5: "",
     });
     topics.forEach((topic) => {
       tableData.push({
@@ -100,7 +127,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
   ];
 
   doc.autoTable({
-    startY: startY,
+    startY: 70,
     head: headers,
     body: tableData,
     columns: [
@@ -130,5 +157,4 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
   // Save the PDF
   doc.save(`evaluate_${supplier}.pdf`);
 }
-
 export default generatePDF;
