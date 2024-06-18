@@ -15,6 +15,7 @@ import {
 import { useForm } from "antd/es/form/Form";
 import { memo, useMemo, useState } from "react";
 import {
+  setEvaluateConfirm,
   setEvaluatePending,
   setEvaluateResultTable,
   setForm,
@@ -32,7 +33,8 @@ import ReportMonth from "../../../components/evaluateform/select_report_month";
 import Supplier_Eva from "../../../components/evaluateform/select_supplier_list/inex";
 import GroupedSupplierList from "../../../components/evaluateform/group_supplier";
 import schema from "../../../javascript/print_schema";
-import { CloseCircleOutlined } from "@ant-design/icons";
+import { CloseCircleOutlined, FilePdfOutlined } from "@ant-design/icons";
+import generatePDF from "../../../javascript/generate_pdf/evaluation_pdf/generate_pdf";
 const dateFormat = "DD/MM/YYYY";
 const { Panel } = Collapse;
 
@@ -122,11 +124,31 @@ const Evaluate = (props) => {
       }
     }
   }
+  async function fetchEvaluateConfirm() {
+    try {
+      const response = await axios.get(
+        `${props.baseUrl}/api/evaluate/confirm`,
+        {
+          headers: {
+            Authorization: `Bearer ${props.token_id}`,
+          },
+        }
+      );
+      response.status === 200
+        ? dispatch(setEvaluateConfirm(response.data))
+        : dispatch(setEvaluateConfirm(...evaluate_vendors?.evaluate_confirm));
+    } catch (error) {
+      if (error) {
+        window.location.href = "/error_login";
+      }
+    }
+  }
   useMemo(() => {
     fetchEvaluateTopic();
     fetchDropdownVendor();
     fetchEvaluate();
     fetchEvaluateDraft();
+    fetchEvaluateConfirm();
   }, []);
 
   const { vendor } = evaluate_vendors.temp_state_filter;
@@ -238,6 +260,26 @@ const Evaluate = (props) => {
     };
   };
   let rows_id = 0;
+
+  const savePDF = async (supplier, evaluate_date, flag_status) => {
+    let payload = {
+      supplier: supplier,
+      evaluate_date: evaluate_date,
+      flag_status: flag_status,
+    };
+    const response = await axios.post(
+      `${props.baseUrl}/api/evaluate/generate_pdf`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${props.token_id}`,
+        },
+      }
+    );
+    if (response.status === 200) {
+      generatePDF(supplier, evaluate_date, response.data);
+    }
+  };
   return (
     <>
       <div className="site-card-wrapper kanit">
@@ -410,7 +452,38 @@ const Evaluate = (props) => {
                   {
                     label: "confirm".toUpperCase(),
                     key: "2",
-                    children: "Tab 2",
+                    children: (
+                      <Table
+                        dataSource={evaluate_vendors?.evaluate_confirm}
+                        columns={schema(
+                          evaluate_vendors?.evaluate_confirm
+                        ).concat([
+                          {
+                            title: "address",
+                            dataIndex: "address",
+                            render: (a, record) => (
+                              <>
+                                <Button
+                                  //generatePDF
+                                  onClick={savePDF.bind(
+                                    this,
+                                    record?.SUPPLIER,
+                                    record?.EVALUATE_DATE,
+                                    record?.FLAG_STATUS
+                                  )}
+                                  className="uppercase"
+                                >
+                                  <div className="flex flex-row">
+                                    <FilePdfOutlined className="text-[18px] mr-3" />
+                                    SAVE as PDF
+                                  </div>
+                                </Button>
+                              </>
+                            ),
+                          },
+                        ])}
+                      />
+                    ),
                   },
                   {
                     label: "SUMMARY SCORE".toUpperCase(),

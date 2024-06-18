@@ -12,6 +12,7 @@ import { memo, useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import PriceReport_PDF from "../../../components/generate_pdf/price_report_pdf/components";
 import convertDateFormat from "../../../javascript/convertDateFormat";
+import { data } from "autoprefixer";
 
 const PriceReport = (props) => {
   const [form] = useForm();
@@ -102,9 +103,8 @@ const PriceReport = (props) => {
   const submitRemark = async () => {
     try {
       const payload = {
+        ...currentSelected,
         remark: remark,
-        invoice_date: currentSelected.invoice_date,
-        invoice_num: currentSelected.invoice_num,
       };
       const response = await axios.put(
         `${props.baseUrl}/api/price_report/${currentSelected.id}/${currentSelected.item_no}/${currentSelected.po_release}`,
@@ -115,9 +115,11 @@ const PriceReport = (props) => {
           },
         }
       );
+
       if (response.status === 200) {
-        updatedForm.resetFields();
-        setRemark("");
+        // Update local state after successful submission
+        updatedForm.resetFields(); // Reset form fields (assuming from Ant Design or similar)
+        setRemark(""); // Clear remark state
         setCurrentSelected({
           id: 0,
           invoice_date: "",
@@ -131,8 +133,16 @@ const PriceReport = (props) => {
           currency: "",
           remark: null,
         });
-        dispatch(resetAllState());
-        setUpdateForm(false);
+        const reply = await axios.post(`${props.baseUrl}/api/price_report/latest_data`, payload, {
+          headers: {
+            Authorization: `Bearer ${props.token_id}`,
+          },
+        });
+        if (reply.status === 200) {
+          dispatch(setSupplieryList(reply.data));
+          setUpdateForm(false);
+          dispatch(resetAllState());
+        }
       }
     } catch (error) {
       if (error) {

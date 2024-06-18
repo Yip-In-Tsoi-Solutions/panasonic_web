@@ -4,6 +4,7 @@ const initial_data = {
   evaluate_form: [],
   evaluate_result_table: [],
   evaluate_pending: [],
+  evaluate_confirm: [],
   temp_state_filter: {
     vendor: "",
   },
@@ -27,8 +28,11 @@ const evaluate_formSlice = createSlice({
     setEvaluatePending(state, action) {
       state.evaluate_pending = action.payload;
     },
+    setEvaluateConfirm(state, action) {
+      state.evaluate_confirm = action.payload;
+    },
   },
 });
-export const { setVendorList, setSelect_VendorList, setForm, setEvaluateResultTable, setEvaluatePending } =
+export const { setVendorList, setSelect_VendorList, setForm, setEvaluateResultTable, setEvaluatePending, setEvaluateConfirm } =
   evaluate_formSlice.actions;
 export default evaluate_formSlice.reducer;
