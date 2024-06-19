@@ -130,7 +130,7 @@ buyer_reason.post(
     }
   }
 );
-// display latest after submit update 
+// display latest after submit update
 buyer_reason.post(
   "/buyerlist/latest_data",
   authenticateToken,
@@ -153,6 +153,21 @@ buyer_reason.post(
     }
   }
 );
+// export BuyerReason PDF
+buyer_reason.post("/buyerlist/export_pdf", authenticateToken, async (req, res) => {
+  try {
+    const sql = await sql_serverConn();
+    const result = await sql.query(
+      `
+      SELECT * FROM [dbo].[PECTH_SUPPLIER_DELIVERY_HISTORICAL] WHERE ${req.body.queryString} AND DIFF_DAY != 0
+      `
+    );
+    res.status(200).json(result.recordset);
+  } catch (error) {
+    console.error("Error inserting data:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 buyer_reason.get(
   "/dropdown/root_cause",
   authenticateToken,

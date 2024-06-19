@@ -318,8 +318,11 @@ function Buyer_Reason(props) {
                 dataset={buyer_reason?.buyer_reason_table}
               />
               <Buyer_reason_pdf
+                baseUrl={props.baseUrl}
+                token_id={props.token_id}
                 page_title={props.page_title}
-                pdf_data={buyer_reason?.buyer_reason_table}
+                buyer_data={buyer_reason?.buyer_reason_table}
+                filterData={sessionStorage.getItem("buyer_between_date")}
               />
             </div>
           </Form.Item>
