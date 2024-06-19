@@ -142,23 +142,24 @@ function Buyer_Reason(props) {
       }
       dispatch(resetAllState());
       sessionStorage.setItem("buyer_between_date", queryString);
-      console.log(sessionStorage.getItem("buyer_between_date"))
-      // const response = await axios.post(
-      //   `${props.baseUrl}/api/buyerlist_filter_optional`,
-      //   {
-      //     queryString,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${props.token_id}`,
-      //     },
-      //   }
-      // );
-      // if (response.status === 200) {
-      //   dispatch(setBuyer_reason(response.data));
-      // } else {
-      //   dispatch(setBuyer_reason(...buyer_reason?.buyer_reason_table));
-      // }
+      const response = await axios.post(
+        `${props.baseUrl}/api/buyerlist_filter_optional`,
+        {
+          queryString,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${props.token_id}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        form.resetFields()
+        dispatch(resetAllState());
+        dispatch(setBuyer_reason(response.data));
+      } else {
+        dispatch(setBuyer_reason(...buyer_reason?.buyer_reason_table));
+      }
     } catch (error) {
       if (error) {
         window.location.href = "/error_not_found";
@@ -213,38 +214,37 @@ function Buyer_Reason(props) {
         item_no: current_selected?.item_no,
       };
       const transaction_id = current_selected?.transaction_id;
-      
-      // const response = await axios.put(
-      //   `${props.baseUrl}/api/buyer/update_reason/${transaction_id}`,
-      //   payload,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${props.token_id}`,
-      //     },
-      //   }
-      // );
-      // if (response.status === 200) {
-      //   const reply = await axios.post(
-      //     `${props.baseUrl}/api/buyerlist/latest_data`,
-      //     { buyer_between_date: sessionStorage.getItem("buyer_between_date") },
-      //     {
-      //       headers: {
-      //         Authorization: `Bearer ${props.token_id}`,
-      //       },
-      //     }
-      //   );
-      //   if (reply.status === 200) {
-      //     form.resetFields();
-      //     dispatch(setBuyer_reason(reply.data));
-      //     setCurrentSelected("");
-      //     dispatch(resetRootCause());
-      //     dispatch(resetAction());
-      //     dispatch(resetProduction_Ship());
-      //     setReason("");
-      //     dispatch(resetAllState());
-      //     setUpdateForm(false);
-      //   }
-      // }
+      const response = await axios.put(
+        `${props.baseUrl}/api/buyer/update_reason/${transaction_id}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${props.token_id}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        const reply = await axios.post(
+          `${props.baseUrl}/api/buyerlist/latest_data`,
+          { buyer_between_date: sessionStorage.getItem("buyer_between_date") },
+          {
+            headers: {
+              Authorization: `Bearer ${props.token_id}`,
+            },
+          }
+        );
+        if (reply.status === 200) {
+          form.resetFields();
+          dispatch(setBuyer_reason(reply.data));
+          setCurrentSelected("");
+          dispatch(resetRootCause());
+          dispatch(resetAction());
+          dispatch(resetProduction_Ship());
+          setReason("");
+          dispatch(resetAllState());
+          setUpdateForm(false);
+        }
+      }
     } catch (error) {
       if (error) {
         window.location.href = "/error_login";
