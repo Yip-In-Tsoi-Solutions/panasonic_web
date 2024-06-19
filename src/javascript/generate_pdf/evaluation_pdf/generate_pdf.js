@@ -161,7 +161,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
   }, 0);
 
   // Calculate total percentage based on EVALUATE_PERCENT
-  const totalPercentage = questionaire[0].EVALUATE_PERCENT.toFixed(3);
+  const totalPercentage = questionaire[0]?.EVALUATE_PERCENT.toFixed(3);
   let grade = "";
 
   if (totalPercentage >= 90 && totalPercentage < 100) {
@@ -199,7 +199,7 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
 
   // Print comment
   doc.text(
-    `ข้อเสนอแนะ ( Comment ): ${questionaire[0].EVALUATE_COMMENT}`,
+    `ข้อเสนอแนะ ( Comment ): ${questionaire[0]?.EVALUATE_COMMENT}`,
     15,
     startYComment
   );

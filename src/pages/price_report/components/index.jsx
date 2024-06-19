@@ -50,6 +50,7 @@ const PriceReport = (props) => {
         ).replace(/"/g, "'")} AND ${JSON.stringify(
           convertDateFormat(promise_end_date)
         ).replace(/"/g, "'")}`;
+        sessionStorage.setItem("price_report_between_date", queryString);
       }
       dispatch(resetAllState());
       const response = await axios.post(
@@ -80,6 +81,7 @@ const PriceReport = (props) => {
     form.resetFields();
     dispatch(setSupplieryList([]));
     dispatch(resetAllState());
+    sessionStorage.removeItem("price_report_between_date")
   };
 
   const selectRemarkForm = (item) => {
@@ -133,11 +135,15 @@ const PriceReport = (props) => {
           currency: "",
           remark: null,
         });
-        const reply = await axios.post(`${props.baseUrl}/api/price_report/latest_data`, payload, {
-          headers: {
-            Authorization: `Bearer ${props.token_id}`,
-          },
-        });
+        const reply = await axios.post(
+          `${props.baseUrl}/api/price_report/latest_data`,
+          { between_date: sessionStorage.getItem("price_report_between_date") },
+          {
+            headers: {
+              Authorization: `Bearer ${props.token_id}`,
+            },
+          }
+        );
         if (reply.status === 200) {
           dispatch(setSupplieryList(reply.data));
           setUpdateForm(false);

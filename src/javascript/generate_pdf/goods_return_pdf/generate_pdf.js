@@ -2,6 +2,7 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import schema from "../../print_schema";
 import { font } from "../../tahoma-normal";
+import numberWithCommas from "../../numberWithCommas";
 
 async function generatePDF(dataset, supplierName, fileName, return_doc) {
   try {
@@ -15,27 +16,47 @@ async function generatePDF(dataset, supplierName, fileName, return_doc) {
     const createForm_date = `${day}/${month}/${year}`;
 
     // Data in Table
-    const dataTable = dataset.map((item) => ({
+    let dataTable = dataset.map((item) => ({
       "po number": item?.po_number,
       "po release": item?.po_release,
       "รหัสสินค้า\nitem_code": item?.item_no,
       "รายละเอียดข้อมูล\ndescription": item?.description,
-      "หน่วย\nunit": item?.unit,
-      "จำนวน\nQuantity": item?.return_qty,
-      "ราคาต่อหน่วย\nunitPrice": item?.unitPrice,
-      "บาท\nBATH": parseFloat(item?.return_qty * item?.unitPrice).toFixed(2),
+      "หน่วย\nunit": numberWithCommas(item?.unit),
+      "จำนวนที่คืน\nQuantity": numberWithCommas(item?.return_qty),
+      "ราคาต่อหน่วย\nunitPrice": numberWithCommas(item?.unitPrice),
+      "บาท\nBATH": numberWithCommas(item?.return_qty * item?.unitPrice),
       "สาเหตุ\ncause": item?.cause,
       "อ้างอิงถึงใบกำกับภาษี\ninvoice_number": item?.invoice_no,
     }));
+    // doc.text(`SUBTOTAL:   ${total.toFixed(2)} / BATH`, margin, finalY + 10);
+    // doc.text(`VAT 7%:   ${vat.toFixed(2)} / BATH`, margin + 60, finalY + 10); // Positioned next to TOTAL
+    // doc.text(
+    //   `GRAND TOTAL:   ${grandTotal.toFixed(2)} / BATH`,
+    //   margin + 120,
+    //   finalY + 10
+    // );
+
+    const return_total = dataset.reduce(
+      (sum, item) => (sum += item?.return_qty),
+      0
+    );
 
     // Calculate totals and VAT
-    const total = dataTable.reduce(
-      (sum, item) => sum + parseFloat(item["บาท\nBATH"]),
+    const total = dataset.reduce(
+      (sum, item) => (sum += item?.return_qty * item?.unitPrice),
       0
     );
     const vat = total * 0.07;
     const grandTotal = total + vat;
-
+    doc.setFontSize(10);
+    dataTable.push({
+      "po number": `จำนวนที่คืน (Quantity) ${numberWithCommas(return_total)}\n\nTOTAL :  ${numberWithCommas(
+        total.toFixed(3)
+      )}  VAT : ${numberWithCommas(
+        vat.toFixed(3)
+      )}  GRAND TOTAL : ${numberWithCommas(grandTotal.toFixed(3))}`,
+    });
+    // `Sub Total : ${total}\nGRAND TOTAL + VAT (${vat.toFixed(3)}) : ${grandTotal.toFixed(3)}`,
     // Embedding custom font
     doc.addFileToVFS("tahoma.ttf", font);
     doc.addFont("tahoma.ttf", "tahoma", "normal");
@@ -114,17 +135,6 @@ async function generatePDF(dataset, supplierName, fileName, return_doc) {
     });
 
     const finalY = doc.autoTable.previous.finalY; // Reduced space between table and totals
-
-    // Add total, VAT, and grand total below the table
-    doc.setFontSize(9);
-    doc.setFont("tahoma", "bold");
-    doc.text(`SUBTOTAL:   ${total.toFixed(2)} / BATH`, margin, finalY + 10);
-    doc.text(`VAT 7%:   ${vat.toFixed(2)} / BATH`, margin + 60, finalY + 10); // Positioned next to TOTAL
-    doc.text(
-      `GRAND TOTAL:   ${grandTotal.toFixed(2)} / BATH`,
-      margin + 120,
-      finalY + 10
-    );
     doc.setFontSize(9);
     doc.setFont("tahoma", "normal");
     const sign_here = "..........................................";

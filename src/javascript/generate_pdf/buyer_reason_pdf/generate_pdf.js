@@ -2,6 +2,7 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { font } from "../../tahoma-normal";
 import schema from "../../print_schema";
+import numberWithCommas from "../../numberWithCommas";
 
 async function generatePDF(data, fileName) {
   try {
@@ -108,7 +109,7 @@ async function generatePDF(data, fileName) {
     // Mapping data to table and calculating grand totals
     let totalQtyReceived = 0;
 
-    const dataTable = data.map((item) => {
+    let dataTable = data.map((item) => {
       const qtyReceived = parseFloat(item?.QUANTITY_RECEIVED) || 0;
       totalQtyReceived += qtyReceived;
       return {
@@ -117,37 +118,30 @@ async function generatePDF(data, fileName) {
         po_release: item?.PO_RELEASE,
         item: item?.ITEM_NO,
         item_desc: item?.ITEM_DESCRIPTION,
-        qty_received: qtyReceived,
+        qty_received: numberWithCommas(qtyReceived.toFixed(3)),
         buyer: item?.BUYER,
-        remark: item?.REASON,
+        remark: item?.REASON_REMARK,
       };
     });
 
     // Add the GRAND TOTAL row
     dataTable.push({
-      supplier: "GRAND TOTAL",
-      po_number: "",
-      po_release: "",
-      item: "",
-      item_desc: "",
-      qty_received: totalQtyReceived,
-      buyer: "",
-      remark: "",
+      supplier: `GRAND TOTAL : ${numberWithCommas(totalQtyReceived.toFixed(3))}`
     });
-
     // Generating data table
     doc.autoTable({
       startY: 80,
+      head: [['SUPPLIER', 'PO NUMBER', 'PO RELEASE', 'ITEM CODE', 'ITEM DESC', 'QTY RECEIVED', 'BUYER', 'REMARK']],
       body: dataTable,
       columns: schema(dataTable),
       styles: {
-        fontSize: 6,
+        fontSize: 8,
         font: 'tahoma'
       },
       headerStyles: {
         fillColor: "#016255",
         font: "tahoma",
-        fontSize: 5,
+        fontSize: 7,
       },
       didDrawCell: function (data) {
         if (data.row.raw.supplier === "GRAND TOTAL") {

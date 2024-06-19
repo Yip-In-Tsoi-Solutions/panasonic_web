@@ -141,6 +141,7 @@ function Buyer_Reason(props) {
         ).replace(/"/g, "'")}`;
       }
       dispatch(resetAllState());
+      sessionStorage.setItem("buyer_between_date", queryString);
       const response = await axios.post(
         `${props.baseUrl}/api/buyerlist_filter_optional`,
         {
@@ -153,6 +154,8 @@ function Buyer_Reason(props) {
         }
       );
       if (response.status === 200) {
+        form.resetFields()
+        dispatch(resetAllState());
         dispatch(setBuyer_reason(response.data));
       } else {
         dispatch(setBuyer_reason(...buyer_reason?.buyer_reason_table));
@@ -221,14 +224,26 @@ function Buyer_Reason(props) {
         }
       );
       if (response.status === 200) {
-        form.resetFields();
-        setCurrentSelected("");
-        dispatch(resetRootCause());
-        dispatch(resetAction());
-        dispatch(resetProduction_Ship());
-        setReason("");
-        dispatch(resetAllState());
-        setUpdateForm(false);
+        const reply = await axios.post(
+          `${props.baseUrl}/api/buyerlist/latest_data`,
+          { buyer_between_date: sessionStorage.getItem("buyer_between_date") },
+          {
+            headers: {
+              Authorization: `Bearer ${props.token_id}`,
+            },
+          }
+        );
+        if (reply.status === 200) {
+          form.resetFields();
+          dispatch(setBuyer_reason(reply.data));
+          setCurrentSelected("");
+          dispatch(resetRootCause());
+          dispatch(resetAction());
+          dispatch(resetProduction_Ship());
+          setReason("");
+          dispatch(resetAllState());
+          setUpdateForm(false);
+        }
       }
     } catch (error) {
       if (error) {
@@ -303,8 +318,11 @@ function Buyer_Reason(props) {
                 dataset={buyer_reason?.buyer_reason_table}
               />
               <Buyer_reason_pdf
+                baseUrl={props.baseUrl}
+                token_id={props.token_id}
                 page_title={props.page_title}
-                pdf_data={buyer_reason?.buyer_reason_table}
+                buyer_data={buyer_reason?.buyer_reason_table}
+                filterData={sessionStorage.getItem("buyer_between_date")}
               />
             </div>
           </Form.Item>
