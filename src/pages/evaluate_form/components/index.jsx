@@ -562,8 +562,8 @@ const Evaluate = (props) => {
                           evaluate_vendors?.evaluate_confirm
                         ).concat([
                           {
-                            title: "address",
-                            dataIndex: "address",
+                            title: "ACTION",
+                            dataIndex: "ACTION",
                             render: (a, record) => (
                               <>
                                 <Button
