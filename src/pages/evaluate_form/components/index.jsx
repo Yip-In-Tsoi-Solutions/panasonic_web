@@ -402,7 +402,6 @@ const Evaluate = (props) => {
                           ).concat([
                             {
                               title: "ACTION",
-                              dataIndex: "ACTION",
                               key: `action_${rows_id + 1}`,
                               render: (record) => (
                                 <>
