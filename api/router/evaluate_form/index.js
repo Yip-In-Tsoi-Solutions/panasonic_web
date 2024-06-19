@@ -350,13 +350,13 @@ evaluate_form.post(
     try {
       const sql = await sql_serverConn();
       const request = sql.request();
-      const { supplier, evaluate_date, flag_status } = req.body;
+      const { supplier, evaluate_id, flag_status } = req.body;
       request.input("supplier", String(supplier).toLowerCase());
-      request.input("evaluate_date", evaluate_date);
+      request.input("evaluate_id", String(evaluate_id).toLowerCase())
       request.input("status", flag_status);
       const result = await request.query(
         `
-      SELECT
+        SELECT
           DISTINCT
           a.TOPIC_NAME_TH,
           a.TOPIC_NAME_EN,
@@ -366,15 +366,15 @@ evaluate_form.post(
           a.TOPIC_HEADER_NAME_ENG,
           a.HEADER_INDEX, a.TOPIC_LINE,
           c.EVALUATE_COMMENT
-      FROM [dbo].PECTH_EVALUATION_MASTER a
-          JOIN dbo.PECTH_EVALUATION_SCORE_DETAIL b
-          ON a.TOPIC_KEY_ID = b.TOPIC_KEY_ID
-          JOIN dbo.PECTH_EVALUATION_SCORE_HEADER c
-          ON b.EVALUATE_ID = c.EVALUATE_ID
-      GROUP BY a.HEADER_INDEX, a.TOPIC_LINE, c.EVALUATE_ID, a.TOPIC_NAME_TH,a.TOPIC_NAME_EN,b.EVALUATE_TOPIC_SCORE,a.TOPIC_HEADER_NAME_TH,a.TOPIC_HEADER_NAME_ENG, c.EVALUATE_PERCENT, c.FLAG_STATUS, c.SUPPLIER, c.EVALUATE_COMMENT, convert(nvarchar(10), b.EVALUATE_DATE, 120)
-      HAVING LOWER(c.FLAG_STATUS)=@status and LOWER(c.SUPPLIER)=@supplier AND convert(nvarchar(10), b.EVALUATE_DATE, 120)=convert(nvarchar(10), @evaluate_date, 120)
-      ORDER BY a.HEADER_INDEX, a.TOPIC_LINE
-      `
+        FROM [dbo].PECTH_EVALUATION_MASTER a
+            JOIN dbo.PECTH_EVALUATION_SCORE_DETAIL b
+            ON a.TOPIC_KEY_ID = b.TOPIC_KEY_ID
+            JOIN dbo.PECTH_EVALUATION_SCORE_HEADER c
+            ON b.EVALUATE_ID = c.EVALUATE_ID
+        GROUP BY a.HEADER_INDEX, a.TOPIC_LINE, c.EVALUATE_ID, a.TOPIC_NAME_TH,a.TOPIC_NAME_EN,b.EVALUATE_TOPIC_SCORE,a.TOPIC_HEADER_NAME_TH,a.TOPIC_HEADER_NAME_ENG, c.EVALUATE_PERCENT, c.FLAG_STATUS, c.SUPPLIER, c.EVALUATE_COMMENT
+        HAVING LOWER(c.FLAG_STATUS)=@status and LOWER(c.SUPPLIER)=@supplier AND LOWER(c.EVALUATE_ID)=@evaluate_id
+        ORDER BY a.HEADER_INDEX, a.TOPIC_LINE
+        `
       );
       res.status(200).send(result.recordset);
     } catch (error) {

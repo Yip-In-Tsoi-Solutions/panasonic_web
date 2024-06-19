@@ -279,8 +279,9 @@ const Evaluate = (props) => {
   };
   let rows_id = 0;
 
-  const savePDF = async (supplier, evaluate_date, flag_status) => {
+  const savePDF = async (evaluateId, supplier, evaluate_date, flag_status) => {
     let payload = {
+      evaluate_id: evaluateId,
       supplier: supplier,
       evaluate_date: evaluate_date,
       flag_status: flag_status,
@@ -569,6 +570,7 @@ const Evaluate = (props) => {
                                   //generatePDF
                                   onClick={savePDF.bind(
                                     this,
+                                    record?.EVALUATE_ID,
                                     record?.SUPPLIER,
                                     record?.EVALUATE_DATE,
                                     record?.FLAG_STATUS
