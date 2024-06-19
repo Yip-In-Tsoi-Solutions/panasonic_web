@@ -274,6 +274,7 @@ const Evaluate = (props) => {
       fetchEvaluateConfirm();
       fetchEvaluateDraft();
       fetchEvaluate();
+      EvaluateUpdateForm.resetFields();
     }
   };
   let rows_id = 0;
