@@ -160,7 +160,93 @@ evaluate_form.get("/evaluate/draft", authenticateToken, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+// EVALUATE UPDATE
+evaluate_form.put(
+  "/evaluate/form/update/:evaluate_id",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const id = req.params.evaluate_id;
+      const sql = await sql_serverConn();
+      const {
+        supplier,
+        evaluate_date,
+        comments,
+        updateScore,
+        flag_status,
+        full_score,
+      } = req.body;
 
+      // Calculate total score and evaluation percent
+      const totalScore = updateScore.reduce(
+        (sum, form) => sum + form.EVALUATE_TOPIC_SCORE,
+        0
+      );
+      const evaluatePercent = (totalScore / full_score) * 100;
+
+      // Determine evaluation grade
+      const evaluateGrade =
+        evaluatePercent <= 69
+          ? "D"
+          : evaluatePercent <= 79
+          ? "C"
+          : evaluatePercent <= 89
+          ? "B"
+          : "A";
+
+      // Update evaluation header
+      const evaluateHeaderRequest = sql.request();
+      evaluateHeaderRequest.input("EVALUATE_ID", String(id).toLowerCase());
+      evaluateHeaderRequest.input("EVALUATE_TOTAL_SCORE", totalScore);
+      evaluateHeaderRequest.input("EVALUATE_FULL_SCORE", full_score);
+      evaluateHeaderRequest.input("EVALUATE_PERCENT", evaluatePercent);
+      evaluateHeaderRequest.input("EVALUATE_GRADE", evaluateGrade);
+      evaluateHeaderRequest.input("EVALUATE_COMMENT", comments);
+      evaluateHeaderRequest.input("FLAG_STATUS", flag_status);
+
+      await evaluateHeaderRequest.query(`
+        UPDATE dbo.[PECTH_EVALUATION_SCORE_HEADER]
+        SET 
+          EVALUATE_TOTAL_SCORE = @EVALUATE_TOTAL_SCORE,
+          EVALUATE_FULL_SCORE = @EVALUATE_FULL_SCORE,
+          EVALUATE_PERCENT = @EVALUATE_PERCENT,
+          EVALUATE_GRADE = @EVALUATE_GRADE,
+          EVALUATE_COMMENT=@EVALUATE_COMMENT,
+          SUBMIT_FORM_DATE=GETDATE(),
+          FLAG_STATUS = @FLAG_STATUS,
+          EVALUATE_DATE = GETDATE()
+        WHERE LOWER([EVALUATE_ID]) = @EVALUATE_ID AND [EVALUATE_DATE] = '${evaluate_date}'
+      `);
+      // Update each evaluation detail
+      for (const score of updateScore) {
+        const evaluateDetailRequest = sql.request();
+        evaluateDetailRequest.input("EVALUATE_ID", String(id).toLowerCase());
+        evaluateDetailRequest.input("SUPPLIER", String(supplier).toLowerCase());
+        evaluateDetailRequest.input("HEADER_INDEX", score.HEADER_INDEX);
+        evaluateDetailRequest.input("TOPIC_KEY_ID", score.TOPIC_KEY_ID);
+        evaluateDetailRequest.input(
+          "EVALUATE_TOPIC_SCORE",
+          score.EVALUATE_TOPIC_SCORE
+        );
+        await evaluateDetailRequest.query(`
+          UPDATE dbo.[PECTH_EVALUATION_SCORE_DETAIL]
+          SET
+            [EVALUATE_TOPIC_SCORE] = @EVALUATE_TOPIC_SCORE
+          WHERE
+          EVALUATE_ID = @EVALUATE_ID
+          AND LOWER([SUPPLIER]) = @SUPPLIER
+          AND HEADER_INDEX = @HEADER_INDEX
+          AND TOPIC_KEY_ID = @TOPIC_KEY_ID
+          AND [EVALUATE_DATE] = '${evaluate_date}'
+      `);
+      }
+      res.status(200).send("Data updated successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
 //Evaluation FORM of Confirm
 evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
   try {
@@ -237,13 +323,13 @@ evaluate_form.post(
       request.input("evaluate_date", evaluate_date);
       const result = await request.query(
         `
-        SELECT distinct a.HEADER_INDEX, a.TOPIC_KEY_ID, c.TOPIC_NAME_TH, c.TOPIC_NAME_EN, a.EVALUATE_TOPIC_SCORE, b.FLAG_STATUS, max(b.EVALUATE_DATE) as EVALUATE_DATE
+        SELECT distinct a.HEADER_INDEX, a.TOPIC_KEY_ID, c.TOPIC_NAME_TH, c.TOPIC_HEADER_NAME_TH, c.TOPIC_HEADER_NAME_ENG, c.TOPIC_NAME_EN, a.EVALUATE_TOPIC_SCORE, b.FLAG_STATUS, max(b.EVALUATE_DATE) as EVALUATE_DATE, b.EVALUATE_COMMENT
         FROM [dbo].[PECTH_EVALUATION_SCORE_DETAIL] a
-          LEFT JOIN dbo.[PECTH_EVALUATION_SCORE_HEADER] b
-          ON a.EVALUATE_ID = b.EVALUATE_ID
-          LEFT JOIN dbo.[PECTH_EVALUATION_MASTER] c
-          ON a.TOPIC_KEY_ID = c.TOPIC_KEY_ID
-        GROUP BY a.HEADER_INDEX, a.TOPIC_KEY_ID, a.EVALUATE_ID, a.SUPPLIER, b.FLAG_STATUS, b.EVALUATE_DATE, c.TOPIC_NAME_TH, c.TOPIC_NAME_EN, a.EVALUATE_TOPIC_SCORE, b.FLAG_STATUS
+            LEFT JOIN dbo.[PECTH_EVALUATION_SCORE_HEADER] b
+            ON a.EVALUATE_ID = b.EVALUATE_ID
+            LEFT JOIN dbo.[PECTH_EVALUATION_MASTER] c
+            ON a.TOPIC_KEY_ID = c.TOPIC_KEY_ID
+        GROUP BY a.HEADER_INDEX, a.TOPIC_KEY_ID, a.EVALUATE_ID, a.SUPPLIER, b.FLAG_STATUS, b.EVALUATE_DATE, c.TOPIC_NAME_TH, c.TOPIC_NAME_EN, c.TOPIC_HEADER_NAME_TH, c.TOPIC_HEADER_NAME_ENG, a.EVALUATE_TOPIC_SCORE, b.FLAG_STATUS, b.EVALUATE_COMMENT
         HAVING a.EVALUATE_ID = @id AND LOWER(a.SUPPLIER) = @supplier AND LOWER(b.FLAG_STATUS) = @status AND b.EVALUATE_DATE = @evaluate_date
         ORDER BY a.TOPIC_KEY_ID
         `
@@ -257,16 +343,19 @@ evaluate_form.post(
 );
 
 // evalueForm for PDF
-evaluate_form.post("/evaluate/generate_pdf", authenticateToken, async (req, res) => {
-  try {
-    const sql = await sql_serverConn();
-    const request = sql.request();
-    const { supplier, evaluate_date, flag_status } = req.body;
-    request.input("supplier", String(supplier).toLowerCase());
-    request.input("evaluate_date", evaluate_date);
-    request.input("status", flag_status);
-    const result = await request.query(
-      `
+evaluate_form.post(
+  "/evaluate/generate_pdf",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const request = sql.request();
+      const { supplier, evaluate_date, flag_status } = req.body;
+      request.input("supplier", String(supplier).toLowerCase());
+      request.input("evaluate_date", evaluate_date);
+      request.input("status", flag_status);
+      const result = await request.query(
+        `
       SELECT
           DISTINCT
           a.TOPIC_NAME_TH,
@@ -286,11 +375,12 @@ evaluate_form.post("/evaluate/generate_pdf", authenticateToken, async (req, res)
       HAVING LOWER(c.FLAG_STATUS)=@status and LOWER(c.SUPPLIER)=@supplier AND convert(nvarchar(10), b.EVALUATE_DATE, 120)=convert(nvarchar(10), @evaluate_date, 120)
       ORDER BY a.HEADER_INDEX, a.TOPIC_LINE
       `
-    );
-    res.status(200).send(result.recordset);
-  } catch (error) {
-    console.error("Error:", error.message);
-    res.status(500).send("Internal Server Error");
+      );
+      res.status(200).send(result.recordset);
+    } catch (error) {
+      console.error("Error:", error.message);
+      res.status(500).send("Internal Server Error");
+    }
   }
-});
+);
 module.exports = evaluate_form;

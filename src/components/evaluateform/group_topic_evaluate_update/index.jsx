@@ -47,7 +47,7 @@ const Group_topic_evaluate_update = ({ topicGroup, score, setScore }) => {
   // Initialize the score state with 0 for all topics
   useMemo(() => {
     const initialScores = topicGroup.map((item) =>
-      generateScoreObject(item, 0)
+      generateScoreObject(item, item?.EVALUATE_TOPIC_SCORE)
     );
     setScore(initialScores);
   }, []);
@@ -71,7 +71,6 @@ const Group_topic_evaluate_update = ({ topicGroup, score, setScore }) => {
       }
     });
   };
-
   return Object.keys(groupedTopics).map((headerIndex) => (
     <div key={headerIndex}>
       <p className="text-[18px] font-bold">
@@ -89,7 +88,7 @@ const Group_topic_evaluate_update = ({ topicGroup, score, setScore }) => {
               }
             />
             <div>
-              <Form.Item className="mt-5" name={`score_${item.TOPIC_KEY_ID}`}>
+              <Form.Item className="mt-5" name={`scoreUpdate_${item.TOPIC_KEY_ID}`}>
                 <Radio.Group
                   onChange={(e) => handleScoreChange(item, e)}
                   defaultValue={item.EVALUATE_TOPIC_SCORE}

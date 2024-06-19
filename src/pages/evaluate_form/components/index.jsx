@@ -3,6 +3,7 @@ import {
   Card,
   Col,
   Collapse,
+  DatePicker,
   Drawer,
   Form,
   Input,
@@ -13,7 +14,7 @@ import {
   Tabs,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { memo, useMemo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import {
   setEvaluateConfirm,
   setEvaluatePending,
@@ -47,7 +48,7 @@ const Evaluate = (props) => {
   const evaluate_vendors = useSelector((state) => state.evaluate_vendors);
 
   // Evaluation Draft State
-  const [activeTabView, setActiveTabView] = useState("4");
+  const [activeTabView, setActiveTabView] = useState("1");
   const [pageSize, setPageSize] = useState(5);
   const [score_selected, setScoreSelected] = useState(0);
   const [month, setSelectMonth] = useState("");
@@ -55,6 +56,7 @@ const Evaluate = (props) => {
   const [comments, setComment] = useState("");
 
   // Evaluation Continute State
+  const [evaluate_id, setEvaluateId] = useState("");
   const [EvaluateContinuteForm, setEvaContinuteForm] = useState(false);
   const [evaluateSupplier, setEvaluateSupplier] = useState("");
   const [questionList, setQuestList] = useState([]);
@@ -143,7 +145,7 @@ const Evaluate = (props) => {
       }
     }
   }
-  useMemo(() => {
+  useEffect(() => {
     fetchEvaluateTopic();
     fetchDropdownVendor();
     fetchEvaluate();
@@ -158,7 +160,7 @@ const Evaluate = (props) => {
     setActiveTabView(key);
   };
 
-  // radio button for Scoring
+  // submit for creating Evaluate FORM
   const submitForm = async (val) => {
     try {
       form.resetFields();
@@ -184,9 +186,13 @@ const Evaluate = (props) => {
       );
       if (response.status === 200) {
         if (payload.flag_status === "confirm") {
-          setActiveTabView("2");
+          setActiveTabView("3");
+          fetchEvaluateConfirm();
+          fetchEvaluate();
         } else {
-          setActiveTabView("1");
+          setActiveTabView("2");
+          fetchEvaluateDraft();
+          fetchEvaluate();
         }
       }
     } catch (error) {
@@ -221,15 +227,10 @@ const Evaluate = (props) => {
       if (response.status === 200) {
         setEvaContinuteForm(true);
         setEvaluateSupplier(record.SUPPLIER);
+        setEvaluateId(record?.EVALUATE_ID);
         setQuestList(response.data);
         EvaluateUpdateForm.resetFields();
-        if (payload.flag_status === "confirm") {
-          setActiveTabView("2");
-        } else {
-          setActiveTabView("1");
-        }
       } else {
-        // Handle non-200 responses
         setEvaContinuteForm(false);
         setEvaluateSupplier("");
         setQuestList([]);
@@ -247,17 +248,33 @@ const Evaluate = (props) => {
   };
   // update
   const submitUpdateEvaluate = async () => {
-    let payload = {
-      supplier: vendor, // Assigning the value of the variable `vendor` to the key `supplier`.
-      evaluate_date: month, // Assigning the value of the variable `month` to the key `evaluate_date`.
+    const updatePayload = {
+      supplier: evaluateSupplier, // Assigning the value of the variable `vendor` to the key `supplier`.
+      evaluate_date: questionList[0]?.EVALUATE_DATE, // Assigning the value of the variable `month` to the key `evaluate_date`.
       comments: comments,
-      eval_form: score,
+      updateScore: score,
       flag_status: score.reduce((acc, curr) => {
         // Using the reduce function on the `score` array to transform it into an object.
         return curr.EVALUATE_TOPIC_SCORE != 0 ? "confirm" : "draft";
       }, {}),
       full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
     };
+    const response = await axios.put(
+      `${props.baseUrl}/api/evaluate/form/update/${evaluate_id}`,
+      updatePayload,
+      {
+        headers: {
+          Authorization: `Bearer ${props.token_id}`,
+        },
+      }
+    );
+    if (response.status === 200) {
+      setActiveTabView("3");
+      setEvaContinuteForm(false);
+      fetchEvaluateConfirm();
+      fetchEvaluateDraft();
+      fetchEvaluate();
+    }
   };
   let rows_id = 0;
 
@@ -299,204 +316,8 @@ const Evaluate = (props) => {
                 centered
                 items={[
                   {
-                    label: "draft".toUpperCase(),
-                    key: "1",
-                    children: (
-                      <>
-                        <br />
-                        <Table
-                          dataSource={evaluate_vendors?.evaluate_pending}
-                          columns={schema(
-                            evaluate_vendors?.evaluate_pending
-                          ).concat([
-                            {
-                              title: "Action",
-                              key: `action_${rows_id + 1}`,
-                              render: (record) => (
-                                <>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth={1.5}
-                                    stroke="currentColor"
-                                    className="size-5 cursor-pointer"
-                                    onClick={() => selectedEvaUpdate(record)}
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                                    />
-                                  </svg>
-                                  <Drawer
-                                    width={window.innerWidth}
-                                    open={EvaluateContinuteForm}
-                                    footer={null}
-                                    extra={
-                                      <Space>
-                                        <CloseCircleOutlined
-                                          onClick={closeEvaUpdate}
-                                          className="text-[24px] text-left"
-                                        />
-                                      </Space>
-                                    }
-                                  >
-                                    <div>
-                                      <h2 className="text-center text-[18px] font-normal">
-                                        ทำการประเมินบริษัท
-                                      </h2>
-                                    </div>
-                                    <h1 className="text-center text-[24px] font-bold">
-                                      {evaluateSupplier}
-                                    </h1>
-                                    <br />
-                                    <Form
-                                      onFinish={submitUpdateEvaluate}
-                                      form={EvaluateUpdateForm}
-                                    >
-                                      <ReportMonth
-                                        dateFormat={dateFormat}
-                                        month={month}
-                                        moment={moment}
-                                        setSelectMonth={setSelectMonth}
-                                        convert_year_th={convert_year_th}
-                                      />
-                                      <div className="clear-both">
-                                        <div className="text-right">
-                                          <p className="text-[16px]">
-                                            ระดับความพึงพอใจ (Satisfaction
-                                            Level)
-                                          </p>
-                                        </div>
-                                        <div className="text-left">
-                                          <Group_topic_evaluate_update
-                                            topicGroup={questionList}
-                                            score={score}
-                                            setScore={setScore}
-                                          />
-                                        </div>
-                                        <div>
-                                          <br />
-                                          <p className="text-[16px]">
-                                            ข้อเสนอแนะ
-                                          </p>
-                                          <br />
-                                          <Form.Item name={"comments"}>
-                                            <TextArea
-                                              placeholder="ระบุข้อเสนอแนะ"
-                                              autoSize={{
-                                                minRows: 6,
-                                                maxRows: 24,
-                                              }}
-                                              onChange={(e) =>
-                                                setComment(e.target.value)
-                                              }
-                                            />
-                                          </Form.Item>
-                                          <div className="table m-auto mt-5">
-                                            <div className="flex flex-row">
-                                              <Button
-                                                htmlType="submit"
-                                                className="uppercase ml-2"
-                                              >
-                                                <div className="flex flex-row">
-                                                  <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth={1.5}
-                                                    stroke="currentColor"
-                                                    className="w-5 h-5 float-left mr-2"
-                                                  >
-                                                    <path
-                                                      strokeLinecap="round"
-                                                      strokeLinejoin="round"
-                                                      d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"
-                                                    />
-                                                  </svg>
-                                                  SAVE APPROVED
-                                                </div>
-                                              </Button>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <br />
-                                      </div>
-                                    </Form>
-                                  </Drawer>
-                                </>
-                              ),
-                            },
-                          ])}
-                          scroll={{ x: "max-content" }}
-                          pagination={{
-                            pageSize: pageSize, // Set the initial page size
-                            defaultPageSize: 5,
-                            pageSizeOptions: [
-                              "5",
-                              "10",
-                              "20",
-                              "50",
-                              "100",
-                              "200",
-                            ],
-                            onShowSizeChange: (current, size) =>
-                              setPageSize(size), // Function to handle page size changes
-                            position: ["bottomCenter"],
-                          }}
-                        />
-                      </>
-                    ),
-                  },
-                  {
-                    label: "confirm".toUpperCase(),
-                    key: "2",
-                    children: (
-                      <Table
-                        dataSource={evaluate_vendors?.evaluate_confirm}
-                        columns={schema(
-                          evaluate_vendors?.evaluate_confirm
-                        ).concat([
-                          {
-                            title: "address",
-                            dataIndex: "address",
-                            render: (a, record) => (
-                              <>
-                                <Button
-                                  //generatePDF
-                                  onClick={savePDF.bind(
-                                    this,
-                                    record?.SUPPLIER,
-                                    record?.EVALUATE_DATE,
-                                    record?.FLAG_STATUS
-                                  )}
-                                  className="uppercase"
-                                >
-                                  <div className="flex flex-row">
-                                    <FilePdfOutlined className="text-[18px] mr-3" />
-                                    SAVE as PDF
-                                  </div>
-                                </Button>
-                              </>
-                            ),
-                          },
-                        ])}
-                      />
-                    ),
-                  },
-                  {
-                    label: "SUMMARY SCORE".toUpperCase(),
-                    key: "3",
-                    children: (
-                      <GradingTable
-                        evaResult={evaluate_vendors?.evaluate_result_table}
-                      />
-                    ),
-                  },
-                  {
                     label: "Evaluate FORM".toUpperCase(),
-                    key: "4",
+                    key: "1",
                     children: (
                       <Form onFinish={submitForm} form={form}>
                         <Supplier_Eva
@@ -564,6 +385,214 @@ const Evaluate = (props) => {
                           <br />
                         </div>
                       </Form>
+                    ),
+                  },
+                  {
+                    label: "draft".toUpperCase(),
+                    key: "2",
+                    children: (
+                      <>
+                        <br />
+                        <Table
+                          dataSource={evaluate_vendors?.evaluate_pending}
+                          columns={schema(
+                            evaluate_vendors?.evaluate_pending
+                          ).concat([
+                            {
+                              title: "Action",
+                              key: `action_${rows_id + 1}`,
+                              render: (record) => (
+                                <>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth={1.5}
+                                    stroke="currentColor"
+                                    className="size-5 cursor-pointer"
+                                    onClick={() => selectedEvaUpdate(record)}
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                                    />
+                                  </svg>
+                                  <Drawer
+                                    width={window.innerWidth}
+                                    open={EvaluateContinuteForm}
+                                    footer={null}
+                                    extra={
+                                      <Space>
+                                        <CloseCircleOutlined
+                                          onClick={closeEvaUpdate}
+                                          className="text-[24px] text-left"
+                                        />
+                                      </Space>
+                                    }
+                                  >
+                                    <div>
+                                      <h2 className="text-center text-[18px] font-normal">
+                                        ทำการประเมินบริษัท
+                                      </h2>
+                                    </div>
+                                    <h1 className="text-center text-[24px] font-bold">
+                                      {evaluateSupplier}
+                                    </h1>
+                                    <br />
+                                    <Form
+                                      onFinish={submitUpdateEvaluate}
+                                      form={EvaluateUpdateForm}
+                                    >
+                                      <div className="flex-row">
+                                        <div className="float-left">
+                                          <p className="text-[16px]">
+                                            การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ
+                                          </p>
+                                        </div>
+                                        <Input
+                                          className="w-[140px] float-right mb-5"
+                                          value={new Date(record?.EVALUATE_DATE)
+                                            .toLocaleDateString("en-GB")
+                                            .split("/")
+                                            .reverse()
+                                            .join("-")}
+                                        />
+                                      </div>
+                                      <div className="clear-both">
+                                        <div className="text-right">
+                                          <p className="text-[16px]">
+                                            ระดับความพึงพอใจ (Satisfaction
+                                            Level)
+                                          </p>
+                                        </div>
+                                        <div className="text-left">
+                                          <Group_topic_evaluate_update
+                                            topicGroup={questionList}
+                                            score={score}
+                                            setScore={setScore}
+                                          />
+                                        </div>
+                                        <div>
+                                          <br />
+                                          <p className="text-[16px]">
+                                            ข้อเสนอแนะ
+                                          </p>
+                                          <br />
+                                          <Form.Item name={"comments"}>
+                                            <TextArea
+                                              placeholder="ระบุข้อเสนอแนะ"
+                                              defaultValue={
+                                                questionList[0]
+                                                  ?.EVALUATE_COMMENT
+                                              }
+                                              autoSize={{
+                                                minRows: 6,
+                                                maxRows: 24,
+                                              }}
+                                              onChange={(e) =>
+                                                setComment(e.target.value)
+                                              }
+                                            />
+                                          </Form.Item>
+                                          <div className="table m-auto mt-5">
+                                            <div className="flex flex-row">
+                                              <Button
+                                                htmlType="submit"
+                                                className="uppercase ml-2"
+                                              >
+                                                <div className="flex flex-row">
+                                                  <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    strokeWidth={1.5}
+                                                    stroke="currentColor"
+                                                    className="w-5 h-5 float-left mr-2"
+                                                  >
+                                                    <path
+                                                      strokeLinecap="round"
+                                                      strokeLinejoin="round"
+                                                      d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"
+                                                    />
+                                                  </svg>
+                                                  UPDATE FORM
+                                                </div>
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <br />
+                                      </div>
+                                    </Form>
+                                  </Drawer>
+                                </>
+                              ),
+                            },
+                          ])}
+                          scroll={{ x: "max-content" }}
+                          pagination={{
+                            pageSize: pageSize, // Set the initial page size
+                            defaultPageSize: 5,
+                            pageSizeOptions: [
+                              "5",
+                              "10",
+                              "20",
+                              "50",
+                              "100",
+                              "200",
+                            ],
+                            onShowSizeChange: (current, size) =>
+                              setPageSize(size), // Function to handle page size changes
+                            position: ["bottomCenter"],
+                          }}
+                        />
+                      </>
+                    ),
+                  },
+                  {
+                    label: "confirm".toUpperCase(),
+                    key: "3",
+                    children: (
+                      <Table
+                        dataSource={evaluate_vendors?.evaluate_confirm}
+                        columns={schema(
+                          evaluate_vendors?.evaluate_confirm
+                        ).concat([
+                          {
+                            title: "address",
+                            dataIndex: "address",
+                            render: (a, record) => (
+                              <>
+                                <Button
+                                  //generatePDF
+                                  onClick={savePDF.bind(
+                                    this,
+                                    record?.SUPPLIER,
+                                    record?.EVALUATE_DATE,
+                                    record?.FLAG_STATUS
+                                  )}
+                                  className="uppercase"
+                                >
+                                  <div className="flex flex-row">
+                                    <FilePdfOutlined className="text-[18px] mr-3" />
+                                    SAVE as PDF
+                                  </div>
+                                </Button>
+                              </>
+                            ),
+                          },
+                        ])}
+                      />
+                    ),
+                  },
+                  {
+                    label: "SUMMARY SCORE".toUpperCase(),
+                    key: "4",
+                    children: (
+                      <GradingTable
+                        evaResult={evaluate_vendors?.evaluate_result_table}
+                      />
                     ),
                   },
                 ]}
