@@ -31,6 +31,7 @@ evaluate_form.get("/evaluate/topic", authenticateToken, async (req, res) => {
           , [ACTIVE_DATE_FROM]
           , [ACTIVE_DATE_TO]
         FROM [dbo].[PECTH_EVALUATION_MASTER]
+        ORDER BY TOPIC_KEY_ID asc
         `
       );
       cache.set(cacheKey, result.recordset);
@@ -152,6 +153,7 @@ evaluate_form.get("/evaluate/draft", authenticateToken, async (req, res) => {
                 a.[EVALUATE_DATE], 
                 a.[FLAG_STATUS]
         HAVING LOWER(a.FLAG_STATUS) = 'draft'
+        ORDER BY a.[EVALUATE_ID] asc
       `
     );
     res.status(200).send(result.recordset);
@@ -272,6 +274,7 @@ evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
                 a.[EVALUATE_DATE], 
                 a.[FLAG_STATUS]
         HAVING LOWER(a.FLAG_STATUS) = 'confirm'
+        ORDER BY a.[EVALUATE_ID] asc
       `
     );
     res.status(200).send(result.recordset);
@@ -299,6 +302,7 @@ evaluate_form.get(
           EVALUATE_COMMENT
         FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER]
         GROUP BY EVALUATE_ID, SUPPLIER, EVALUATE_PERCENT, EVALUATE_GRADE, EVALUATE_COMMENT
+        ORDER BY EVALUATE_ID asc
         `
       );
       res.status(200).send(result.recordset);
