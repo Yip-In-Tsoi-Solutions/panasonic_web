@@ -172,7 +172,6 @@ evaluate_form.put(
       const sql = await sql_serverConn();
       const {
         supplier,
-        evaluate_date,
         comments,
         updateScore,
         flag_status,
@@ -217,7 +216,7 @@ evaluate_form.put(
           SUBMIT_FORM_DATE=GETDATE(),
           FLAG_STATUS = @FLAG_STATUS,
           EVALUATE_DATE = GETDATE()
-        WHERE LOWER([EVALUATE_ID]) = @EVALUATE_ID AND [EVALUATE_DATE] = '${evaluate_date}'
+        WHERE LOWER([EVALUATE_ID]) = @EVALUATE_ID
       `);
       // Update each evaluation detail
       for (const score of updateScore) {
@@ -239,7 +238,6 @@ evaluate_form.put(
           AND LOWER([SUPPLIER]) = @SUPPLIER
           AND HEADER_INDEX = @HEADER_INDEX
           AND TOPIC_KEY_ID = @TOPIC_KEY_ID
-          AND [EVALUATE_DATE] = '${evaluate_date}'
       `);
       }
       res.status(200).send("Data updated successfully");
