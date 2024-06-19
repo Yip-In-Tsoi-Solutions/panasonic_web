@@ -107,6 +107,7 @@ buyer_reason.get("/buyerlist", authenticateToken, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+// display buyer by filter
 buyer_reason.post(
   "/buyerlist_filter_optional",
   authenticateToken,
@@ -123,6 +124,30 @@ buyer_reason.post(
         `
       );
       res.status(200).json(result.recordset);
+    } catch (error) {
+      console.error("Error inserting data:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+// display latest after submit update 
+buyer_reason.post(
+  "/buyerlist/latest_data",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      console.log(req.body)
+      // const sql = await sql_serverConn();
+      // const result = await sql.query(
+      //   `
+      //     SELECT
+      //       *
+      //     FROM
+      //       dbo.[v_PECTH_SUPPLIER_BUYER_REASON]
+      //     WHERE ${req.body.buyer_between_date}
+      //   `
+      // );
+      // res.status(200).json(result.recordset);
     } catch (error) {
       console.error("Error inserting data:", error);
       res.status(500).send("Internal Server Error");
