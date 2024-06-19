@@ -401,7 +401,8 @@ const Evaluate = (props) => {
                             evaluate_vendors?.evaluate_pending
                           ).concat([
                             {
-                              title: "Action",
+                              title: "ACTION",
+                              dataIndex: "ACTION",
                               key: `action_${rows_id + 1}`,
                               render: (record) => (
                                 <>
