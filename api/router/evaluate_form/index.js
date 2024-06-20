@@ -136,7 +136,7 @@ evaluate_form.get("/evaluate/draft", authenticateToken, async (req, res) => {
     const result = await request.query(
       `
         SELECT
-            upper(a.[EVALUATE_ID]) as EVALUATE_ID,
+            upper(a.[EVALUATE_ID]) as EVALUATE_ID, a.DEPARTMENT,
             a.[SUPPLIER],
             a.[EVALUATE_DATE],
             CONCAT(
@@ -151,7 +151,8 @@ evaluate_form.get("/evaluate/draft", authenticateToken, async (req, res) => {
         GROUP BY a.[EVALUATE_ID], 
                 a.[SUPPLIER], 
                 a.[EVALUATE_DATE], 
-                a.[FLAG_STATUS]
+                a.[FLAG_STATUS],
+                a.DEPARTMENT
         HAVING LOWER(a.FLAG_STATUS) = 'draft'
         ORDER BY a.[EVALUATE_ID] asc
       `
@@ -263,6 +264,7 @@ evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
                 '/', 
                 COUNT(*)
             ) AS 'EVALUATED AMOUNT',
+            a.DEPARTMENT,
             a.[FLAG_STATUS]
         FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER] a
             JOIN [dbo].[PECTH_EVALUATION_SCORE_DETAIL] b
@@ -270,7 +272,8 @@ evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
         GROUP BY a.[EVALUATE_ID], 
                 a.[SUPPLIER], 
                 a.[EVALUATE_DATE], 
-                a.[FLAG_STATUS]
+                a.[FLAG_STATUS],
+                a.DEPARTMENT
         HAVING LOWER(a.FLAG_STATUS) = 'confirm'
         ORDER BY a.[EVALUATE_ID] asc
       `
