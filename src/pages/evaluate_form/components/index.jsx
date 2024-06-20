@@ -263,9 +263,9 @@ const Evaluate = (props) => {
     }
   };
   let rows_id = 0;
-
-  const savePDF = async (supplier, evaluate_date, flag_status) => {
+  const savePDF = async (evaluateId, supplier, evaluate_date, flag_status, department) => {
     let payload = {
+      evaluate_id: evaluateId,
       supplier: supplier,
       evaluate_date: evaluate_date,
       flag_status: flag_status,
@@ -280,7 +280,7 @@ const Evaluate = (props) => {
       }
     );
     if (response.status === 200) {
-      generatePDF(supplier, evaluate_date, response.data);
+      generatePDF(supplier, evaluate_date, department, response.data);
     }
   };
   return (
@@ -551,17 +551,18 @@ const Evaluate = (props) => {
                           evaluate_vendors?.evaluate_confirm
                         ).concat([
                           {
-                            title: "address",
-                            dataIndex: "address",
+                            title: "ACTION",
+                            dataIndex: "ACTION",
                             render: (a, record) => (
                               <>
                                 <Button
-                                  //generatePDF
                                   onClick={savePDF.bind(
                                     this,
+                                    record?.EVALUATE_ID,
                                     record?.SUPPLIER,
                                     record?.EVALUATE_DATE,
-                                    record?.FLAG_STATUS
+                                    record?.FLAG_STATUS,
+                                    record?.DEPARTMENT
                                   )}
                                   className="uppercase"
                                 >
