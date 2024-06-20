@@ -188,8 +188,7 @@ const Evaluate = (props) => {
       
       if (response.status === 200) {
         form.resetFields();
-        payload.eval_form = []
-        sessionStorage.removeItem('form')
+        payload.eval_form = [{}];
         if (payload.flag_status === "waiting") {
           setActiveTabView("3");
           fetchEvaluateConfirm();
