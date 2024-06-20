@@ -10,7 +10,7 @@ async function logout() {
       sessionStorage.clear();
       setTimeout(()=> {
         window.location.href = "/";
-      }, 2400)
+      }, 300)
     }
   } catch (error) {
     console.error(
