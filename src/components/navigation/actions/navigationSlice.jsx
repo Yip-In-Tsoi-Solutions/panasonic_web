@@ -7,7 +7,10 @@ async function logout() {
     window.location.protocol + "//" + window.location.hostname + ":9000";
     const response = await axios.post(`${url}/api/auth/user/logout`);
     if (response.status === 200 && response.data === `Logout successful.`) {
-      window.location.href = "/";
+      sessionStorage.clear();
+      setTimeout(()=> {
+        window.location.href = "/";
+      }, 2400)
     }
   } catch (error) {
     console.error(
