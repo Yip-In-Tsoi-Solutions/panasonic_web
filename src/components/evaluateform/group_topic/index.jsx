@@ -1,4 +1,4 @@
-import { memo, useEffect } from "react";
+import { useEffect } from "react";
 import { Form, List, Radio } from "antd";
 
 const GroupTopic = ({ topicGroup, score, setScore }) => {
@@ -40,7 +40,7 @@ const GroupTopic = ({ topicGroup, score, setScore }) => {
       CREATED_DATE,
       ACTIVE_DATE_FROM,
       ACTIVE_DATE_TO,
-      EVALUATE_TOPIC_SCORE: scoring
+      EVALUATE_TOPIC_SCORE: scoring,
     };
   };
 
@@ -59,13 +59,13 @@ const GroupTopic = ({ topicGroup, score, setScore }) => {
 
     setScore((prevScore) => {
       const existingIndex = prevScore.findIndex(
-        (item) =>
-          item.TOPIC_KEY_ID === record.TOPIC_KEY_ID
+        (item) => item.TOPIC_KEY_ID === record.TOPIC_KEY_ID
       );
 
       if (existingIndex === -1) {
         return [...prevScore, scoreObject];
-      } else {
+      }
+      else {
         const newScore = [...prevScore];
         newScore[existingIndex] = scoreObject;
         return newScore;
@@ -83,22 +83,21 @@ const GroupTopic = ({ topicGroup, score, setScore }) => {
         renderItem={(item) => (
           <List.Item key={item.TOPIC_KEY_ID}>
             <List.Item.Meta
-              title={<h1 className="text-[14px] font-normal">{item.TOPIC_NAME}</h1>}
+              title={
+                <h1 className="text-[14px] font-normal">{item.TOPIC_NAME}</h1>
+              }
             />
             <div>
               <Form.Item className="mt-5" name={`score_${item.TOPIC_KEY_ID}`}>
                 <Radio.Group
                   onChange={(e) => handleScoreChange(item, e)}
-                  value={score.find(
-                    (s) => s.TOPIC_KEY_ID === item.TOPIC_KEY_ID
-                  )?.EVALUATE_TOPIC_SCORE}
+                  value={
+                    score.find((s) => s.TOPIC_KEY_ID === item.TOPIC_KEY_ID)
+                      ?.EVALUATE_TOPIC_SCORE
+                  }
                 >
                   {[1, 2, 3, 4, 5].map((value) => (
-                    <Radio
-                      key={value}
-                      className="text-[12px]"
-                      value={value}
-                    >
+                    <Radio key={value} className="text-[12px]" value={value}>
                       {value}
                     </Radio>
                   ))}
@@ -113,4 +112,4 @@ const GroupTopic = ({ topicGroup, score, setScore }) => {
   ));
 };
 
-export default memo(GroupTopic);
+export default GroupTopic;

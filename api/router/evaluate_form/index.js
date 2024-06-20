@@ -10,14 +10,9 @@ const cache = new NodeCache({ stdTTL: 60 });
 // display all questionaire
 evaluate_form.get("/evaluate/topic", authenticateToken, async (req, res) => {
   try {
-    const cacheKey = "evaluate_topic";
-    const cachedData = cache.get(cacheKey);
-    if (cachedData) {
-      res.status(200).send(cachedData);
-    } else {
-      const sql = await sql_serverConn();
-      const result = sql.query(
-        `
+    const sql = await sql_serverConn();
+    const result = sql.query(
+      `
         SELECT
         [TOPIC_NAME_TH],
         [TOPIC_NAME_EN],
@@ -33,17 +28,15 @@ evaluate_form.get("/evaluate/topic", authenticateToken, async (req, res) => {
         FROM [dbo].[PECTH_EVALUATION_MASTER]
         ORDER BY TOPIC_KEY_ID asc
         `
-      );
-      cache.set(cacheKey, result.recordset);
-      res.status(200).send((await result).recordset);
-    }
+    );
+    res.status(200).send((await result).recordset);
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).send("Internal Server Error");
   }
 });
 
-// insert into PECTH_EVALUATION_SCORE_HEADER & PECTH_EVALUATION_SCORE_DETAIL
+// create Evaluation data
 evaluate_form.post(
   "/evaluate/sending_form",
   authenticateToken,
@@ -56,7 +49,7 @@ evaluate_form.post(
         comments,
         eval_form,
         full_score,
-        flag_status,
+        flag_status
       } = req.body;
       const totalEntries = eval_form.length;
       const totalScore = eval_form.reduce(
@@ -119,8 +112,7 @@ evaluate_form.post(
           VALUES (@EVALUATE_ID, @HEADER_INDEX, @TOPIC_KEY_ID, @SUPPLIER, @DEPARTMENT, @EVALUATE_DATE, @EVALUATE_TOPIC_SCORE, GETDATE())
         `);
       }
-
-      res.status(200).send("Data inserted successfully");
+      res.status(200).send('Data is inserted')
     } catch (error) {
       console.error("Error:", error.message);
       res.status(500).send("Internal Server Error");
@@ -128,7 +120,7 @@ evaluate_form.post(
   }
 );
 
-//Evaluation FORM of Draft
+//display Evaluation is Draft
 evaluate_form.get("/evaluate/draft", authenticateToken, async (req, res) => {
   try {
     const sql = await sql_serverConn();
@@ -163,6 +155,42 @@ evaluate_form.get("/evaluate/draft", authenticateToken, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+//display Evaluation is Waiting
+evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
+  try {
+    const sql = await sql_serverConn();
+    const request = sql.request();
+    const result = await request.query(
+      `
+        SELECT
+            upper(a.[EVALUATE_ID]) as EVALUATE_ID,
+            a.[SUPPLIER],
+            a.[EVALUATE_DATE],
+            CONCAT(
+                COUNT(CASE WHEN b.EVALUATE_TOPIC_SCORE != 0 THEN 1 END), 
+                '/', 
+                COUNT(*)
+            ) AS 'EVALUATED AMOUNT',
+            a.DEPARTMENT,
+            a.[FLAG_STATUS]
+        FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER] a
+            JOIN [dbo].[PECTH_EVALUATION_SCORE_DETAIL] b
+            ON a.EVALUATE_ID = b.EVALUATE_ID
+        GROUP BY a.[EVALUATE_ID], 
+                a.[SUPPLIER], 
+                a.[EVALUATE_DATE], 
+                a.[FLAG_STATUS],
+                a.DEPARTMENT
+        HAVING LOWER(a.FLAG_STATUS) = 'waiting'
+        ORDER BY a.[EVALUATE_ID] asc
+      `
+    );
+    res.status(200).send(result.recordset);
+  } catch (error) {
+    console.error("Error:", error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
 // EVALUATE UPDATE
 evaluate_form.put(
   "/evaluate/form/update/:evaluate_id",
@@ -171,13 +199,8 @@ evaluate_form.put(
     try {
       const id = req.params.evaluate_id;
       const sql = await sql_serverConn();
-      const {
-        supplier,
-        comments,
-        updateScore,
-        flag_status,
-        full_score,
-      } = req.body;
+      const { supplier, comments, updateScore, flag_status, full_score } =
+        req.body;
 
       // Calculate total score and evaluation percent
       const totalScore = updateScore.reduce(
@@ -248,42 +271,6 @@ evaluate_form.put(
     }
   }
 );
-//Evaluation FORM of Confirm
-evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
-  try {
-    const sql = await sql_serverConn();
-    const request = sql.request();
-    const result = await request.query(
-      `
-        SELECT
-            upper(a.[EVALUATE_ID]) as EVALUATE_ID,
-            a.[SUPPLIER],
-            a.[EVALUATE_DATE],
-            CONCAT(
-                COUNT(CASE WHEN b.EVALUATE_TOPIC_SCORE != 0 THEN 1 END), 
-                '/', 
-                COUNT(*)
-            ) AS 'EVALUATED AMOUNT',
-            a.DEPARTMENT,
-            a.[FLAG_STATUS]
-        FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER] a
-            JOIN [dbo].[PECTH_EVALUATION_SCORE_DETAIL] b
-            ON a.EVALUATE_ID = b.EVALUATE_ID
-        GROUP BY a.[EVALUATE_ID], 
-                a.[SUPPLIER], 
-                a.[EVALUATE_DATE], 
-                a.[FLAG_STATUS],
-                a.DEPARTMENT
-        HAVING LOWER(a.FLAG_STATUS) = 'confirm'
-        ORDER BY a.[EVALUATE_ID] asc
-      `
-    );
-    res.status(200).send(result.recordset);
-  } catch (error) {
-    console.error("Error:", error.message);
-    res.status(500).send("Internal Server Error");
-  }
-});
 
 //display SUMMARY SCORE
 evaluate_form.get(
@@ -357,7 +344,7 @@ evaluate_form.post(
       const request = sql.request();
       const { supplier, evaluate_id, flag_status } = req.body;
       request.input("supplier", String(supplier).toLowerCase());
-      request.input("evaluate_id", String(evaluate_id).toLowerCase())
+      request.input("evaluate_id", String(evaluate_id).toLowerCase());
       request.input("status", flag_status);
       const result = await request.query(
         `

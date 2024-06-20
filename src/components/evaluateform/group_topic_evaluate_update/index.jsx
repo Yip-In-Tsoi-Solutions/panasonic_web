@@ -1,7 +1,7 @@
 import { memo, useEffect, useMemo } from "react";
 import { Form, List, Radio } from "antd";
 
-const Group_topic_evaluate_update = ({ topicGroup, score, setScore }) => {
+const Group_topic_evaluate_update = ({ topicGroup, setScore }) => {
   // Group topics by HEADER_INDEX
   const groupedTopics = topicGroup.reduce((groups, item) => {
     const index = item.HEADER_INDEX;

@@ -47,7 +47,8 @@ const LoginPage = () => {
     }
   };
   if (checkAuth === "true") {
-    window.location.href = '/home'
+    window.location.href = '/home';
+    sessionStorage.setItem('pageId', '1');
   } else {
     console.log("not found user");
   }
