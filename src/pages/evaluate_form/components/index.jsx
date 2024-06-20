@@ -50,7 +50,6 @@ const Evaluate = (props) => {
   // Evaluation Draft State
   const [activeTabView, setActiveTabView] = useState("1");
   const [pageSize, setPageSize] = useState(5);
-  const [score_selected, setScoreSelected] = useState(0);
   const [month, setSelectMonth] = useState("");
   const [score, setScore] = useState([]);
   const [comments, setComment] = useState("");
@@ -154,12 +153,12 @@ const Evaluate = (props) => {
   }, []);
 
   const { vendor } = evaluate_vendors.temp_state_filter;
-  const companyName = "PANASONIC ENERGY (THAILAND) CO.,LTD";
+  const pageToipic =
+    "การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ";
 
   const handleTabsView = async (key) => {
     setActiveTabView(key);
   };
-
   // submit for creating Evaluate FORM
   const submitForm = async (val) => {
     try {
@@ -170,7 +169,7 @@ const Evaluate = (props) => {
         eval_form: score,
         flag_status: score.reduce((acc, curr) => {
           // Using the reduce function on the `score` array to transform it into an object.
-          return curr.EVALUATE_TOPIC_SCORE != 0 ? "confirm" : "draft";
+          return curr.EVALUATE_TOPIC_SCORE != 0 ? "waiting" : "draft";
         }, {}),
         full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
       };
@@ -184,13 +183,7 @@ const Evaluate = (props) => {
         }
       );
       if (response.status === 200) {
-        form.resetFields();
-        // setScore([]);
-        // setActiveTabView("3");
-        // fetchEvaluateDraft();
-        // fetchEvaluateConfirm();
-        // fetchEvaluate();
-        history.go()
+        history.go();
       }
     } catch (error) {
       console.log(error);
@@ -252,7 +245,7 @@ const Evaluate = (props) => {
       updateScore: score,
       flag_status: score.reduce((acc, curr) => {
         // Using the reduce function on the `score` array to transform it into an object.
-        return curr.EVALUATE_TOPIC_SCORE != 0 ? "confirm" : "draft";
+        return curr.EVALUATE_TOPIC_SCORE != 0 ? "waiting" : "draft";
       }, {}),
       full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
     };
@@ -266,11 +259,7 @@ const Evaluate = (props) => {
       }
     );
     if (response.status === 200) {
-      setActiveTabView("3");
-      setEvaContinuteForm(false);
-      fetchEvaluateConfirm();
-      fetchEvaluateDraft();
-      fetchEvaluate();
+      history.go();
     }
   };
   let rows_id = 0;
@@ -301,9 +290,14 @@ const Evaluate = (props) => {
           <Col span={24}>
             <Card
               title={
-                <h1 className="text-2xl text-center font-bold pl-0 p-3 mb-10">
-                  {companyName}
-                </h1>
+                <>
+                  <h1 className="text-[16px] text-center font-bold pl-0 p-3">
+                    EVALUATE FORM
+                  </h1>
+                  <h1 className="text-2xl text-center font-bold pl-0 p-3 mb-3 uppercase">
+                    {pageToipic}
+                  </h1>
+                </>
               }
               bordered={false}
             >

@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useState } from "react";
+import React, { lazy, useMemo, useState } from "react";
 import { ConfigProvider, Layout, theme } from "antd";
 const Navigation = lazy(() => import("../../components/navigation/components"));
 const Supplier_delivery = lazy(() => import("../supplier_delivery/components"));
@@ -24,7 +24,7 @@ const App = () => {
   const url =
     window.location.protocol + "//" + window.location.hostname + ":9000";
   const token_id = sessionStorage.getItem("token_session");
-  useEffect(()=> {
+  useMemo(()=> {
     setSelected(parseInt(sessionStorage.getItem('pageId')))
   }, [selected_items])
   return (
