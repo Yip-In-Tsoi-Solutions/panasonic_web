@@ -10,14 +10,9 @@ const cache = new NodeCache({ stdTTL: 60 });
 // display all questionaire
 evaluate_form.get("/evaluate/topic", authenticateToken, async (req, res) => {
   try {
-    const cacheKey = "evaluate_topic";
-    const cachedData = cache.get(cacheKey);
-    if (cachedData) {
-      res.status(200).send(cachedData);
-    } else {
-      const sql = await sql_serverConn();
-      const result = sql.query(
-        `
+    const sql = await sql_serverConn();
+    const result = sql.query(
+      `
         SELECT
         [TOPIC_NAME_TH],
         [TOPIC_NAME_EN],
@@ -33,10 +28,8 @@ evaluate_form.get("/evaluate/topic", authenticateToken, async (req, res) => {
         FROM [dbo].[PECTH_EVALUATION_MASTER]
         ORDER BY TOPIC_KEY_ID asc
         `
-      );
-      cache.set(cacheKey, result.recordset);
-      res.status(200).send((await result).recordset);
-    }
+    );
+    res.status(200).send((await result).recordset);
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).send("Internal Server Error");
@@ -56,7 +49,6 @@ evaluate_form.post(
         comments,
         eval_form,
         full_score,
-        flag_status,
       } = req.body;
       const totalEntries = eval_form.length;
       const totalScore = eval_form.reduce(
@@ -98,7 +90,7 @@ evaluate_form.post(
           : "A"
       );
       request.input("EVALUATE_COMMENT", comments);
-      request.input("FLAG_STATUS", flag_status);
+      request.input("FLAG_STATUS", "");
       await request.query(headersQuery);
       // Insert details inside loop
       for (let i = 0; i < totalEntries; i++) {
@@ -119,8 +111,7 @@ evaluate_form.post(
           VALUES (@EVALUATE_ID, @HEADER_INDEX, @TOPIC_KEY_ID, @SUPPLIER, @DEPARTMENT, @EVALUATE_DATE, @EVALUATE_TOPIC_SCORE, GETDATE())
         `);
       }
-
-      res.status(200).send("Data inserted successfully");
+      res.status(200).send('Data is inserted')
     } catch (error) {
       console.error("Error:", error.message);
       res.status(500).send("Internal Server Error");
@@ -171,13 +162,8 @@ evaluate_form.put(
     try {
       const id = req.params.evaluate_id;
       const sql = await sql_serverConn();
-      const {
-        supplier,
-        comments,
-        updateScore,
-        flag_status,
-        full_score,
-      } = req.body;
+      const { supplier, comments, updateScore, flag_status, full_score } =
+        req.body;
 
       // Calculate total score and evaluation percent
       const totalScore = updateScore.reduce(
@@ -274,7 +260,7 @@ evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
                 a.[EVALUATE_DATE], 
                 a.[FLAG_STATUS],
                 a.DEPARTMENT
-        HAVING LOWER(a.FLAG_STATUS) = 'confirm'
+        HAVING LOWER(a.FLAG_STATUS) = 'waiting'
         ORDER BY a.[EVALUATE_ID] asc
       `
     );
@@ -357,7 +343,7 @@ evaluate_form.post(
       const request = sql.request();
       const { supplier, evaluate_id, flag_status } = req.body;
       request.input("supplier", String(supplier).toLowerCase());
-      request.input("evaluate_id", String(evaluate_id).toLowerCase())
+      request.input("evaluate_id", String(evaluate_id).toLowerCase());
       request.input("status", flag_status);
       const result = await request.query(
         `

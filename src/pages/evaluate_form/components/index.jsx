@@ -170,10 +170,10 @@ const Evaluate = (props) => {
         evaluate_date: month, // Assigning the value of the variable `month` to the key `evaluate_date`.
         comments: comments,
         eval_form: score,
-        flag_status: score.reduce((acc, curr) => {
-          // Using the reduce function on the `score` array to transform it into an object.
-          return curr.EVALUATE_TOPIC_SCORE != 0 ? "confirm" : "draft";
-        }, {}),
+        // flag_status: score.reduce((acc, curr) => {
+        //   // Using the reduce function on the `score` array to transform it into an object.
+        //   return curr.EVALUATE_TOPIC_SCORE != 0 ? "waiting" : "draft";
+        // }, {}),
         full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
       };
       const response = await axios.post(
@@ -185,17 +185,20 @@ const Evaluate = (props) => {
           },
         }
       );
+      
       if (response.status === 200) {
-        if (payload.flag_status === "confirm") {
+        form.resetFields();
+        payload.eval_form = []
+        sessionStorage.removeItem('form')
+        if (payload.flag_status === "waiting") {
           setActiveTabView("3");
           fetchEvaluateConfirm();
           fetchEvaluate();
-          form.resetFields();
+          
         } else {
           setActiveTabView("2");
           fetchEvaluateDraft();
           fetchEvaluate();
-          form.resetFields();
         }
       }
     } catch (error) {
@@ -258,7 +261,7 @@ const Evaluate = (props) => {
       updateScore: scoreUpdate,
       flag_status: scoreUpdate.reduce((acc, curr) => {
         // Using the reduce function on the `score` array to transform it into an object.
-        return curr.EVALUATE_TOPIC_SCORE != 0 ? "confirm" : "draft";
+        return curr.EVALUATE_TOPIC_SCORE != 0 ? "waiting" : "draft";
       }, {}),
       full_score: scoreUpdate.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
     };
@@ -556,7 +559,7 @@ const Evaluate = (props) => {
                     ),
                   },
                   {
-                    label: "confirm".toUpperCase(),
+                    label: "waiting".toUpperCase(),
                     key: "3",
                     children: (
                       <Table

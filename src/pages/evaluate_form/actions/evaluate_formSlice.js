@@ -31,8 +31,18 @@ const evaluate_formSlice = createSlice({
     setEvaluateConfirm(state, action) {
       state.evaluate_confirm = action.payload;
     },
+    resetEValuate(state) {
+      state.temp_state_filter = initial_data.temp_state_filter;
+    },
   },
 });
-export const { setVendorList, setSelect_VendorList, setForm, setEvaluateResultTable, setEvaluatePending, setEvaluateConfirm } =
-  evaluate_formSlice.actions;
+export const {
+  setVendorList,
+  setSelect_VendorList,
+  setForm,
+  setEvaluateResultTable,
+  setEvaluatePending,
+  setEvaluateConfirm,
+  resetEValuate
+} = evaluate_formSlice.actions;
 export default evaluate_formSlice.reducer;
