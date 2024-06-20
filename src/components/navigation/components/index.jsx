@@ -15,7 +15,7 @@ const Navigation = (props) => {
           items.map((i) => (
             <Menu.Item
               key={i.key}
-              onClick={(e) => props.setSelected(parseInt(e.key))}
+              onClick={(e) => props.setSelected(sessionStorage.setItem('pageId', e.key))}
             >
               {i.label}
             </Menu.Item>

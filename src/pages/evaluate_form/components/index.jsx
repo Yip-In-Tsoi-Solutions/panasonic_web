@@ -14,7 +14,7 @@ import {
   Tabs,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { memo, useMemo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import {
   setEvaluateConfirm,
   setEvaluatePending,
@@ -59,7 +59,6 @@ const Evaluate = (props) => {
   const [evaluate_id, setEvaluateId] = useState("");
   const [EvaluateContinuteForm, setEvaContinuteForm] = useState(false);
   const [evaluateSupplier, setEvaluateSupplier] = useState("");
-  const [scoreUpdate, setUpdateScore] = useState([]);
   const [questionList, setQuestList] = useState([]);
   async function fetchDropdownVendor() {
     try {
@@ -146,7 +145,7 @@ const Evaluate = (props) => {
       }
     }
   }
-  useMemo(() => {
+  useEffect(() => {
     fetchEvaluateTopic();
     fetchDropdownVendor();
     fetchEvaluate();
@@ -164,16 +163,15 @@ const Evaluate = (props) => {
   // submit for creating Evaluate FORM
   const submitForm = async (val) => {
     try {
-      form.resetFields();
       let payload = {
         supplier: vendor, // Assigning the value of the variable `vendor` to the key `supplier`.
         evaluate_date: month, // Assigning the value of the variable `month` to the key `evaluate_date`.
         comments: comments,
         eval_form: score,
-        // flag_status: score.reduce((acc, curr) => {
-        //   // Using the reduce function on the `score` array to transform it into an object.
-        //   return curr.EVALUATE_TOPIC_SCORE != 0 ? "waiting" : "draft";
-        // }, {}),
+        flag_status: score.reduce((acc, curr) => {
+          // Using the reduce function on the `score` array to transform it into an object.
+          return curr.EVALUATE_TOPIC_SCORE != 0 ? "confirm" : "draft";
+        }, {}),
         full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
       };
       const response = await axios.post(
@@ -185,20 +183,14 @@ const Evaluate = (props) => {
           },
         }
       );
-      
       if (response.status === 200) {
         form.resetFields();
-        payload.eval_form = [{}];
-        if (payload.flag_status === "waiting") {
-          setActiveTabView("3");
-          fetchEvaluateConfirm();
-          fetchEvaluate();
-          
-        } else {
-          setActiveTabView("2");
-          fetchEvaluateDraft();
-          fetchEvaluate();
-        }
+        // setScore([]);
+        // setActiveTabView("3");
+        // fetchEvaluateDraft();
+        // fetchEvaluateConfirm();
+        // fetchEvaluate();
+        history.go()
       }
     } catch (error) {
       console.log(error);
@@ -257,12 +249,12 @@ const Evaluate = (props) => {
       supplier: evaluateSupplier, // Assigning the value of the variable `vendor` to the key `supplier`.
       evaluate_date: questionList[0]?.EVALUATE_DATE, // Assigning the value of the variable `month` to the key `evaluate_date`.
       comments: comments,
-      updateScore: scoreUpdate,
-      flag_status: scoreUpdate.reduce((acc, curr) => {
+      updateScore: score,
+      flag_status: score.reduce((acc, curr) => {
         // Using the reduce function on the `score` array to transform it into an object.
-        return curr.EVALUATE_TOPIC_SCORE != 0 ? "waiting" : "draft";
+        return curr.EVALUATE_TOPIC_SCORE != 0 ? "confirm" : "draft";
       }, {}),
-      full_score: scoreUpdate.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
+      full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
     };
     const response = await axios.put(
       `${props.baseUrl}/api/evaluate/form/update/${evaluate_id}`,
@@ -279,17 +271,15 @@ const Evaluate = (props) => {
       fetchEvaluateConfirm();
       fetchEvaluateDraft();
       fetchEvaluate();
-      EvaluateUpdateForm.resetFields();
     }
   };
   let rows_id = 0;
 
-  const savePDF = async (evaluateId, supplier, evaluate_date, flag_status, department) => {
+  const savePDF = async (supplier, evaluate_date, flag_status) => {
     let payload = {
-      evaluate_id: evaluateId,
       supplier: supplier,
       evaluate_date: evaluate_date,
-      flag_status: flag_status
+      flag_status: flag_status,
     };
     const response = await axios.post(
       `${props.baseUrl}/api/evaluate/generate_pdf`,
@@ -301,7 +291,7 @@ const Evaluate = (props) => {
       }
     );
     if (response.status === 200) {
-      generatePDF(supplier, evaluate_date, department, response.data);
+      generatePDF(supplier, evaluate_date, response.data);
     }
   };
   return (
@@ -406,7 +396,7 @@ const Evaluate = (props) => {
                             evaluate_vendors?.evaluate_pending
                           ).concat([
                             {
-                              title: "ACTION",
+                              title: "Action",
                               key: `action_${rows_id + 1}`,
                               render: (record) => (
                                 <>
@@ -476,8 +466,8 @@ const Evaluate = (props) => {
                                         <div className="text-left">
                                           <Group_topic_evaluate_update
                                             topicGroup={questionList}
-                                            score={scoreUpdate}
-                                            setScore={setUpdateScore}
+                                            score={score}
+                                            setScore={setScore}
                                           />
                                         </div>
                                         <div>
@@ -558,7 +548,7 @@ const Evaluate = (props) => {
                     ),
                   },
                   {
-                    label: "waiting".toUpperCase(),
+                    label: "confirm".toUpperCase(),
                     key: "3",
                     children: (
                       <Table
@@ -567,18 +557,17 @@ const Evaluate = (props) => {
                           evaluate_vendors?.evaluate_confirm
                         ).concat([
                           {
-                            title: "ACTION",
-                            dataIndex: "ACTION",
+                            title: "address",
+                            dataIndex: "address",
                             render: (a, record) => (
                               <>
                                 <Button
+                                  //generatePDF
                                   onClick={savePDF.bind(
                                     this,
-                                    record?.EVALUATE_ID,
                                     record?.SUPPLIER,
                                     record?.EVALUATE_DATE,
-                                    record?.FLAG_STATUS,
-                                    record?.DEPARTMENT
+                                    record?.FLAG_STATUS
                                   )}
                                   className="uppercase"
                                 >

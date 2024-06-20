@@ -61,17 +61,15 @@ const GroupTopic = ({ topicGroup, score, setScore }) => {
       const existingIndex = prevScore.findIndex(
         (item) => item.TOPIC_KEY_ID === record.TOPIC_KEY_ID
       );
-      const newScore = [...prevScore];
-      newScore[existingIndex] = scoreObject;
-      return newScore;
 
-      // if (existingIndex === -1) {
-      //   return [...prevScore, scoreObject];
-      // } else {
-      //   const newScore = [...prevScore];
-      //   newScore[existingIndex] = scoreObject;
-      //   return newScore;
-      // }
+      if (existingIndex === -1) {
+        return [...prevScore, scoreObject];
+      }
+      else {
+        const newScore = [...prevScore];
+        newScore[existingIndex] = scoreObject;
+        return newScore;
+      }
     });
   };
 
