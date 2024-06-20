@@ -4,7 +4,7 @@ import { font } from "../../tahoma-normal";
 import schema from "../../print_schema";
 
 // Function to generate the PDF
-async function generatePDF(supplier, evaluate_date, questionaire) {
+async function generatePDF(supplier, evaluate_date, department, questionaire) {
   // Date formatting
   const date = new Date(evaluate_date);
   const year = date.getUTCFullYear();
@@ -67,8 +67,8 @@ async function generatePDF(supplier, evaluate_date, questionaire) {
 
   // Texts below the table
   doc.text(`ประจำเดือน : ${formattedDate}`, width - 60, 50);
-  doc.text(`หน่วยงาน / แผนก : ${String(supplier).toUpperCase()}`, 15, 50);
-  doc.text(`ชื่อผู้ส่งมอบ :`, 15, 60);
+  doc.text(`หน่วยงาน / แผนก : ${String(department).toUpperCase()}`, 15, 50);
+  doc.text(`ชื่อผู้ส่งมอบ : ${String(supplier).toUpperCase()}`, 15, 60);
 
   // Group topics by TOPIC_HEADER_NAME_TH
   const groupedTopics = questionaire.reduce((groups, item) => {

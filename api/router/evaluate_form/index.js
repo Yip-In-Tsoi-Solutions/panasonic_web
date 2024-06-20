@@ -136,7 +136,7 @@ evaluate_form.get("/evaluate/draft", authenticateToken, async (req, res) => {
     const result = await request.query(
       `
         SELECT
-            upper(a.[EVALUATE_ID]) as EVALUATE_ID,
+            upper(a.[EVALUATE_ID]) as EVALUATE_ID, a.DEPARTMENT,
             a.[SUPPLIER],
             a.[EVALUATE_DATE],
             CONCAT(
@@ -151,7 +151,8 @@ evaluate_form.get("/evaluate/draft", authenticateToken, async (req, res) => {
         GROUP BY a.[EVALUATE_ID], 
                 a.[SUPPLIER], 
                 a.[EVALUATE_DATE], 
-                a.[FLAG_STATUS]
+                a.[FLAG_STATUS],
+                a.DEPARTMENT
         HAVING LOWER(a.FLAG_STATUS) = 'draft'
         ORDER BY a.[EVALUATE_ID] asc
       `
@@ -172,7 +173,6 @@ evaluate_form.put(
       const sql = await sql_serverConn();
       const {
         supplier,
-        evaluate_date,
         comments,
         updateScore,
         flag_status,
@@ -217,7 +217,7 @@ evaluate_form.put(
           SUBMIT_FORM_DATE=GETDATE(),
           FLAG_STATUS = @FLAG_STATUS,
           EVALUATE_DATE = GETDATE()
-        WHERE LOWER([EVALUATE_ID]) = @EVALUATE_ID AND [EVALUATE_DATE] = '${evaluate_date}'
+        WHERE LOWER([EVALUATE_ID]) = @EVALUATE_ID
       `);
       // Update each evaluation detail
       for (const score of updateScore) {
@@ -239,7 +239,6 @@ evaluate_form.put(
           AND LOWER([SUPPLIER]) = @SUPPLIER
           AND HEADER_INDEX = @HEADER_INDEX
           AND TOPIC_KEY_ID = @TOPIC_KEY_ID
-          AND [EVALUATE_DATE] = '${evaluate_date}'
       `);
       }
       res.status(200).send("Data updated successfully");
@@ -265,6 +264,7 @@ evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
                 '/', 
                 COUNT(*)
             ) AS 'EVALUATED AMOUNT',
+            a.DEPARTMENT,
             a.[FLAG_STATUS]
         FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER] a
             JOIN [dbo].[PECTH_EVALUATION_SCORE_DETAIL] b
@@ -272,7 +272,8 @@ evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
         GROUP BY a.[EVALUATE_ID], 
                 a.[SUPPLIER], 
                 a.[EVALUATE_DATE], 
-                a.[FLAG_STATUS]
+                a.[FLAG_STATUS],
+                a.DEPARTMENT
         HAVING LOWER(a.FLAG_STATUS) = 'confirm'
         ORDER BY a.[EVALUATE_ID] asc
       `

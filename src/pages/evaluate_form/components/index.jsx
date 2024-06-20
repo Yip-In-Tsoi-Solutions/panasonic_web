@@ -14,7 +14,7 @@ import {
   Tabs,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { memo, useEffect, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import {
   setEvaluateConfirm,
   setEvaluatePending,
@@ -59,6 +59,7 @@ const Evaluate = (props) => {
   const [evaluate_id, setEvaluateId] = useState("");
   const [EvaluateContinuteForm, setEvaContinuteForm] = useState(false);
   const [evaluateSupplier, setEvaluateSupplier] = useState("");
+  const [scoreUpdate, setUpdateScore] = useState([]);
   const [questionList, setQuestList] = useState([]);
   async function fetchDropdownVendor() {
     try {
@@ -145,7 +146,7 @@ const Evaluate = (props) => {
       }
     }
   }
-  useEffect(() => {
+  useMemo(() => {
     fetchEvaluateTopic();
     fetchDropdownVendor();
     fetchEvaluate();
@@ -189,10 +190,12 @@ const Evaluate = (props) => {
           setActiveTabView("3");
           fetchEvaluateConfirm();
           fetchEvaluate();
+          form.resetFields();
         } else {
           setActiveTabView("2");
           fetchEvaluateDraft();
           fetchEvaluate();
+          form.resetFields();
         }
       }
     } catch (error) {
@@ -252,12 +255,12 @@ const Evaluate = (props) => {
       supplier: evaluateSupplier, // Assigning the value of the variable `vendor` to the key `supplier`.
       evaluate_date: questionList[0]?.EVALUATE_DATE, // Assigning the value of the variable `month` to the key `evaluate_date`.
       comments: comments,
-      updateScore: score,
-      flag_status: score.reduce((acc, curr) => {
+      updateScore: scoreUpdate,
+      flag_status: scoreUpdate.reduce((acc, curr) => {
         // Using the reduce function on the `score` array to transform it into an object.
         return curr.EVALUATE_TOPIC_SCORE != 0 ? "confirm" : "draft";
       }, {}),
-      full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
+      full_score: scoreUpdate.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
     };
     const response = await axios.put(
       `${props.baseUrl}/api/evaluate/form/update/${evaluate_id}`,
@@ -279,12 +282,12 @@ const Evaluate = (props) => {
   };
   let rows_id = 0;
 
-  const savePDF = async (evaluateId, supplier, evaluate_date, flag_status) => {
+  const savePDF = async (evaluateId, supplier, evaluate_date, flag_status, department) => {
     let payload = {
       evaluate_id: evaluateId,
       supplier: supplier,
       evaluate_date: evaluate_date,
-      flag_status: flag_status,
+      flag_status: flag_status
     };
     const response = await axios.post(
       `${props.baseUrl}/api/evaluate/generate_pdf`,
@@ -296,7 +299,7 @@ const Evaluate = (props) => {
       }
     );
     if (response.status === 200) {
-      generatePDF(supplier, evaluate_date, response.data);
+      generatePDF(supplier, evaluate_date, department, response.data);
     }
   };
   return (
@@ -402,7 +405,6 @@ const Evaluate = (props) => {
                           ).concat([
                             {
                               title: "ACTION",
-                              dataIndex: "ACTION",
                               key: `action_${rows_id + 1}`,
                               render: (record) => (
                                 <>
@@ -472,8 +474,8 @@ const Evaluate = (props) => {
                                         <div className="text-left">
                                           <Group_topic_evaluate_update
                                             topicGroup={questionList}
-                                            score={score}
-                                            setScore={setScore}
+                                            score={scoreUpdate}
+                                            setScore={setUpdateScore}
                                           />
                                         </div>
                                         <div>
@@ -568,13 +570,13 @@ const Evaluate = (props) => {
                             render: (a, record) => (
                               <>
                                 <Button
-                                  //generatePDF
                                   onClick={savePDF.bind(
                                     this,
                                     record?.EVALUATE_ID,
                                     record?.SUPPLIER,
                                     record?.EVALUATE_DATE,
-                                    record?.FLAG_STATUS
+                                    record?.FLAG_STATUS,
+                                    record?.DEPARTMENT
                                   )}
                                   className="uppercase"
                                 >
