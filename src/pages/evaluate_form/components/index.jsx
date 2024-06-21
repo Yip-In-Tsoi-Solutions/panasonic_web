@@ -31,7 +31,7 @@ import Group_topic_evaluate_update from "../../../components/evaluateform/group_
 import convert_year_th from "../../../javascript/convert_year_th";
 import moment from "moment";
 import ReportMonth from "../../../components/evaluateform/select_report_month";
-import Supplier_Eva from "../../../components/evaluateform/select_supplier_list/inex";
+import Supplier_Eva from "../../../components/evaluateform/select_supplier_list/index";
 import GroupedSupplierList from "../../../components/evaluateform/group_supplier";
 import schema from "../../../javascript/print_schema";
 import { CloseCircleOutlined, FilePdfOutlined } from "@ant-design/icons";

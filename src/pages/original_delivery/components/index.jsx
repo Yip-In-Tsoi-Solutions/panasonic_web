@@ -189,7 +189,7 @@ const Original_delivery = (props) => {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
             {original_delivery_report?.filterVendor.map((item) => (
-              <Option key={item.SUPPLIER} value={item.SUPPLIER}>
+              <Option key={item.SUPPLIER} value={item.SUPPLIER} disabled={item.SUPPLIER === original_delivery_report.temp_state_filter.vendor}>
                 {item.SUPPLIER}
               </Option>
             ))}
@@ -202,7 +202,7 @@ const Original_delivery = (props) => {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
             {original_delivery_report?.filterPO.map((item) => (
-              <Option key={item.PO_NUMBER} value={item.PO_NUMBER}>
+              <Option key={item.PO_NUMBER} value={item.PO_NUMBER} disabled={item.PO_NUMBER === original_delivery_report.temp_state_filter.purchaseNo}>
                 {item.PO_NUMBER}
               </Option>
             ))}
