@@ -17,7 +17,7 @@ const schema = (data) => {
 
     // Custom date format for 'date' columns
     if (isDateColumn(item)) {
-      col_data.render = (text) => moment(text).format('YYYY-MM-DD');
+      col_data.render = (text) => moment(new Date(text)).format('YYYY-MM-DD');
     }
 
     // Format float columns to 3 decimal places, except for date and integer columns
