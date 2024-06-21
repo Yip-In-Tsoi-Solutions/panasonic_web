@@ -20,9 +20,9 @@ const schema = (data) => {
       col_data.render = (text) => moment(new Date(text)).format('YYYY-MM-DD');
     }
 
-    // Format float columns to 3 decimal places, except for date and integer columns
-    if (!isDateColumn(item) && isFloatColumn(data, item)) {
-      col_data.render = (text) => parseFloat(text).toFixed(3);
+    // Format numeric columns (floats and integers), except for date and string columns
+    if (!isDateColumn(item) && !isStringColumn(data, item) && isNumericColumn(data, item)) {
+      col_data.render = (text) => formatNumericValue(text);
       col_data.align = 'right'; // Align numeric values to the right
     }
 
@@ -37,13 +37,35 @@ const isDateColumn = (item) => {
   return item.toLowerCase().includes('date');
 };
 
-// Function to check if the item represents a float column
-const isFloatColumn = (data, item) => {
-  // Check if all values in the column can be parsed as floats (excluding integers)
+// Function to check if the item represents a string column
+const isStringColumn = (data, item) => {
+  // Check if all values in the column are strings
   return data.every(row => {
     const value = row[item];
-    return !isNaN(parseFloat(value)) && !Number.isInteger(parseFloat(value));
+    return typeof value === 'string';
   });
+};
+
+// Function to check if the item represents a numeric column (float or integer)
+const isNumericColumn = (data, item) => {
+  // Check if all values in the column are numeric (float or integer)
+  return data.every(row => {
+    const value = row[item];
+    return !isNaN(parseFloat(value)) && isFinite(value);
+  });
+};
+
+// Function to format numeric values with commas and decimal places
+const formatNumericValue = (text) => {
+  const num = parseFloat(text);
+  if (isNaN(num)) return text; // Return original text if parsing fails
+
+  // Check if it's a float (up to 3 decimal places) or an integer
+  if (Number.isInteger(num)) {
+    return num.toLocaleString('en-US');
+  } else {
+    return num.toLocaleString('en-US', { maximumFractionDigits: 3 });
+  }
 };
 
 export default schema;
