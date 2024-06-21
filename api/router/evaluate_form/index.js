@@ -1,23 +1,14 @@
 const express = require("express");
 const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const authenticateToken = require("../../secure/jwt");
-const NodeCache = require("node-cache");
 const evaluate_form = express();
 evaluate_form.use(express.json());
-
-//initial variable
-const cache = new NodeCache({ stdTTL: 20 });
 // display all questionaire
 evaluate_form.get("/evaluate/topic", authenticateToken, async (req, res) => {
   try {
-    const cacheKey = "evaluate_topic";
-    const cachedData = cache.get(cacheKey);
-    if (cachedData) {
-      res.status(200).send(cachedData);
-    } else {
-      const sql = await sql_serverConn();
-      const result = sql.query(
-        `
+    const sql = await sql_serverConn();
+    const result = sql.query(
+      `
         SELECT
         [TOPIC_NAME_TH],
         [TOPIC_NAME_EN],
@@ -33,10 +24,8 @@ evaluate_form.get("/evaluate/topic", authenticateToken, async (req, res) => {
         FROM [dbo].[PECTH_EVALUATION_MASTER]
         ORDER BY TOPIC_KEY_ID asc
         `
-      );
-      cache.set(cacheKey, result.recordset);
-      res.status(200).send((await result).recordset);
-    }
+    );
+    res.status(200).send((await result).recordset);
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).send("Internal Server Error");
@@ -285,13 +274,7 @@ evaluate_form.get(
   authenticateToken,
   async (req, res) => {
     try {
-      const cacheKey = "summary_evaluate_score_result";
-      const cache_data = cache.get(cacheKey);
-      if (cache_data) {
-        res.status(200).send(cache_data);
-      }
-      else {
-        const sql = await sql_serverConn();
+      const sql = await sql_serverConn();
       const request = sql.request();
       const result = await request.query(
         `
@@ -306,9 +289,7 @@ evaluate_form.get(
         ORDER BY EVALUATE_ID asc
         `
       );
-      cache.set(cacheKey, result.recordset);
       res.status(200).send(result.recordset);
-      }
     } catch (error) {
       console.error("Error:", error.message);
       res.status(500).send("Internal Server Error");

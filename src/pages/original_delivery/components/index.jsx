@@ -115,16 +115,16 @@ const Original_delivery = (props) => {
     try {
       let queryString = "";
       if (buyer != "") {
-        queryString += `[Buyer] = ${JSON.stringify(buyer).replace(/"/g, "'")}`;
+        queryString = `[Buyer] = ${JSON.stringify(buyer).replace(/"/g, "'")}`;
       }
       if (vendor != "") {
-        queryString += ` AND [Vendor] = ${JSON.stringify(vendor).replace(
+        queryString = ` AND [SUPPLIER] = ${JSON.stringify(vendor).replace(
           /"/g,
           "'"
         )}`;
       }
       if (purchaseNo != "") {
-        queryString += ` AND [PO No] = ${purchaseNo}`;
+        queryString = ` AND [PO_NUMBER] = ${purchaseNo}`;
       }
       const response = await axios.post(
         `${props.baseUrl}/api/original_delivery_report/supplier_list_filter_optional`,
@@ -147,7 +147,7 @@ const Original_delivery = (props) => {
         window.location.href = "/error_not_found";
       }
     }
-  };
+  }
   return (
     <>
       <div>
@@ -176,7 +176,7 @@ const Original_delivery = (props) => {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
             {original_delivery_report?.filterBuyer.map((item) => (
-              <Option key={item.Buyer} value={item.Buyer}>
+              <Option key={item.Buyer} value={item.Buyer} disabled={item.Buyer === original_delivery_report.temp_state_filter.buyer}>
                 {item.Buyer}
               </Option>
             ))}

@@ -263,7 +263,13 @@ const Evaluate = (props) => {
     }
   };
   let rows_id = 0;
-  const savePDF = async (evaluateId, supplier, evaluate_date, flag_status, department) => {
+  const savePDF = async (
+    evaluateId,
+    supplier,
+    evaluate_date,
+    flag_status,
+    department
+  ) => {
     let payload = {
       evaluate_id: evaluateId,
       supplier: supplier,
