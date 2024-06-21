@@ -84,6 +84,7 @@ const Supplier_delivery = (props) => {
           if (exportAPI.status === 200) {
             setExportDataset(exportAPI.data);
             setConfirm(false);
+            form.resetFields()
           }
         } catch (error) {
           if (error) {

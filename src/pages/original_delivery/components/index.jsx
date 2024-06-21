@@ -141,6 +141,7 @@ const Original_delivery = (props) => {
       if (response.status === 200) {
         setOriginal_delivery_report_filter_result(response.data);
         dispatch(resetAllState());
+        form.resetFields()
       }
     } catch (error) {
       if (error) {
