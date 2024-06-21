@@ -25,8 +25,8 @@ supplier_api.post(
       const sql = await sql_serverConn();
       const result = await sql.query(
         `
-    SELECT * FROM dbo.v_PECTH_SUPPLIER_DELIVERY_DATEDIFF WHERE ${req.body.queryString} AND (QUANTITY_PO - QUANTITY_RECEIVED <> 0 OR (DATEDIFF(day,RECEIVE_DATE,PROMISED_DATE) <> 0) )
-    `
+        SELECT * FROM dbo.v_PECTH_SUPPLIER_DELIVERY_DATEDIFF WHERE ${req.body.queryString} AND (QUANTITY_PO - QUANTITY_RECEIVED <> 0 OR (DATEDIFF(day,RECEIVE_DATE,PROMISED_DATE) <> 0) )
+        `
       );
       res.status(200).json(result.recordset);
     } catch (error) {
