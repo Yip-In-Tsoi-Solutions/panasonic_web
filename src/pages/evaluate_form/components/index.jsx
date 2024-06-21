@@ -37,6 +37,7 @@ import schema from "../../../javascript/print_schema";
 import { CloseCircleOutlined, FilePdfOutlined } from "@ant-design/icons";
 import generatePDF from "../../../javascript/generate_pdf/evaluation_pdf/generate_pdf";
 import Update_evaluate from "../../../components/evaluateform/update_evaluate";
+import Approve_evaluate from "../../../components/evaluateform/approve_evaluate";
 const dateFormat = "DD/MM/YYYY";
 const { Panel } = Collapse;
 
@@ -250,6 +251,29 @@ const Evaluate = (props) => {
         // Using the reduce function on the `score` array to transform it into an object.
         return curr.EVALUATE_TOPIC_SCORE != 0 ? "waiting" : "draft";
       }, {}),
+      full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
+    };
+    const response = await axios.put(
+      `${props.baseUrl}/api/evaluate/form/update/${evaluate_id}`,
+      updatePayload,
+      {
+        headers: {
+          Authorization: `Bearer ${props.token_id}`,
+        },
+      }
+    );
+    if (response.status === 200) {
+      history.go();
+    }
+  };
+  //Approve
+  const submitApprove = async () => {
+    const updatePayload = {
+      supplier: evaluateSupplier, // Assigning the value of the variable `vendor` to the key `supplier`.
+      evaluate_date: questionList[0]?.EVALUATE_DATE, // Assigning the value of the variable `month` to the key `evaluate_date`.
+      comments: comments,
+      updateScore: score,
+      flag_status: "confirm",
       full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
     };
     const response = await axios.put(
@@ -513,11 +537,11 @@ const Evaluate = (props) => {
                                     )}
                                   </div>
                                 </Button>
-                                <Update_evaluate
+                                <Approve_evaluate
                                   questionList={questionList}
                                   EvaluateContinuteForm={EvaluateContinuteForm}
                                   evaluateSupplier={evaluateSupplier}
-                                  submitUpdateEvaluate={submitUpdateEvaluate}
+                                  submitUpdateEvaluate={submitApprove}
                                   EvaluateUpdateForm={EvaluateUpdateForm}
                                   closeEvaUpdate={closeEvaUpdate}
                                   record={record}

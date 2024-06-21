@@ -177,7 +177,7 @@ evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
                 a.[EVALUATE_DATE], 
                 a.[FLAG_STATUS],
                 a.DEPARTMENT
-        HAVING LOWER(a.FLAG_STATUS) = 'waiting'
+        HAVING LOWER(a.FLAG_STATUS) in ('waiting', 'confirm')
         ORDER BY a.[EVALUATE_ID] asc
       `
     );
