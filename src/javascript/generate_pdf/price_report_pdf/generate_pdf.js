@@ -2,6 +2,7 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { font } from "../../tahoma-normal";
 import schema from "../../print_schema";
+import numberWithCommas from "../../numberWithCommas";
 
 async function generatePDF(data, fileName) {
   try {
@@ -105,7 +106,6 @@ async function generatePDF(data, fileName) {
       align: "center",
     });
 
-    // Mapping data to table
     const dataTable = data.map((item) => ({
       supplier: item?.VENDOR_NAME,
       invoice_no: item?.INVOICE_NUM,
@@ -116,34 +116,25 @@ async function generatePDF(data, fileName) {
       uom: item?.UOM,
       QTY_ORDER: item?.PO_QTY,
       QTY_RECEIVED: item?.INV_QTY,
-      PO_PRICE: item?.PO_UNIT_PRICE ? item.PO_UNIT_PRICE.toFixed(3) : "0.000",
-      INVOICE_PRICE: item?.INV_UNIT_PRICE
-        ? item.INV_UNIT_PRICE.toFixed(3)
-        : "0.000",
-      DIFF: item?.PO_INVOICE_DIFF ? item.PO_INVOICE_DIFF : 0,
-      DIFF_AMOUNT: item?.PO_ITEM_COST_DIFF ? item.PO_ITEM_COST_DIFF : 0,
-      currency: item?.INV_CURRENCY_CODE,
+      PO_PRICE: item.PO_UNIT_PRICE.toFixed(3),
+      INVOICE_PRICE: item.INV_UNIT_PRICE.toFixed(3),
+      DIFF: item?.DIFF,
+      DIFF_AMOUNT_THB: numberWithCommas(item?.DIFF_AMOUNT_THB),
+      currency: "THB",
       buyer: item?.BUYER,
       remark: item?.REMARK,
     }));
 
-    // Generating data table
-    const totals = dataTable.reduce(
-      (acc, item) => {
-        acc.PO_PRICE += parseFloat(item.PO_PRICE) || 0;
-        acc.INVOICE_PRICE += parseFloat(item.INVOICE_PRICE) || 0;
-        acc.PO_INVOICE_DIFF += item.PO_INVOICE_DIFF || 0;
-        acc.PO_ITEM_COST_DIFF += item.PO_ITEM_COST_DIFF || 0;
-        return acc;
-      },
-      {
-        PO_PRICE: 0,
-        INVOICE_PRICE: 0,
-        PO_INVOICE_DIFF: 0,
-        PO_ITEM_COST_DIFF: 0,
-      }
-    );
+    // Mapping data to table
+    const findSum = data.map((item) => ({
+      DIFF_AMOUNT_THB: item?.DIFF_AMOUNT_THB,
+    }));
 
+    // Generating data table
+    const totals = findSum.reduce((acc, item) => {
+      acc.DIFF_AMOUNT_THB += parseFloat(item.DIFF_AMOUNT_THB);
+      return acc;
+    });
     doc.autoTable({
       startY: 80,
       body: dataTable,
@@ -161,22 +152,18 @@ async function generatePDF(data, fileName) {
 
     // Displaying totals
     doc.setFontSize(10);
-    const total =
-      totals.PO_PRICE +
-      totals.INVOICE_PRICE +
-      totals.PO_INVOICE_DIFF +
-      totals.PO_ITEM_COST_DIFF;
+    const total = totals.DIFF_AMOUNT_THB;
 
     const vat = total * 0.07;
     doc.text(
       `
-      TOTAL: ${total.toFixed(3)}`,
+      TOTAL: ${numberWithCommas(total.toFixed(3))}`,
       10,
       doc.lastAutoTable.finalY + 10
     );
     doc.text(
       `
-      VAT 7%: ${(vat).toFixed(3)}`,
+      VAT 7%: ${vat.toFixed(3)}`,
       10,
       doc.lastAutoTable.finalY + 20
     );
