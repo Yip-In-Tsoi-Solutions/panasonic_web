@@ -68,31 +68,24 @@ const Supplier_delivery = (props) => {
       );
       dispatch(resetAllState());
       if (response.status === 200) {
-        try {
-          setSuppliery_list_filter_result(response.data);
-          const exportAPI = await axios.post(
-            `${props.baseUrl}/api/supplier_list/export_file`,
-            {
-              queryString,
+        setSuppliery_list_filter_result(response.data);
+        const exportAPI = await axios.post(
+          `${props.baseUrl}/api/supplier_list/export_file`,
+          {
+            queryString,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${props.token_id}`,
             },
-            {
-              headers: {
-                Authorization: `Bearer ${props.token_id}`,
-              },
-            }
-          );
-          if (exportAPI.status === 200) {
-            setExportDataset(exportAPI.data);
-            setConfirm(false);
-            form.resetFields()
           }
-        } catch (error) {
-          if (error) {
-            window.location.href = "/error_login";
-          }
+        );
+        if (exportAPI.status === 200) {
+          setExportDataset(exportAPI.data);
+          setConfirm(false);
+          form.resetFields();
+          dispatch(resetAllState());
         }
-      } else {
-        setSuppliery_list_filter_result(...suppliery_list_filter_result);
       }
     } catch (error) {
       if (error) {

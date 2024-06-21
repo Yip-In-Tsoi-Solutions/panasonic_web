@@ -34,7 +34,6 @@ const Buyer_filter = (props) => {
     <>
       <Form.Item
         label={"Buyer"}
-        name={"buyer"}
         rules={[
           {
             required: true,
