@@ -186,7 +186,7 @@ const Evaluate = (props) => {
         }
       );
       if (response.status === 200) {
-        history.go();
+        window.location.reload();
       }
     } catch (error) {
       console.log(error);
@@ -263,7 +263,7 @@ const Evaluate = (props) => {
       }
     );
     if (response.status === 200) {
-      history.go();
+      window.location.reload();
     }
   };
   //Approve
@@ -286,7 +286,7 @@ const Evaluate = (props) => {
       }
     );
     if (response.status === 200) {
-      history.go();
+      window.location.reload();
     }
   };
   let rows_id = 0;
@@ -324,10 +324,10 @@ const Evaluate = (props) => {
             <Card
               title={
                 <>
-                  <h1 className="text-[16px] text-center font-bold pl-0 p-3">
+                  <h1 className="text-2xl text-center font-bold pl-0 p-3">
                     EVALUATE FORM
                   </h1>
-                  <h1 className="text-2xl text-center font-bold pl-0 p-3 mb-3 uppercase">
+                  <h1 className="text-[16px] text-center font-bold pl-0 p-3 mb-3 uppercase">
                     {pageToipic}
                   </h1>
                 </>
