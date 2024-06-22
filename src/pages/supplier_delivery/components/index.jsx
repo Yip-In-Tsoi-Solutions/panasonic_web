@@ -37,7 +37,7 @@ const Supplier_delivery = (props) => {
   const manageFilter = async (val) => {
     try {
       if (buyer != "") {
-        queryString += `[Buyer] = ${JSON.stringify(buyer).replace(/"/g, "'")}`;
+        queryString += `LOWER([Buyer]) = ${JSON.stringify(buyer).toLowerCase().replace(/"/g, "'")}`;
       }
       if (promise_start_date != "" && promise_end_date != "") {
         queryString += ` AND convert(nvarchar(10), [PROMISED_DATE], 120) BETWEEN ${JSON.stringify(
@@ -47,7 +47,7 @@ const Supplier_delivery = (props) => {
         ).replace(/"/g, "'")}`;
       }
       if (vendor != "") {
-        queryString += ` AND [SUPPLIER] = ${JSON.stringify(vendor).replace(
+        queryString += ` AND LOWER([SUPPLIER]) = ${JSON.stringify(vendor).toLowerCase().replace(
           /"/g,
           "'"
         )}`;

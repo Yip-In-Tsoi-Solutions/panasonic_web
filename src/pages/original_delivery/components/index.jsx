@@ -115,16 +115,16 @@ const Original_delivery = (props) => {
     try {
       let queryString = "";
       if (buyer != "") {
-        queryString = `[Buyer] = ${JSON.stringify(buyer).replace(/"/g, "'")}`;
+        queryString += `LOWER([Buyer]) = ${JSON.stringify(buyer).toLowerCase().replace(/"/g, "'")}`;
       }
       if (vendor != "") {
-        queryString = ` AND [SUPPLIER] = ${JSON.stringify(vendor).replace(
+        queryString += ` AND LOWER([SUPPLIER]) = ${JSON.stringify(vendor).toLowerCase().replace(
           /"/g,
           "'"
         )}`;
       }
       if (purchaseNo != "") {
-        queryString = ` AND [PO_NUMBER] = ${purchaseNo}`;
+        queryString += ` AND [PO_NUMBER] = ${purchaseNo}`;
       }
       const response = await axios.post(
         `${props.baseUrl}/api/original_delivery_report/supplier_list_filter_optional`,
