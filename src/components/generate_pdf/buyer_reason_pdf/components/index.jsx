@@ -24,6 +24,7 @@ const Buyer_reason_pdf = ({
     );
     if (response.status === 200) {
       generatePDF(response.data, page_title);
+      //sessionStorage.removeItem("buyer_between_date")
     }
   };
   return (

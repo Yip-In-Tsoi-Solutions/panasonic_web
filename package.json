@@ -38,6 +38,7 @@
     "react-router-dom": "^6.23.1",
     "redis": "^4.6.13",
     "redux": "^5.0.1",
+    "redux-persist": "^6.0.0",
     "util": "^0.12.5",
     "vite-express": "^0.15.0",
     "xlsx": "^0.18.5",

@@ -16,8 +16,6 @@ async function generatePDF(data, fileName) {
     const doc = new jsPDF("l", "mm", "a4");
     const width = doc.internal.pageSize.getWidth();
     const height = doc.internal.pageSize.getHeight();
-
-    // Embedding custom font
     doc.addFileToVFS("tahoma.ttf", font);
     doc.addFont("tahoma.ttf", "tahoma", "normal");
     doc.setFont("tahoma");
@@ -126,6 +124,7 @@ async function generatePDF(data, fileName) {
     });
 
     // Generating data table
+    doc.setFont("tahoma", "normal");
     doc.autoTable({
       startY: 80,
       head: [
@@ -143,7 +142,7 @@ async function generatePDF(data, fileName) {
       body: dataTable,
       columns: schema(dataTable),
       styles: {
-        fontSize: 8,
+        fontSize: 7,
         font: "tahoma",
       },
       headerStyles: {
@@ -151,17 +150,10 @@ async function generatePDF(data, fileName) {
         font: "tahoma",
         fontSize: 7,
       },
-      didDrawCell: function (data) {
-        if (data.row.raw.supplier === "GRAND TOTAL") {
-          doc.setFontSize(10);
-          doc.setFont("tahoma", "bold");
-          doc.setTextColor(255, 0, 0); // Red color for the grand total row
-        }
-      },
     });
     doc.setFontSize(12);
     doc.setFont("tahoma", "bold");
-    doc.text('Summary Total', 15, doc.lastAutoTable.finalY + 10)
+    doc.text("Summary Total", 15, doc.lastAutoTable.finalY + 10);
     doc.setFontSize(10);
     doc.setFont("tahoma", "normal");
     doc.text(

@@ -243,7 +243,6 @@ function Buyer_Reason(props) {
           setReason("");
           dispatch(resetAllState());
           setUpdateForm(false);
-          sessionStorage.removeItem("buyer_between_date")
         }
       }
     } catch (error) {
