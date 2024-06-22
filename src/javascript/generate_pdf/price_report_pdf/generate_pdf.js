@@ -156,26 +156,31 @@ async function generatePDF(data, fileName) {
 
     // Displaying totals
     doc.setFontSize(10);
+    doc.setFontSize(12);
+    doc.setFont("tahoma", "bold");
+    doc.text('Summary Total', 15, doc.lastAutoTable.finalY + 10)
+    doc.setFontSize(10);
+    doc.setFont("tahoma", "normal");
     const total = totals.DIFF_AMOUNT_THB;
-
     const vat = total * 0.07;
     doc.text(
-      `
-      TOTAL: ${numberWithCommas(total.toFixed(3))}`,
-      10,
-      doc.lastAutoTable.finalY + 10
+      `SUB_TOTAL:   ${numberWithCommas(total.toFixed(3))} /THB`,
+      15,
+      doc.lastAutoTable.finalY + 15
     );
     doc.text(
-      `
-      VAT 7%: ${vat.toFixed(3)}`,
-      10,
+      `VAT 7%:   ${numberWithCommas(
+        (total * 0.07).toFixed(3)
+      )} /THB`,
+      15,
       doc.lastAutoTable.finalY + 20
     );
     doc.text(
-      `
-      GRAND TOTAL: ${(total + vat).toFixed(3)}`,
-      10,
-      doc.lastAutoTable.finalY + 30
+      `GRAND TOTAL:   ${numberWithCommas(
+        (total + total * 0.07).toFixed(3)
+      )} /THB`,
+      15,
+      doc.lastAutoTable.finalY + 25
     );
     // Saving the PDF
     doc.save(`${fileName}_${current_date}.pdf`);
