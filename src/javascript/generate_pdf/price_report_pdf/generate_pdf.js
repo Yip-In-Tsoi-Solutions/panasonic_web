@@ -3,7 +3,7 @@ import "jspdf-autotable";
 import { font } from "../../tahoma-normal";
 import schema from "../../print_schema";
 import numberWithCommas from "../../numberWithCommas";
-
+import moment from 'moment';
 async function generatePDF(data, fileName) {
   try {
     const currentDate = new Date();
@@ -109,16 +109,16 @@ async function generatePDF(data, fileName) {
     const dataTable = data.map((item) => ({
       supplier: item?.VENDOR_NAME,
       invoice_no: item?.INVOICE_NUM,
-      invoice_date: item?.INVOICE_DATE,
+      invoice_date: moment(item?.INVOICE_DATE).format('YYYY-MM-DD'),
       po_release: `${item?.PO_NUMBER}/${item?.RELEASE_NUM}`, // Combined PO_NUMBER and RELEASE_NUM
       item: item?.ITEM,
       description: item?.DESCRIPTION,
       uom: item?.UOM,
-      QTY_ORDER: item?.PO_QTY,
-      QTY_RECEIVED: item?.INV_QTY,
-      PO_PRICE: item.PO_UNIT_PRICE.toFixed(3),
-      INVOICE_PRICE: item.INV_UNIT_PRICE.toFixed(3),
-      DIFF: item?.DIFF,
+      QTY_ORDER: numberWithCommas(item?.PO_QTY),
+      QTY_RECEIVED: numberWithCommas(item?.INV_QTY),
+      PO_PRICE: numberWithCommas(item.PO_UNIT_PRICE.toFixed(3)),
+      INVOICE_PRICE: numberWithCommas(item.INV_UNIT_PRICE.toFixed(3)),
+      DIFF: numberWithCommas(item?.DIFF),
       DIFF_AMOUNT_THB: numberWithCommas(item?.DIFF_AMOUNT_THB),
       currency: "THB",
       buyer: item?.BUYER,
@@ -149,6 +149,10 @@ async function generatePDF(data, fileName) {
         fontSize: 6,
       },
     });
+
+    if (height > 270) {
+      doc.addPage()
+    }
 
     // Displaying totals
     doc.setFontSize(10);

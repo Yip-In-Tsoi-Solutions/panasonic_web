@@ -107,36 +107,44 @@ async function generatePDF(data, fileName) {
     });
 
     // Mapping data to table and calculating grand totals
-    let totalQtyReceived = 0;
+    let totalQtyReceived = 0; // Initialize totalQtyReceived
+    data.forEach((item) => {
+      totalQtyReceived += parseFloat(item.QUANTITY_RECEIVED);
+    });
 
     let dataTable = data.map((item) => {
-      const qtyReceived = parseFloat(item?.QUANTITY_RECEIVED) || 0;
-      totalQtyReceived += qtyReceived;
       return {
         supplier: item?.SUPPLIER,
         po_number: item?.PO_NUMBER,
         po_release: item?.PO_RELEASE,
         item: item?.ITEM_NO,
         item_desc: item?.ITEM_DESCRIPTION,
-        qty_received: numberWithCommas(qtyReceived.toFixed(3)),
+        qty_received: numberWithCommas(item?.QUANTITY_RECEIVED.toFixed(3)),
         buyer: item?.BUYER,
         remark: item?.REASON_REMARK,
       };
     });
 
-    // Add the GRAND TOTAL row
-    dataTable.push({
-      supplier: `GRAND TOTAL : ${numberWithCommas(totalQtyReceived.toFixed(3))}`
-    });
     // Generating data table
     doc.autoTable({
       startY: 80,
-      head: [['SUPPLIER', 'PO NUMBER', 'PO RELEASE', 'ITEM CODE', 'ITEM DESC', 'QTY RECEIVED', 'BUYER', 'REMARK']],
+      head: [
+        [
+          "SUPPLIER",
+          "PO NUMBER",
+          "PO RELEASE",
+          "ITEM CODE",
+          "ITEM DESC",
+          "QTY RECEIVED",
+          "BUYER",
+          "REMARK",
+        ],
+      ],
       body: dataTable,
       columns: schema(dataTable),
       styles: {
         fontSize: 8,
-        font: 'tahoma'
+        font: "tahoma",
       },
       headerStyles: {
         fillColor: "#016255",
@@ -151,6 +159,30 @@ async function generatePDF(data, fileName) {
         }
       },
     });
+    doc.setFontSize(12);
+    doc.setFont("tahoma", "bold");
+    doc.text('Summary Total', 15, doc.lastAutoTable.finalY + 10)
+    doc.setFontSize(10);
+    doc.setFont("tahoma", "normal");
+    doc.text(
+      `SUB_TOTAL:   ${numberWithCommas(totalQtyReceived.toFixed(3))} /THB`,
+      15,
+      doc.lastAutoTable.finalY + 15
+    );
+    doc.text(
+      `VAT 7%:   ${numberWithCommas(
+        (totalQtyReceived * 0.07).toFixed(3)
+      )} /THB`,
+      15,
+      doc.lastAutoTable.finalY + 20
+    );
+    doc.text(
+      `GRAND TOTAL:   ${numberWithCommas(
+        (totalQtyReceived + totalQtyReceived * 0.07).toFixed(3)
+      )} /THB`,
+      15,
+      doc.lastAutoTable.finalY + 25
+    );
 
     // Saving the PDF
     doc.save(`${fileName}_${current_date}.pdf`);
