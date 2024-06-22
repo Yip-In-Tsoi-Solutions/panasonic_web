@@ -1,7 +1,7 @@
 import { memo, useEffect, useMemo } from "react";
 import { Form, List, Radio } from "antd";
 
-const Group_topic_evaluate_update = ({ topicGroup, setScore }) => {
+const Group_topic_evaluate_update = ({ topicGroup, setSelectScore }) => {
   // Group topics by HEADER_INDEX
   const groupedTopics = topicGroup.reduce((groups, item) => {
     const index = item.HEADER_INDEX;
@@ -49,7 +49,7 @@ const Group_topic_evaluate_update = ({ topicGroup, setScore }) => {
     const initialScores = topicGroup.map((item) =>
       generateScoreObject(item, item?.EVALUATE_TOPIC_SCORE)
     );
-    setScore(initialScores);
+    setSelectScore(initialScores);
   }, []);
 
   // Handle score change
@@ -57,7 +57,7 @@ const Group_topic_evaluate_update = ({ topicGroup, setScore }) => {
     const scoring = e.target.value;
     const scoreObject = generateScoreObject(record, scoring);
 
-    setScore((prevScore) => {
+    setSelectScore((prevScore) => {
       const existingIndex = prevScore.findIndex(
         (item) => item.TOPIC_KEY_ID === record.TOPIC_KEY_ID
       );

@@ -9,7 +9,7 @@ const Approve_Evaluate = ({
   EvaluateContinuteForm,
   evaluateSupplier,
   submitUpdateEvaluate,
-  EvaluateUpdateForm,
+  approveForm,
   closeEvaUpdate,
   record,
   score,
@@ -41,7 +41,7 @@ const Approve_Evaluate = ({
           {evaluateSupplier}
         </h1>
         <br />
-        <Form onFinish={submitUpdateEvaluate} form={EvaluateUpdateForm}>
+        <Form onFinish={submitUpdateEvaluate} form={approveForm}>
           <div className="flex-row">
             <div className="float-left">
               <p className="text-[16px]">
