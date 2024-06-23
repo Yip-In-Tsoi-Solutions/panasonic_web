@@ -265,7 +265,31 @@ const Evaluate = (props) => {
       console.log(error);
     }
   };
-
+  const savePDF = async (record) => {
+    const evaluateId = record?.EVALUATE_ID;
+    const supplier = record?.SUPPLIER;
+    const evaluate_date = record?.EVALUATE_DATE;
+    const flag_status = record?.FLAG_STATUS;
+    const department = record?.DEPARTMENT;
+    let pdf_payload = {
+      evaluate_id: evaluateId,
+      supplier: supplier,
+      evaluate_date: evaluate_date,
+      flag_status: flag_status,
+    };
+    const response = await axios.post(
+      `${props.baseUrl}/api/evaluate/generate_pdf`,
+      pdf_payload,
+      {
+        headers: {
+          Authorization: `Bearer ${props.token_id}`,
+        },
+      }
+    );
+    if (response.status === 200) {
+      generatePDF(supplier, evaluate_date, department, response.data);
+    }
+  };
   const DraftDrawer = ({ open, onClose, data }) => {
     const [SelectScore, setSelectScore] = useState([]);
     if (!data || data.length === 0) {
@@ -534,6 +558,7 @@ const Evaluate = (props) => {
                               if (record.FLAG_STATUS === "waiting") {
                                 return (
                                   <Button
+                                    className="uppercase"
                                     onClick={() => openConfirmDrawer(record)}
                                   >
                                     Approve
@@ -542,7 +567,8 @@ const Evaluate = (props) => {
                               } else {
                                 return (
                                   <Button
-                                    onClick={() => openConfirmDrawer(record)}
+                                    className="uppercase"
+                                    onClick={savePDF.bind(this, record)}
                                   >
                                     Save AS PDF
                                   </Button>
