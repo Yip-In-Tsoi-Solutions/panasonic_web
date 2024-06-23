@@ -223,7 +223,88 @@ evaluate_form.put(
       evaluateHeaderRequest.input("EVALUATE_PERCENT", evaluatePercent);
       evaluateHeaderRequest.input("EVALUATE_GRADE", evaluateGrade);
       evaluateHeaderRequest.input("EVALUATE_COMMENT", comments);
-      evaluateHeaderRequest.input("FLAG_STATUS", flag_status);
+      evaluateHeaderRequest.input("FLAG_STATUS", String(flag_status).toUpperCase());
+
+      await evaluateHeaderRequest.query(`
+        UPDATE dbo.[PECTH_EVALUATION_SCORE_HEADER]
+        SET 
+          EVALUATE_TOTAL_SCORE = @EVALUATE_TOTAL_SCORE,
+          EVALUATE_FULL_SCORE = @EVALUATE_FULL_SCORE,
+          EVALUATE_PERCENT = @EVALUATE_PERCENT,
+          EVALUATE_GRADE = @EVALUATE_GRADE,
+          EVALUATE_COMMENT=@EVALUATE_COMMENT,
+          SUBMIT_FORM_DATE=GETDATE(),
+          FLAG_STATUS = @FLAG_STATUS,
+          EVALUATE_DATE = GETDATE()
+        WHERE LOWER([EVALUATE_ID]) = @EVALUATE_ID
+      `);
+      // Update each evaluation detail
+      for (const score of updateScore) {
+        const evaluateDetailRequest = sql.request();
+        evaluateDetailRequest.input("EVALUATE_ID", String(id).toLowerCase());
+        evaluateDetailRequest.input("SUPPLIER", String(supplier).toLowerCase());
+        evaluateDetailRequest.input("HEADER_INDEX", score.HEADER_INDEX);
+        evaluateDetailRequest.input("TOPIC_KEY_ID", score.TOPIC_KEY_ID);
+        evaluateDetailRequest.input(
+          "EVALUATE_TOPIC_SCORE",
+          score.EVALUATE_TOPIC_SCORE
+        );
+        await evaluateDetailRequest.query(`
+          UPDATE dbo.[PECTH_EVALUATION_SCORE_DETAIL]
+          SET
+            [EVALUATE_TOPIC_SCORE] = @EVALUATE_TOPIC_SCORE
+          WHERE
+          EVALUATE_ID = @EVALUATE_ID
+          AND LOWER([SUPPLIER]) = @SUPPLIER
+          AND HEADER_INDEX = @HEADER_INDEX
+          AND TOPIC_KEY_ID = @TOPIC_KEY_ID
+      `);
+      }
+      res.status(200).send("Data updated successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+
+//EVALUATE APPROVE
+evaluate_form.put(
+  "/evaluate/form/update/:approve_id",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const id = req.params.approve_id;
+      const sql = await sql_serverConn();
+      const { supplier, comments, updateScore, flag_status, full_score } =
+        req.body;
+
+      // Calculate total score and evaluation percent
+      const totalScore = updateScore.reduce(
+        (sum, form) => sum + form.EVALUATE_TOPIC_SCORE,
+        0
+      );
+      const evaluatePercent = (totalScore / full_score) * 100;
+
+      // Determine evaluation grade
+      const evaluateGrade =
+        evaluatePercent <= 69
+          ? "D"
+          : evaluatePercent <= 79
+          ? "C"
+          : evaluatePercent <= 89
+          ? "B"
+          : "A";
+
+      // Update evaluation header
+      const evaluateHeaderRequest = sql.request();
+      evaluateHeaderRequest.input("EVALUATE_ID", String(id).toLowerCase());
+      evaluateHeaderRequest.input("EVALUATE_TOTAL_SCORE", totalScore);
+      evaluateHeaderRequest.input("EVALUATE_FULL_SCORE", full_score);
+      evaluateHeaderRequest.input("EVALUATE_PERCENT", evaluatePercent);
+      evaluateHeaderRequest.input("EVALUATE_GRADE", evaluateGrade);
+      evaluateHeaderRequest.input("EVALUATE_COMMENT", comments);
+      evaluateHeaderRequest.input("FLAG_STATUS", String(flag_status).toUpperCase());
 
       await evaluateHeaderRequest.query(`
         UPDATE dbo.[PECTH_EVALUATION_SCORE_HEADER]

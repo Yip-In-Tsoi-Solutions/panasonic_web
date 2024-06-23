@@ -17,6 +17,7 @@ import axios from "axios";
 import TextArea from "antd/es/input/TextArea";
 import moment from "moment";
 import Group_topic_evaluate_update from "../../../components/evaluateform/group_topic_evaluate_update";
+import Group_topic_approve from "../../../components/evaluateform/group_topic_approve";
 // Components
 import Supplier_Eva from "../../../components/evaluateform/select_supplier_list/index";
 import ReportMonth from "../../../components/evaluateform/select_report_month";
@@ -44,9 +45,11 @@ const Evaluate = (props) => {
   const [supplierName, setSupplierName] = useState("");
   const [save_draft] = useForm();
   const [draft_form] = useForm();
+  const [approve_form] = useForm();
   const dispatch = useDispatch();
-  const updateComment = useRef("");
   const comments = useRef("");
+  const updateComment = useRef("");
+  const approveComment = useRef("");
   const evaluate_vendors = useSelector((state) => state.evaluate_vendors);
 
   const [activeTabView, setActiveTabView] = useState("1");
@@ -62,6 +65,7 @@ const Evaluate = (props) => {
   // Confirm Drawer State
   const [confirmDrawerOpen, setConfirmDrawerOpen] = useState(false);
   const [confirmData, setConfirmData] = useState(null);
+  const [approve_id, setApproveId] = useState("");
 
   useEffect(() => {
     fetchEvaluateTopic();
@@ -200,6 +204,8 @@ const Evaluate = (props) => {
       );
       if (response.status === 200) {
         setConfirmData(response.data);
+        setSupplierName(record.SUPPLIER);
+        setApproveId(record.EVALUATE_ID);
         setConfirmDrawerOpen(true);
       }
     } catch (error) {
@@ -235,16 +241,25 @@ const Evaluate = (props) => {
     }
   };
 
-  const updateConfirmData = async (values) => {
+  const updateConfirmData = async (data, approve_date) => {
     try {
+      //approve_id
+      const approve_payload = {
+        supplier: supplierName,
+        evaluate_date: approve_date,
+        comments: approveComment.current.resizableTextArea.textArea.value,
+        updateScore: data,
+        flag_status: "confirm",
+        full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
+      };
       const response = await axios.put(
-        `${props.baseUrl}/api/evaluate/form/update/${confirmData.EVALUATE_ID}`,
-        values,
+        `${props.baseUrl}/api/evaluate/form/update/${approve_id}`,
+        approve_payload,
         { headers: { Authorization: `Bearer ${props.token_id}` } }
       );
       if (response.status === 200) {
         setConfirmDrawerOpen(false);
-        fetchEvaluateConfirm();
+        window.location.reload();
       }
     } catch (error) {
       console.log(error);
@@ -279,6 +294,7 @@ const Evaluate = (props) => {
             moment(data?.EVALUATE_DATE).format("YYYY-MM-DD")
           )}
           form={draft_form}
+          initialValues={data}
         >
           <div className="flex-row">
             <h1 className="text-2xl text-center font-bold">{supplierName}</h1>
@@ -325,20 +341,82 @@ const Evaluate = (props) => {
       </Drawer>
     );
   };
-  const ConfirmDrawer = ({ open, onClose, data }) => (
-    <Drawer
-      title="Approve Evaluation"
-      placement="right"
-      onClose={onClose}
-      visible={open}
-      width={720}
-    >
-      <Form onFinish={updateConfirmData} initialValues={data}>
-        {/* Form fields for approving evaluation */}
-        <Button htmlType="submit">Approve</Button>
-      </Form>
-    </Drawer>
-  );
+  const ConfirmDrawer = ({ open, onClose, data }) => {
+    const [scoreApprove, setScoreApprove] = useState([]);
+    if (!data || data.length === 0) {
+      // Handle case where data is not available or empty
+      return "";
+    }
+    return (
+      <Drawer
+        placement="right"
+        visible={open}
+        width={window.innerWidth}
+        extra={
+          <Space>
+            <CloseCircleOutlined
+              onClick={onClose}
+              className="text-[24px] text-left"
+            />
+          </Space>
+        }
+      >
+        <Form
+          onFinish={updateConfirmData.bind(
+            this,
+            scoreApprove,
+            moment(data?.EVALUATE_DATE).format("YYYY-MM-DD")
+          )}
+          initialValues={data}
+          form={approve_form}
+        >
+          {/* Form fields for approving evaluation */}
+          {/* <Button htmlType="submit">Approve</Button> */}
+          <div className="flex-row">
+            <h1 className="text-2xl text-center font-bold">{supplierName}</h1>
+            <br />
+            <div className="float-left">
+              <p className="text-[16px]">
+                การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ
+              </p>
+            </div>
+
+            <div className="clear-both">
+              <br />
+              <p className="text-[18px] float-left">รายงานประจำเดือน</p>
+              <Input
+                className="w-[140px] float-right mb-5"
+                value={moment(data?.EVALUATE_DATE).format("YYYY-MM-DD")}
+              />
+            </div>
+            <div className="clear-both">
+              <Group_topic_approve
+                topicGroup={data}
+                setScoreApprove={setScoreApprove}
+              />
+            </div>
+            <br />
+            <Form.Item>
+              <TextArea
+                placeholder="ระบุข้อเสนอแนะ"
+                defaultValue={data[0].EVALUATE_COMMENT}
+                autoSize={{
+                  minRows: 6,
+                  maxRows: 24,
+                }}
+                ref={approveComment}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button htmlType="submit" className="table m-auto uppercase">
+                Approve
+              </Button>
+            </Form.Item>
+          </div>
+        </Form>
+      </Drawer>
+    );
+  };
 
   return (
     <div className="site-card-wrapper kanit">
@@ -452,13 +530,25 @@ const Evaluate = (props) => {
                           {
                             title: "Action",
                             key: "action",
-                            render: (record) => (
-                              <Button onClick={() => openConfirmDrawer(record)}>
-                                {record.FLAG_STATUS === "waiting"
-                                  ? "Approve"
-                                  : "View"}
-                              </Button>
-                            ),
+                            render: (record) => {
+                              if (record.FLAG_STATUS === "waiting") {
+                                return (
+                                  <Button
+                                    onClick={() => openConfirmDrawer(record)}
+                                  >
+                                    Approve
+                                  </Button>
+                                );
+                              } else {
+                                return (
+                                  <Button
+                                    onClick={() => openConfirmDrawer(record)}
+                                  >
+                                    Save AS PDF
+                                  </Button>
+                                ); // Or render a different button or nothing if needed
+                              }
+                            },
                           },
                         ]}
                         pagination={{
