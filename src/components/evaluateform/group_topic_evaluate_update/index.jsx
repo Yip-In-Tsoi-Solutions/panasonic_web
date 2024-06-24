@@ -52,7 +52,7 @@ const Group_topic_evaluate_update = ({ topicGroup, setSelectScore }) => {
     setSelectScore(initialScores);
   }, []);
 
-  // Handle score change
+  //Handle score change
   const handleScoreChange = (record, e) => {
     const scoring = e.target.value;
     const scoreObject = generateScoreObject(record, scoring);
@@ -91,7 +91,7 @@ const Group_topic_evaluate_update = ({ topicGroup, setSelectScore }) => {
               <Form.Item className="mt-5" name={`scoreUpdate_${item.TOPIC_KEY_ID}`}>
                 <Radio.Group
                   onChange={(e) => handleScoreChange(item, e)}
-                  defaultValue={item.EVALUATE_TOPIC_SCORE}
+                  defaultValue={item?.EVALUATE_TOPIC_SCORE}
                 >
                   {[1, 2, 3, 4, 5].map((value) => (
                     <Radio key={value} className="text-[12px]" value={value}>
