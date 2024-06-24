@@ -296,6 +296,7 @@ const Evaluate = (props) => {
       // Handle case where data is not available or empty
       return "";
     }
+    console.log(data)
     return (
       <Drawer
         placement="right"
@@ -315,7 +316,7 @@ const Evaluate = (props) => {
           onFinish={updateDraftData.bind(
             this,
             SelectScore,
-            moment(data?.EVALUATE_DATE).format("YYYY-MM-DD")
+            moment(data[0]?.EVALUATE_DATE).format("YYYY-MM-DD")
           )}
           form={draft_form}
           //initialValues={data}
@@ -334,7 +335,7 @@ const Evaluate = (props) => {
               <p className="text-[18px] float-left">รายงานประจำเดือน</p>
               <Input
                 className="w-[140px] float-right mb-5"
-                value={moment(data?.EVALUATE_DATE).format("YYYY-MM-DD")}
+                value={moment(data[0]?.EVALUATE_DATE).format("YYYY-MM-DD")}
               />
             </div>
             <div className="clear-both">
@@ -406,7 +407,7 @@ const Evaluate = (props) => {
           onFinish={updateConfirmData.bind(
             this,
             scoreApprove,
-            moment(data?.EVALUATE_DATE).format("YYYY-MM-DD")
+            moment(data[0]?.EVALUATE_DATE).format("YYYY-MM-DD")
           )}
           initialValues={data}
           form={approve_form}
@@ -427,7 +428,7 @@ const Evaluate = (props) => {
               <p className="text-[18px] float-left">รายงานประจำเดือน</p>
               <Input
                 className="w-[140px] float-right mb-5"
-                value={moment(data?.EVALUATE_DATE).format("YYYY-MM-DD")}
+                value={moment(data[0]?.EVALUATE_DATE).format("YYYY-MM-DD")}
               />
             </div>
             <div className="clear-both">
