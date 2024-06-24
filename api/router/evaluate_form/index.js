@@ -1,12 +1,8 @@
 const express = require("express");
 const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const authenticateToken = require("../../secure/jwt");
-const NodeCache = require("node-cache");
 const evaluate_form = express();
 evaluate_form.use(express.json());
-
-//initial variable
-const cache = new NodeCache({ stdTTL: 60 });
 // display all questionaire
 evaluate_form.get("/evaluate/topic", authenticateToken, async (req, res) => {
   try {
@@ -49,7 +45,7 @@ evaluate_form.post(
         comments,
         eval_form,
         full_score,
-        flag_status
+        flag_status,
       } = req.body;
       const totalEntries = eval_form.length;
       const totalScore = eval_form.reduce(
@@ -65,11 +61,6 @@ evaluate_form.post(
       id++;
       const EVALUATE_ID = `evaluation_${String(id).padStart(4, "0")}`;
       // Prepare headers insertion query
-      const headersQuery = `
-      INSERT INTO dbo.[PECTH_EVALUATION_SCORE_HEADER]
-      ([EVALUATE_ID], [SUPPLIER], [DEPARTMENT], [EVALUATE_DATE], [EVALUATE_TOTAL_SCORE], [EVALUATE_FULL_SCORE], [EVALUATE_PERCENT], [EVALUATE_GRADE], [EVALUATE_COMMENT], [SUBMIT_FORM_DATE], [FLAG_STATUS])
-      VALUES (@EVALUATE_ID, @SUPPLIER, @DEPARTMENT, @EVALUATE_DATE, @EVALUATE_TOTAL_SCORE, @EVALUATE_FULL_SCORE, @EVALUATE_PERCENT, @EVALUATE_GRADE, @EVALUATE_COMMENT, GETDATE(), @FLAG_STATUS)
-    `;
       const request = sql.request();
       // Insert headers outside loop
       request.input("EVALUATE_ID", EVALUATE_ID);
@@ -91,8 +82,14 @@ evaluate_form.post(
           : "A"
       );
       request.input("EVALUATE_COMMENT", comments);
-      request.input("FLAG_STATUS", flag_status);
-      await request.query(headersQuery);
+      request.input("FLAG_STATUS", String(flag_status).toUpperCase());
+      await request.query(
+        `
+        INSERT INTO dbo.[PECTH_EVALUATION_SCORE_HEADER]
+        ([EVALUATE_ID], [SUPPLIER], [DEPARTMENT], [EVALUATE_DATE], [EVALUATE_TOTAL_SCORE], [EVALUATE_FULL_SCORE], [EVALUATE_PERCENT], [EVALUATE_GRADE], [EVALUATE_COMMENT], [SUBMIT_FORM_DATE], [FLAG_STATUS])
+        VALUES (@EVALUATE_ID, @SUPPLIER, @DEPARTMENT, @EVALUATE_DATE, @EVALUATE_TOTAL_SCORE, @EVALUATE_FULL_SCORE, @EVALUATE_PERCENT, @EVALUATE_GRADE, @EVALUATE_COMMENT, GETDATE(), @FLAG_STATUS)
+        `
+      );
       // Insert details inside loop
       for (let i = 0; i < totalEntries; i++) {
         const { HEADER_INDEX, TOPIC_KEY_ID, EVALUATE_TOPIC_SCORE } =
@@ -112,7 +109,7 @@ evaluate_form.post(
           VALUES (@EVALUATE_ID, @HEADER_INDEX, @TOPIC_KEY_ID, @SUPPLIER, @DEPARTMENT, @EVALUATE_DATE, @EVALUATE_TOPIC_SCORE, GETDATE())
         `);
       }
-      res.status(200).send('Data is inserted')
+      res.status(200).send("Data is inserted");
     } catch (error) {
       console.error("Error:", error.message);
       res.status(500).send("Internal Server Error");
@@ -135,7 +132,7 @@ evaluate_form.get("/evaluate/draft", authenticateToken, async (req, res) => {
                 COUNT(CASE WHEN b.EVALUATE_TOPIC_SCORE != 0 THEN 1 END), 
                 '/', 
                 COUNT(*)
-            ) AS 'EVALUATED AMOUNT',
+            ) AS 'EVALUATED_AMOUNT',
             a.[FLAG_STATUS]
         FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER] a
             JOIN [dbo].[PECTH_EVALUATION_SCORE_DETAIL] b
@@ -170,7 +167,7 @@ evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
                 COUNT(CASE WHEN b.EVALUATE_TOPIC_SCORE != 0 THEN 1 END), 
                 '/', 
                 COUNT(*)
-            ) AS 'EVALUATED AMOUNT',
+            ) AS 'EVALUATED_AMOUNT',
             a.DEPARTMENT,
             a.[FLAG_STATUS]
         FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER] a
@@ -181,7 +178,7 @@ evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
                 a.[EVALUATE_DATE], 
                 a.[FLAG_STATUS],
                 a.DEPARTMENT
-        HAVING LOWER(a.FLAG_STATUS) = 'waiting'
+        HAVING LOWER(a.FLAG_STATUS) in ('waiting', 'confirm')
         ORDER BY a.[EVALUATE_ID] asc
       `
     );
@@ -227,7 +224,10 @@ evaluate_form.put(
       evaluateHeaderRequest.input("EVALUATE_PERCENT", evaluatePercent);
       evaluateHeaderRequest.input("EVALUATE_GRADE", evaluateGrade);
       evaluateHeaderRequest.input("EVALUATE_COMMENT", comments);
-      evaluateHeaderRequest.input("FLAG_STATUS", flag_status);
+      evaluateHeaderRequest.input(
+        "FLAG_STATUS",
+        String(flag_status).toUpperCase()
+      );
 
       await evaluateHeaderRequest.query(`
         UPDATE dbo.[PECTH_EVALUATION_SCORE_HEADER]
@@ -238,8 +238,7 @@ evaluate_form.put(
           EVALUATE_GRADE = @EVALUATE_GRADE,
           EVALUATE_COMMENT=@EVALUATE_COMMENT,
           SUBMIT_FORM_DATE=GETDATE(),
-          FLAG_STATUS = @FLAG_STATUS,
-          EVALUATE_DATE = GETDATE()
+          FLAG_STATUS = @FLAG_STATUS
         WHERE LOWER([EVALUATE_ID]) = @EVALUATE_ID
       `);
       // Update each evaluation detail
@@ -272,28 +271,82 @@ evaluate_form.put(
   }
 );
 
-//display SUMMARY SCORE
-evaluate_form.get(
-  "/evaluate/summary_score",
+//EVALUATE APPROVE
+evaluate_form.put(
+  "/evaluate/form/update/:approve_id",
   authenticateToken,
   async (req, res) => {
     try {
+      const id = req.params.approve_id;
       const sql = await sql_serverConn();
-      const request = sql.request();
-      const result = await request.query(
-        `
-        SELECT
-          UPPER(EVALUATE_ID) as EVALUATE_ID, 
-          SUPPLIER, 
-          ROUND(EVALUATE_PERCENT, 2) as EVALUATE_PERCENT,
-          EVALUATE_GRADE, 
-          EVALUATE_COMMENT
-        FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER]
-        GROUP BY EVALUATE_ID, SUPPLIER, EVALUATE_PERCENT, EVALUATE_GRADE, EVALUATE_COMMENT
-        ORDER BY EVALUATE_ID asc
-        `
+      const { supplier, comments, updateScore, flag_status, full_score } =
+        req.body;
+
+      // Calculate total score and evaluation percent
+      const totalScore = updateScore.reduce(
+        (sum, form) => sum + form.EVALUATE_TOPIC_SCORE,
+        0
       );
-      res.status(200).send(result.recordset);
+      const evaluatePercent = (totalScore / full_score) * 100;
+
+      // Determine evaluation grade
+      const evaluateGrade =
+        evaluatePercent <= 69
+          ? "D"
+          : evaluatePercent <= 79
+          ? "C"
+          : evaluatePercent <= 89
+          ? "B"
+          : "A";
+
+      // Update evaluation header
+      const evaluateHeaderRequest = sql.request();
+      evaluateHeaderRequest.input("EVALUATE_ID", String(id).toLowerCase());
+      evaluateHeaderRequest.input("EVALUATE_TOTAL_SCORE", totalScore);
+      evaluateHeaderRequest.input("EVALUATE_FULL_SCORE", full_score);
+      evaluateHeaderRequest.input("EVALUATE_PERCENT", evaluatePercent);
+      evaluateHeaderRequest.input("EVALUATE_GRADE", evaluateGrade);
+      evaluateHeaderRequest.input("EVALUATE_COMMENT", comments);
+      evaluateHeaderRequest.input(
+        "FLAG_STATUS",
+        String(flag_status).toUpperCase()
+      );
+
+      await evaluateHeaderRequest.query(`
+        UPDATE dbo.[PECTH_EVALUATION_SCORE_HEADER]
+        SET 
+          EVALUATE_TOTAL_SCORE = @EVALUATE_TOTAL_SCORE,
+          EVALUATE_FULL_SCORE = @EVALUATE_FULL_SCORE,
+          EVALUATE_PERCENT = @EVALUATE_PERCENT,
+          EVALUATE_GRADE = @EVALUATE_GRADE,
+          EVALUATE_COMMENT=@EVALUATE_COMMENT,
+          SUBMIT_FORM_DATE=GETDATE(),
+          FLAG_STATUS = @FLAG_STATUS
+        WHERE LOWER([EVALUATE_ID]) = @EVALUATE_ID
+      `);
+      // Update each evaluation detail
+      for (const score of updateScore) {
+        const evaluateDetailRequest = sql.request();
+        evaluateDetailRequest.input("EVALUATE_ID", String(id).toLowerCase());
+        evaluateDetailRequest.input("SUPPLIER", String(supplier).toLowerCase());
+        evaluateDetailRequest.input("HEADER_INDEX", score.HEADER_INDEX);
+        evaluateDetailRequest.input("TOPIC_KEY_ID", score.TOPIC_KEY_ID);
+        evaluateDetailRequest.input(
+          "EVALUATE_TOPIC_SCORE",
+          score.EVALUATE_TOPIC_SCORE
+        );
+        await evaluateDetailRequest.query(`
+          UPDATE dbo.[PECTH_EVALUATION_SCORE_DETAIL]
+          SET
+            [EVALUATE_TOPIC_SCORE] = @EVALUATE_TOPIC_SCORE
+          WHERE
+          EVALUATE_ID = @EVALUATE_ID
+          AND LOWER([SUPPLIER]) = @SUPPLIER
+          AND HEADER_INDEX = @HEADER_INDEX
+          AND TOPIC_KEY_ID = @TOPIC_KEY_ID
+      `);
+      }
+      res.status(200).send("Data updated successfully");
     } catch (error) {
       console.error("Error:", error.message);
       res.status(500).send("Internal Server Error");
@@ -366,6 +419,67 @@ evaluate_form.post(
         GROUP BY a.HEADER_INDEX, a.TOPIC_LINE, c.EVALUATE_ID, a.TOPIC_NAME_TH,a.TOPIC_NAME_EN,b.EVALUATE_TOPIC_SCORE,a.TOPIC_HEADER_NAME_TH,a.TOPIC_HEADER_NAME_ENG, c.EVALUATE_PERCENT, c.FLAG_STATUS, c.SUPPLIER, c.EVALUATE_COMMENT
         HAVING LOWER(c.FLAG_STATUS)=@status and LOWER(c.SUPPLIER)=@supplier AND LOWER(c.EVALUATE_ID)=@evaluate_id
         ORDER BY a.HEADER_INDEX, a.TOPIC_LINE
+        `
+      );
+      res.status(200).send(result.recordset);
+    } catch (error) {
+      console.error("Error:", error.message);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+//display SUMMARY SCORE
+evaluate_form.get(
+  "/evaluate/summary_score",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const request = sql.request();
+      const result = await request.query(
+        `
+        SELECT
+          UPPER(EVALUATE_ID) as EVALUATE_ID, 
+          SUPPLIER, 
+          ROUND(EVALUATE_PERCENT, 2) as EVALUATE_PERCENT,
+          EVALUATE_GRADE, 
+          EVALUATE_COMMENT
+        FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER]
+        GROUP BY EVALUATE_ID, SUPPLIER, EVALUATE_PERCENT, EVALUATE_GRADE, EVALUATE_COMMENT
+        ORDER BY EVALUATE_ID asc
+        `
+      );
+      res.status(200).send(result.recordset);
+    } catch (error) {
+      console.error("Error:", error.message);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+// filter Summary Score
+evaluate_form.post(
+  "/evaluate/summary_score/filter",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const request = sql.request();
+      const {summary_date} = req.body;
+      request.input("eva_date", summary_date);
+      const result = await request.query(
+        `
+        SELECT
+            UPPER(EVALUATE_ID) as EVALUATE_ID,
+            SUPPLIER,
+            ROUND(EVALUATE_PERCENT, 2) as EVALUATE_PERCENT,
+            EVALUATE_GRADE,
+            FLAG_STATUS,
+            EVALUATE_COMMENT
+        FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER]
+        WHERE [EVALUATE_DATE] BETWEEN CAST(CONCAT(@eva_date,'-01') AS DATE) AND EOMONTH(CAST(CONCAT(@eva_date,'-01') AS DATE))
+        AND LOWER(FLAG_STATUS) = 'confirm'
+        GROUP BY EVALUATE_ID, SUPPLIER, EVALUATE_PERCENT, EVALUATE_GRADE, FLAG_STATUS, EVALUATE_COMMENT
+        ORDER BY EVALUATE_ID asc
         `
       );
       res.status(200).send(result.recordset);

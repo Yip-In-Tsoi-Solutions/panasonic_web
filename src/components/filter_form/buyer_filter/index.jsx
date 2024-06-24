@@ -34,7 +34,6 @@ const Buyer_filter = (props) => {
     <>
       <Form.Item
         label={"Buyer"}
-        name={"buyer"}
         rules={[
           {
             required: true,
@@ -48,7 +47,7 @@ const Buyer_filter = (props) => {
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         >
           {filter?.filterBuyer.map((item) => (
-            <Option key={item.Buyer} value={item.Buyer}>
+            <Option key={item.Buyer} value={item.Buyer} disabled={item.Buyer === filter.temp_state_filter.buyer}>
               {item.Buyer}
             </Option>
           ))}

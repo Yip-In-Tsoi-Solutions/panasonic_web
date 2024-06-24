@@ -37,7 +37,7 @@ const Supplier_delivery = (props) => {
   const manageFilter = async (val) => {
     try {
       if (buyer != "") {
-        queryString += `[Buyer] = ${JSON.stringify(buyer).replace(/"/g, "'")}`;
+        queryString += `LOWER([Buyer]) = ${JSON.stringify(buyer).toLowerCase().replace(/"/g, "'")}`;
       }
       if (promise_start_date != "" && promise_end_date != "") {
         queryString += ` AND convert(nvarchar(10), [PROMISED_DATE], 120) BETWEEN ${JSON.stringify(
@@ -47,7 +47,7 @@ const Supplier_delivery = (props) => {
         ).replace(/"/g, "'")}`;
       }
       if (vendor != "") {
-        queryString += ` AND [SUPPLIER] = ${JSON.stringify(vendor).replace(
+        queryString += ` AND LOWER([SUPPLIER]) = ${JSON.stringify(vendor).toLowerCase().replace(
           /"/g,
           "'"
         )}`;
@@ -68,30 +68,24 @@ const Supplier_delivery = (props) => {
       );
       dispatch(resetAllState());
       if (response.status === 200) {
-        try {
-          setSuppliery_list_filter_result(response.data);
-          const exportAPI = await axios.post(
-            `${props.baseUrl}/api/supplier_list/export_file`,
-            {
-              queryString,
+        setSuppliery_list_filter_result(response.data);
+        const exportAPI = await axios.post(
+          `${props.baseUrl}/api/supplier_list/export_file`,
+          {
+            queryString,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${props.token_id}`,
             },
-            {
-              headers: {
-                Authorization: `Bearer ${props.token_id}`,
-              },
-            }
-          );
-          if (exportAPI.status === 200) {
-            setExportDataset(exportAPI.data);
-            setConfirm(false);
           }
-        } catch (error) {
-          if (error) {
-            window.location.href = "/error_login";
-          }
+        );
+        if (exportAPI.status === 200) {
+          setExportDataset(exportAPI.data);
+          setConfirm(false);
+          form.resetFields();
+          dispatch(resetAllState());
         }
-      } else {
-        setSuppliery_list_filter_result(...suppliery_list_filter_result);
       }
     } catch (error) {
       if (error) {

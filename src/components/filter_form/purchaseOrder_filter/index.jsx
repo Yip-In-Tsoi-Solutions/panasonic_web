@@ -43,7 +43,7 @@ const PurchaseOrder_filter = (props) => {
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         >
           {filter?.filterPO.map((item) => (
-            <Option key={item.po_no} value={item.po_no}>
+            <Option key={item.po_no} value={item.po_no} disabled={item.po_no === filter.temp_state_filter.purchaseNo}>
               {item.po_no}
             </Option>
           ))}

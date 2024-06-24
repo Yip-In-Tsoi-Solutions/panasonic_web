@@ -1,7 +1,7 @@
-import { memo, useEffect, useMemo } from "react";
+import { memo, useMemo } from "react";
 import { Form, List, Radio } from "antd";
 
-const Group_topic_evaluate_update = ({ topicGroup, setSelectScore }) => {
+const Group_topic_approve = ({ topicGroup, setScoreApprove }) => {
   // Group topics by HEADER_INDEX
   const groupedTopics = topicGroup.reduce((groups, item) => {
     const index = item.HEADER_INDEX;
@@ -49,15 +49,15 @@ const Group_topic_evaluate_update = ({ topicGroup, setSelectScore }) => {
     const initialScores = topicGroup.map((item) =>
       generateScoreObject(item, item?.EVALUATE_TOPIC_SCORE)
     );
-    setSelectScore(initialScores);
+    setScoreApprove(initialScores);
   }, []);
 
-  //Handle score change
+  // Handle score change
   const handleScoreChange = (record, e) => {
     const scoring = e.target.value;
     const scoreObject = generateScoreObject(record, scoring);
 
-    setSelectScore((prevScore) => {
+    setScoreApprove((prevScore) => {
       const existingIndex = prevScore.findIndex(
         (item) => item.TOPIC_KEY_ID === record.TOPIC_KEY_ID
       );
@@ -91,7 +91,7 @@ const Group_topic_evaluate_update = ({ topicGroup, setSelectScore }) => {
               <Form.Item className="mt-5" name={`scoreUpdate_${item.TOPIC_KEY_ID}`}>
                 <Radio.Group
                   onChange={(e) => handleScoreChange(item, e)}
-                  defaultValue={item?.EVALUATE_TOPIC_SCORE}
+                  defaultValue={item.EVALUATE_TOPIC_SCORE}
                 >
                   {[1, 2, 3, 4, 5].map((value) => (
                     <Radio key={value} className="text-[12px]" value={value}>
@@ -109,4 +109,4 @@ const Group_topic_evaluate_update = ({ topicGroup, setSelectScore }) => {
   ));
 };
 
-export default memo(Group_topic_evaluate_update);
+export default memo(Group_topic_approve);

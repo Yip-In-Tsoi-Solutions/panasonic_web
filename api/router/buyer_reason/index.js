@@ -255,12 +255,13 @@ buyer_reason.put(
       const delay_cause = req.body.delay_cause;
       const effect_production_shipment = req.body.effect_production_shipment;
       const reason = req.body.reason;
+      request.input("reason_mark", reason);
       request.input("transaction_id", transaction_id);
       request.input("promise_date", promise_date);
       request.input("item_no", item_no);
       request.input("receive_date", receive_date);
       request.query(
-        `UPDATE dbo.[PECTH_SUPPLIER_DELIVERY_HISTORICAL] SET [REASON_REMARK]='${reason}', [EFFECT_PRODUCTION_SHIPMENT] = '${effect_production_shipment}', [ROOT_CAUSE] = '${root_cause}', [ACTION] = '${action}', [DELAY_CAUSE] = '${delay_cause}', CONFIRM_REASON_DATE = SYSDATETIME()  WHERE [ITEM_NO] = '${item_no}' AND [TRANSACTION_ID] = @transaction_id AND [PROMISED_DATE] = @promise_date`
+        `UPDATE dbo.[PECTH_SUPPLIER_DELIVERY_HISTORICAL] SET [REASON_REMARK]=@reason_mark, [EFFECT_PRODUCTION_SHIPMENT] = '${effect_production_shipment}', [ROOT_CAUSE] = '${root_cause}', [ACTION] = '${action}', [DELAY_CAUSE] = '${delay_cause}', CONFIRM_REASON_DATE = SYSDATETIME()  WHERE [ITEM_NO] = '${item_no}' AND [TRANSACTION_ID] = @transaction_id AND [PROMISED_DATE] = @promise_date`
       );
       res.status(200).send("Data is Updated");
     } catch (error) {
