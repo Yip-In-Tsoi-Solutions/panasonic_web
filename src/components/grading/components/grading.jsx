@@ -1,13 +1,22 @@
-import { DatePicker, Table } from "antd";
+import { Button, DatePicker, Form, Table } from "antd";
 import schema from "../../../javascript/print_schema";
 import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setEvaMonth } from "../../summary_score/actions/summary_scoreSlice";
+import {
+  resetSummaryScore,
+  setEvaMonth,
+  setEvaluated_list,
+} from "../../summary_score/actions/summary_scoreSlice";
+import { useForm } from "antd/es/form/Form";
+import axios from "axios";
 
-const GradingTable = ({evaResult}) => {
+const GradingTable = ({ baseUrl, token_id }) => {
   const dispatch = useDispatch();
+  const [filterSummaryForm] = useForm();
   //state
-  const summaryScore = useSelector((state) => state.summary_score);
+  const summaryScore = useSelector(
+    (state) => state.summary_score
+  );
   const convertToThaiBuddhistDate = (gregorianDate) => {
     let [year, month] = gregorianDate.split("-");
 
@@ -20,7 +29,29 @@ const GradingTable = ({evaResult}) => {
     // Return the Thai Buddhist date in the format YYYY-MM
     return `${thaiYear}-${month}`;
   };
-  console.log(convertToThaiBuddhistDate(summaryScore.filter_eva_month));
+  const clearFilter = async () => {
+    dispatch(resetSummaryScore());
+    filterSummaryForm.resetFields()
+  };
+  const manageFilter = async ()=> {
+    const filter_summaryScore_payload = {
+      summary_date: convertToThaiBuddhistDate(summaryScore?.filter_eva_month),
+    }
+    const response = await axios.post(
+      `${baseUrl}/api/evaluate/summary_score/filter`,
+      filter_summaryScore_payload,
+      { headers: { Authorization: `Bearer ${token_id}` } }
+    );
+    if (response.status === 200) {
+      filterSummaryForm.resetFields();
+      dispatch(resetSummaryScore());
+      dispatch(setEvaluated_list(response?.data));
+    }
+    else {
+      filterSummaryForm.resetFields();
+      dispatch(resetSummaryScore());
+    }
+  }
   return (
     <>
       <div className="my-10">
@@ -66,17 +97,66 @@ const GradingTable = ({evaResult}) => {
         </div>
       </div>
       <br />
-      <DatePicker
-        onChange={(date, dateString) => dispatch(setEvaMonth(dateString))}
-        picker="month"
-      />
-      <br/>
+      <Form onFinish={manageFilter} form={filterSummaryForm} initialValues={summaryScore}>
+        <div className="flex flex-row">
+          <Form.Item className="mr-5" name={"summary_date"}>
+            <DatePicker
+              className="w-[300px]"
+              onChange={(date, dateString) => dispatch(setEvaMonth(dateString))}
+              placeholder="Select Month & Year"
+              picker="month"
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button htmlType="submit" className="uppercase">
+              <div className="flex flex-row">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5 float-left mr-2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
+                  />
+                </svg>
+                Filter
+              </div>
+            </Button>
+          </Form.Item>
+          <Form.Item>
+            <Button onClick={clearFilter} className="uppercase ml-5">
+              <div className="flex flex-row">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5 float-left mr-2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                  />
+                </svg>
+                Clear Filter
+              </div>
+            </Button>
+          </Form.Item>
+        </div>
+      </Form>
       <div className="mt-[10px]">
-      <Table
-        dataSource={evaResult}
-        columns={schema(evaResult)}
-        pagination={false}
-      />
+        <Table
+          dataSource={summaryScore?.evaluated_list}
+          columns={schema(summaryScore?.evaluated_list)}
+          pagination={false}
+        />
       </div>
     </>
   );

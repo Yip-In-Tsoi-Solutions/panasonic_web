@@ -1,9 +1,9 @@
 import { memo } from "react";
 import GradingTable from "../../../components/grading/components/grading";
-const SummaryScore = ({ evaResult }) => {
+const SummaryScore = ({ baseUrl, token_id }) => {
   return (
     <>
-      <GradingTable evaResult={evaResult} />
+      <GradingTable baseUrl={baseUrl} token_id={token_id} />
     </>
   );
 };

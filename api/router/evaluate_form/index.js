@@ -224,7 +224,10 @@ evaluate_form.put(
       evaluateHeaderRequest.input("EVALUATE_PERCENT", evaluatePercent);
       evaluateHeaderRequest.input("EVALUATE_GRADE", evaluateGrade);
       evaluateHeaderRequest.input("EVALUATE_COMMENT", comments);
-      evaluateHeaderRequest.input("FLAG_STATUS", String(flag_status).toUpperCase());
+      evaluateHeaderRequest.input(
+        "FLAG_STATUS",
+        String(flag_status).toUpperCase()
+      );
 
       await evaluateHeaderRequest.query(`
         UPDATE dbo.[PECTH_EVALUATION_SCORE_HEADER]
@@ -304,7 +307,10 @@ evaluate_form.put(
       evaluateHeaderRequest.input("EVALUATE_PERCENT", evaluatePercent);
       evaluateHeaderRequest.input("EVALUATE_GRADE", evaluateGrade);
       evaluateHeaderRequest.input("EVALUATE_COMMENT", comments);
-      evaluateHeaderRequest.input("FLAG_STATUS", String(flag_status).toUpperCase());
+      evaluateHeaderRequest.input(
+        "FLAG_STATUS",
+        String(flag_status).toUpperCase()
+      );
 
       await evaluateHeaderRequest.query(`
         UPDATE dbo.[PECTH_EVALUATION_SCORE_HEADER]
@@ -341,35 +347,6 @@ evaluate_form.put(
       `);
       }
       res.status(200).send("Data updated successfully");
-    } catch (error) {
-      console.error("Error:", error.message);
-      res.status(500).send("Internal Server Error");
-    }
-  }
-);
-
-//display SUMMARY SCORE
-evaluate_form.get(
-  "/evaluate/summary_score",
-  authenticateToken,
-  async (req, res) => {
-    try {
-      const sql = await sql_serverConn();
-      const request = sql.request();
-      const result = await request.query(
-        `
-        SELECT
-          UPPER(EVALUATE_ID) as EVALUATE_ID, 
-          SUPPLIER, 
-          ROUND(EVALUATE_PERCENT, 2) as EVALUATE_PERCENT,
-          EVALUATE_GRADE, 
-          EVALUATE_COMMENT
-        FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER]
-        GROUP BY EVALUATE_ID, SUPPLIER, EVALUATE_PERCENT, EVALUATE_GRADE, EVALUATE_COMMENT
-        ORDER BY EVALUATE_ID asc
-        `
-      );
-      res.status(200).send(result.recordset);
     } catch (error) {
       console.error("Error:", error.message);
       res.status(500).send("Internal Server Error");
@@ -442,6 +419,67 @@ evaluate_form.post(
         GROUP BY a.HEADER_INDEX, a.TOPIC_LINE, c.EVALUATE_ID, a.TOPIC_NAME_TH,a.TOPIC_NAME_EN,b.EVALUATE_TOPIC_SCORE,a.TOPIC_HEADER_NAME_TH,a.TOPIC_HEADER_NAME_ENG, c.EVALUATE_PERCENT, c.FLAG_STATUS, c.SUPPLIER, c.EVALUATE_COMMENT
         HAVING LOWER(c.FLAG_STATUS)=@status and LOWER(c.SUPPLIER)=@supplier AND LOWER(c.EVALUATE_ID)=@evaluate_id
         ORDER BY a.HEADER_INDEX, a.TOPIC_LINE
+        `
+      );
+      res.status(200).send(result.recordset);
+    } catch (error) {
+      console.error("Error:", error.message);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+//display SUMMARY SCORE
+evaluate_form.get(
+  "/evaluate/summary_score",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const request = sql.request();
+      const result = await request.query(
+        `
+        SELECT
+          UPPER(EVALUATE_ID) as EVALUATE_ID, 
+          SUPPLIER, 
+          ROUND(EVALUATE_PERCENT, 2) as EVALUATE_PERCENT,
+          EVALUATE_GRADE, 
+          EVALUATE_COMMENT
+        FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER]
+        GROUP BY EVALUATE_ID, SUPPLIER, EVALUATE_PERCENT, EVALUATE_GRADE, EVALUATE_COMMENT
+        ORDER BY EVALUATE_ID asc
+        `
+      );
+      res.status(200).send(result.recordset);
+    } catch (error) {
+      console.error("Error:", error.message);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+// filter Summary Score
+evaluate_form.post(
+  "/evaluate/summary_score/filter",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const request = sql.request();
+      const {summary_date} = req.body;
+      request.input("eva_date", summary_date);
+      const result = await request.query(
+        `
+        SELECT
+            UPPER(EVALUATE_ID) as EVALUATE_ID,
+            SUPPLIER,
+            ROUND(EVALUATE_PERCENT, 2) as EVALUATE_PERCENT,
+            EVALUATE_GRADE,
+            FLAG_STATUS,
+            EVALUATE_COMMENT
+        FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER]
+        WHERE [EVALUATE_DATE] BETWEEN CAST(CONCAT(@eva_date,'-01') AS DATE) AND EOMONTH(CAST(CONCAT(@eva_date,'-01') AS DATE))
+        AND LOWER(FLAG_STATUS) = 'confirm'
+        GROUP BY EVALUATE_ID, SUPPLIER, EVALUATE_PERCENT, EVALUATE_GRADE, FLAG_STATUS, EVALUATE_COMMENT
+        ORDER BY EVALUATE_ID asc
         `
       );
       res.status(200).send(result.recordset);

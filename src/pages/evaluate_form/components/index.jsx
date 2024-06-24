@@ -22,7 +22,7 @@ import Group_topic_approve from "../../../components/evaluateform/group_topic_ap
 import Supplier_Eva from "../../../components/evaluateform/select_supplier_list/index";
 import ReportMonth from "../../../components/evaluateform/select_report_month";
 import GroupTopic from "../../../components/evaluateform/group_topic";
-import SummaryScore from "../../../components/summary_score/components"
+import SummaryScore from "../../../components/summary_score/components";
 
 // Actions
 import {
@@ -56,7 +56,7 @@ const Evaluate = (props) => {
   const [pageSize, setPageSize] = useState(5);
   const [month, setSelectMonth] = useState("");
   const [score, setScore] = useState([]);
-  const [eva_amount, setEvaAmount] = useState('');
+  const [eva_amount, setEvaAmount] = useState("");
 
   // Draft Drawer State
   const [draftDrawerOpen, setDraftDrawerOpen] = useState(false);
@@ -151,7 +151,7 @@ const Evaluate = (props) => {
         flag_status: score.every((item) => item.EVALUATE_TOPIC_SCORE !== 0)
           ? "waiting"
           : "draft",
-        //flag_status: eva_amount === "14/14" ? "Waiting" : "Draft", 
+        //flag_status: eva_amount === "14/14" ? "Waiting" : "Draft",
         full_score: score.length * 5,
       };
       const response = await axios.post(
@@ -230,7 +230,7 @@ const Evaluate = (props) => {
         //flag_status: eva_amount === "14/14" ? "Waiting" : "Draft",
         full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
       };
-      console.log(updatePayload)
+      console.log(updatePayload);
       const response = await axios.put(
         `${props.baseUrl}/api/evaluate/form/update/${draft_id}`,
         updatePayload,
@@ -256,7 +256,7 @@ const Evaluate = (props) => {
         flag_status: "confirm",
         full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
       };
-      console.log(approve_payload)
+      console.log(approve_payload);
       const response = await axios.put(
         `${props.baseUrl}/api/evaluate/form/update/${approve_id}`,
         approve_payload,
@@ -608,7 +608,10 @@ const Evaluate = (props) => {
                             title: "Action",
                             key: "action",
                             render: (record) => {
-                              if (String(record.FLAG_STATUS).toLowerCase() === "waiting") {
+                              if (
+                                String(record.FLAG_STATUS).toLowerCase() ===
+                                "waiting"
+                              ) {
                                 return (
                                   <Button
                                     className="uppercase"
@@ -640,7 +643,7 @@ const Evaluate = (props) => {
                                     onClick={savePDF.bind(this, record)}
                                   >
                                     <div className="flex flex-row">
-                                      <FilePdfOutlined className="text-[16px] mr-2"/>
+                                      <FilePdfOutlined className="text-[16px] mr-2" />
                                       Save AS PDF
                                     </div>
                                   </Button>
@@ -676,7 +679,10 @@ const Evaluate = (props) => {
                   label: "SUMMARY SCORE",
                   key: "4",
                   children: (
-                    <SummaryScore evaResult={evaluate_vendors?.evaluate_result_table}/>
+                    <SummaryScore
+                      baseUrl={props.baseUrl}
+                      token_id={props.token_id}
+                    />
                   ),
                 },
               ]}
