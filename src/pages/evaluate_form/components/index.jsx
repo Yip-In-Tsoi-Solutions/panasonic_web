@@ -22,7 +22,7 @@ import Group_topic_approve from "../../../components/evaluateform/group_topic_ap
 import Supplier_Eva from "../../../components/evaluateform/select_supplier_list/index";
 import ReportMonth from "../../../components/evaluateform/select_report_month";
 import GroupTopic from "../../../components/evaluateform/group_topic";
-import GradingTable from "../../../components/grading/components/grading";
+import SummaryScore from "../../../components/summary_score/components"
 
 // Actions
 import {
@@ -56,6 +56,7 @@ const Evaluate = (props) => {
   const [pageSize, setPageSize] = useState(5);
   const [month, setSelectMonth] = useState("");
   const [score, setScore] = useState([]);
+  const [eva_amount, setEvaAmount] = useState('');
 
   // Draft Drawer State
   const [draftDrawerOpen, setDraftDrawerOpen] = useState(false);
@@ -150,6 +151,7 @@ const Evaluate = (props) => {
         flag_status: score.every((item) => item.EVALUATE_TOPIC_SCORE !== 0)
           ? "waiting"
           : "draft",
+        //flag_status: eva_amount === "14/14" ? "Waiting" : "Draft", 
         full_score: score.length * 5,
       };
       const response = await axios.post(
@@ -182,6 +184,7 @@ const Evaluate = (props) => {
         setDraftData(response.data);
         setSupplierName(record.SUPPLIER);
         setDraftId(record.EVALUATE_ID);
+        setEvaAmount(record.EVALUATED_AMOUNT);
         setDraftDrawerOpen(true);
       }
     } catch (error) {
@@ -206,13 +209,13 @@ const Evaluate = (props) => {
         setConfirmData(response.data);
         setSupplierName(record.SUPPLIER);
         setApproveId(record.EVALUATE_ID);
+        setEvaAmount(record.EVALUATED_AMOUNT);
         setConfirmDrawerOpen(true);
       }
     } catch (error) {
       console.log(error);
     }
   };
-
   const updateDraftData = async (data, evaluate_date) => {
     try {
       //console.log(draft_id);
@@ -221,12 +224,13 @@ const Evaluate = (props) => {
         evaluate_date: evaluate_date,
         comments: updateComment.current.resizableTextArea.textArea.value,
         updateScore: data,
-        flag_status: data.reduce((acc, curr) => {
-          // Using the reduce function on the `score` array to transform it into an object.
-          return curr.EVALUATE_TOPIC_SCORE != 0 ? "waiting" : "draft";
-        }, {}),
+        flag_status: score.every((item) => item.EVALUATE_TOPIC_SCORE !== 0)
+          ? "waiting"
+          : "draft",
+        //flag_status: eva_amount === "14/14" ? "Waiting" : "Draft",
         full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
       };
+      console.log(updatePayload)
       const response = await axios.put(
         `${props.baseUrl}/api/evaluate/form/update/${draft_id}`,
         updatePayload,
@@ -252,6 +256,7 @@ const Evaluate = (props) => {
         flag_status: "confirm",
         full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
       };
+      console.log(approve_payload)
       const response = await axios.put(
         `${props.baseUrl}/api/evaluate/form/update/${approve_id}`,
         approve_payload,
@@ -671,9 +676,7 @@ const Evaluate = (props) => {
                   label: "SUMMARY SCORE",
                   key: "4",
                   children: (
-                    <GradingTable
-                      evaResult={evaluate_vendors?.evaluate_result_table}
-                    />
+                    <SummaryScore evaResult={evaluate_vendors?.evaluate_result_table}/>
                   ),
                 },
               ]}

@@ -1,8 +1,26 @@
-import { Table } from "antd";
+import { DatePicker, Table } from "antd";
 import schema from "../../../javascript/print_schema";
 import { memo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setEvaMonth } from "../../summary_score/actions/summary_scoreSlice";
 
 const GradingTable = ({evaResult}) => {
+  const dispatch = useDispatch();
+  //state
+  const summaryScore = useSelector((state) => state.summary_score);
+  const convertToThaiBuddhistDate = (gregorianDate) => {
+    let [year, month] = gregorianDate.split("-");
+
+    // Convert year from string to integer
+    year = parseInt(year, 10);
+
+    // Thai Buddhist calendar is 543 years ahead of the Gregorian calendar
+    let thaiYear = year + 543;
+
+    // Return the Thai Buddhist date in the format YYYY-MM
+    return `${thaiYear}-${month}`;
+  };
+  console.log(convertToThaiBuddhistDate(summaryScore.filter_eva_month));
   return (
     <>
       <div className="my-10">
@@ -48,11 +66,18 @@ const GradingTable = ({evaResult}) => {
         </div>
       </div>
       <br />
+      <DatePicker
+        onChange={(date, dateString) => dispatch(setEvaMonth(dateString))}
+        picker="month"
+      />
+      <br/>
+      <div className="mt-[10px]">
       <Table
         dataSource={evaResult}
         columns={schema(evaResult)}
         pagination={false}
       />
+      </div>
     </>
   );
 };

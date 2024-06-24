@@ -61,11 +61,6 @@ evaluate_form.post(
       id++;
       const EVALUATE_ID = `evaluation_${String(id).padStart(4, "0")}`;
       // Prepare headers insertion query
-      const headersQuery = `
-      INSERT INTO dbo.[PECTH_EVALUATION_SCORE_HEADER]
-      ([EVALUATE_ID], [SUPPLIER], [DEPARTMENT], [EVALUATE_DATE], [EVALUATE_TOTAL_SCORE], [EVALUATE_FULL_SCORE], [EVALUATE_PERCENT], [EVALUATE_GRADE], [EVALUATE_COMMENT], [SUBMIT_FORM_DATE], [FLAG_STATUS])
-      VALUES (@EVALUATE_ID, @SUPPLIER, @DEPARTMENT, @EVALUATE_DATE, @EVALUATE_TOTAL_SCORE, @EVALUATE_FULL_SCORE, @EVALUATE_PERCENT, @EVALUATE_GRADE, @EVALUATE_COMMENT, GETDATE(), @FLAG_STATUS)
-    `;
       const request = sql.request();
       // Insert headers outside loop
       request.input("EVALUATE_ID", EVALUATE_ID);
@@ -87,8 +82,14 @@ evaluate_form.post(
           : "A"
       );
       request.input("EVALUATE_COMMENT", comments);
-      request.input("FLAG_STATUS", flag_status);
-      await request.query(headersQuery);
+      request.input("FLAG_STATUS", String(flag_status).toUpperCase());
+      await request.query(
+        `
+        INSERT INTO dbo.[PECTH_EVALUATION_SCORE_HEADER]
+        ([EVALUATE_ID], [SUPPLIER], [DEPARTMENT], [EVALUATE_DATE], [EVALUATE_TOTAL_SCORE], [EVALUATE_FULL_SCORE], [EVALUATE_PERCENT], [EVALUATE_GRADE], [EVALUATE_COMMENT], [SUBMIT_FORM_DATE], [FLAG_STATUS])
+        VALUES (@EVALUATE_ID, @SUPPLIER, @DEPARTMENT, @EVALUATE_DATE, @EVALUATE_TOTAL_SCORE, @EVALUATE_FULL_SCORE, @EVALUATE_PERCENT, @EVALUATE_GRADE, @EVALUATE_COMMENT, GETDATE(), @FLAG_STATUS)
+        `
+      );
       // Insert details inside loop
       for (let i = 0; i < totalEntries; i++) {
         const { HEADER_INDEX, TOPIC_KEY_ID, EVALUATE_TOPIC_SCORE } =
@@ -131,7 +132,7 @@ evaluate_form.get("/evaluate/draft", authenticateToken, async (req, res) => {
                 COUNT(CASE WHEN b.EVALUATE_TOPIC_SCORE != 0 THEN 1 END), 
                 '/', 
                 COUNT(*)
-            ) AS 'EVALUATED AMOUNT',
+            ) AS 'EVALUATED_AMOUNT',
             a.[FLAG_STATUS]
         FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER] a
             JOIN [dbo].[PECTH_EVALUATION_SCORE_DETAIL] b
@@ -166,7 +167,7 @@ evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
                 COUNT(CASE WHEN b.EVALUATE_TOPIC_SCORE != 0 THEN 1 END), 
                 '/', 
                 COUNT(*)
-            ) AS 'EVALUATED AMOUNT',
+            ) AS 'EVALUATED_AMOUNT',
             a.DEPARTMENT,
             a.[FLAG_STATUS]
         FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER] a
