@@ -234,8 +234,7 @@ evaluate_form.put(
           EVALUATE_GRADE = @EVALUATE_GRADE,
           EVALUATE_COMMENT=@EVALUATE_COMMENT,
           SUBMIT_FORM_DATE=GETDATE(),
-          FLAG_STATUS = @FLAG_STATUS,
-          EVALUATE_DATE = GETDATE()
+          FLAG_STATUS = @FLAG_STATUS
         WHERE LOWER([EVALUATE_ID]) = @EVALUATE_ID
       `);
       // Update each evaluation detail
@@ -315,8 +314,7 @@ evaluate_form.put(
           EVALUATE_GRADE = @EVALUATE_GRADE,
           EVALUATE_COMMENT=@EVALUATE_COMMENT,
           SUBMIT_FORM_DATE=GETDATE(),
-          FLAG_STATUS = @FLAG_STATUS,
-          EVALUATE_DATE = GETDATE()
+          FLAG_STATUS = @FLAG_STATUS
         WHERE LOWER([EVALUATE_ID]) = @EVALUATE_ID
       `);
       // Update each evaluation detail

@@ -219,7 +219,7 @@ const Evaluate = (props) => {
       const updatePayload = {
         supplier: supplierName,
         evaluate_date: evaluate_date,
-        comments: comments.current.resizableTextArea.textArea.value,
+        comments: updateComment.current.resizableTextArea.textArea.value,
         updateScore: data,
         flag_status: data.reduce((acc, curr) => {
           // Using the reduce function on the `score` array to transform it into an object.
@@ -296,7 +296,6 @@ const Evaluate = (props) => {
       // Handle case where data is not available or empty
       return "";
     }
-    console.log(data)
     return (
       <Drawer
         placement="right"
@@ -319,7 +318,6 @@ const Evaluate = (props) => {
             moment(data[0]?.EVALUATE_DATE).format("YYYY-MM-DD")
           )}
           form={draft_form}
-          //initialValues={data}
         >
           <div className="flex-row">
             <h1 className="text-2xl text-center font-bold">{supplierName}</h1>
@@ -348,6 +346,7 @@ const Evaluate = (props) => {
             <br />
             <Form.Item>
               <TextArea
+                type="text"
                 placeholder="ระบุข้อเสนอแนะ"
                 defaultValue={data[0].EVALUATE_COMMENT}
                 autoSize={{
@@ -409,7 +408,6 @@ const Evaluate = (props) => {
             scoreApprove,
             moment(data[0]?.EVALUATE_DATE).format("YYYY-MM-DD")
           )}
-          initialValues={data}
           form={approve_form}
         >
           {/* Form fields for approving evaluation */}
