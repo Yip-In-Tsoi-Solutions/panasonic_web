@@ -5,7 +5,6 @@ import schema from "../../print_schema";
 
 // Function to generate the PDF
 async function Summary_score_pdf(data, summary_date) {
-
   // Create a new jsPDF document
   const doc = new jsPDF("p", "mm", "a4");
   const width = doc.internal.pageSize.getWidth();
@@ -28,10 +27,10 @@ async function Summary_score_pdf(data, summary_date) {
   doc.text(titleText, 15, 30);
 
   // Table for REVIEWER and PIC
-  const columnWidth2 = 60 / 2;
+  const columnWidth2 = 60 / 3;
   const table2Data = [
-    ["PM", "GM"], // Header row
-    ["", ""], // Empty row, you can remove this line if you don't need it
+    ["GM", "MG", "PIC"], // Header row
+    ["", "", ""], // Empty row, you can remove this line if you don't need it
   ];
   doc.autoTable({
     startY: 25,
@@ -46,6 +45,13 @@ async function Summary_score_pdf(data, summary_date) {
         fontWeight: "bold",
       },
       1: {
+        columnWidth: columnWidth2,
+        halign: "center",
+        lineWidth: 0.1,
+        fontSize: 8,
+        fontWeight: "bold",
+      },
+      2: {
         columnWidth: columnWidth2,
         halign: "center",
         lineWidth: 0.1,

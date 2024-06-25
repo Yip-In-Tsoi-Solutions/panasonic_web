@@ -48,6 +48,17 @@ const GradingTable = ({ baseUrl, token_id, exportSummaryPDF }) => {
       dispatch(resetSummaryScore());
     }
   };
+  let rowId = 0
+  let tableData = summaryScore?.evaluated_list.map((item)=> {
+    return {
+      no: rowId+=1,
+      supplier: item?.SUPPLIER,
+      percentage: item?.EVALUATE_PERCENT,
+      grade: item?.EVALUATE_GRADE,
+      status: item?.FLAG_STATUS,
+      comments: item?.EVALUATE_COMMENT
+    }
+  })
   return (
     <>
       <div className="my-10" id="summaryScore">
@@ -148,7 +159,7 @@ const GradingTable = ({ baseUrl, token_id, exportSummaryPDF }) => {
                 Clear Filter
               </div>
             </Button>
-            <Button disabled={summaryScore?.evaluated_list.length > 0 ? false : true} className="uppercase ml-5" onClick={()=> exportSummaryPDF(summaryScore?.evaluated_list, summaryScore?.filter_eva_month)}>
+            <Button disabled={summaryScore?.evaluated_list.length > 0 ? false : true} className="uppercase ml-5" onClick={()=> exportSummaryPDF(tableData, summaryScore?.filter_eva_month)}>
               <div className="flex flex-row">
                 <FilePdfOutlined className="mr-[10px] text-[20px]" />
                 {"Save as PDF"}
@@ -159,8 +170,8 @@ const GradingTable = ({ baseUrl, token_id, exportSummaryPDF }) => {
       </Form>
       <div className="mt-[10px]">
         <Table
-          dataSource={summaryScore?.evaluated_list}
-          columns={schema(summaryScore?.evaluated_list)}
+          dataSource={tableData}
+          columns={schema(tableData)}
           pagination={false}
         />
       </div>
