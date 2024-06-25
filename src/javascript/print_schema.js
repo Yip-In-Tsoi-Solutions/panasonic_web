@@ -1,6 +1,8 @@
 import moment from 'moment'; // Import moment.js for date formatting
 
 const schema = (data) => {
+  if (!Array.isArray(data) || data.length === 0) return [];
+
   const columnsData = [];
 
   for (const item in data[0]) {
@@ -11,17 +13,13 @@ const schema = (data) => {
     };
 
     // Fix the first two columns
-    if (columnsData.length < 4) {
+    if (columnsData.length < 2) {
       col_data.fixed = 'left';
     }
 
-    // Custom date format for 'date' columns
     if (isDateColumn(item)) {
-      col_data.render = (text) => moment(new Date(text)).format('YYYY-MM-DD');
-    }
-
-    // Format numeric columns (floats and integers), except for date and string columns
-    if (!isDateColumn(item) && !isStringColumn(data, item) && isNumericColumn(data, item)) {
+      col_data.render = (text) => text ? moment(new Date(text)).format('YYYY-MM-DD') : '';
+    } else if (isNumericColumn(data, item)) {
       col_data.render = (text) => formatNumericValue(text);
       col_data.align = 'right'; // Align numeric values to the right
     }
@@ -40,10 +38,7 @@ const isDateColumn = (item) => {
 // Function to check if the item represents a string column
 const isStringColumn = (data, item) => {
   // Check if all values in the column are strings
-  return data.every(row => {
-    const value = row[item];
-    return typeof value === 'string';
-  });
+  return data.every(row => typeof row[item] === 'string');
 };
 
 // Function to check if the item represents a numeric column (float or integer)
@@ -51,7 +46,7 @@ const isNumericColumn = (data, item) => {
   // Check if all values in the column are numeric (float or integer)
   return data.every(row => {
     const value = row[item];
-    return !isNaN(parseFloat(value)) && isFinite(value);
+    return value !== null && !isNaN(parseFloat(value)) && isFinite(value);
   });
 };
 

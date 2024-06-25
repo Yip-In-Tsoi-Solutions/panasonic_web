@@ -345,13 +345,13 @@ function Buyer_Reason(props) {
                         <Tooltip
                           placement="top"
                           title={
-                            record?.REASON != null
+                            record?.CONFIRM_REASON_DATE != null
                               ? "This buyer has been updated for the reason".toUpperCase()
                               : "Update Reason".toUpperCase()
                           }
                         >
                           <Button
-                            disabled={record?.REASON != null ? true : false}
+                            disabled={record?.CONFIRM_REASON_DATE != null ? true : false}
                             onClick={() => updateReasonDetail(record)}
                             className="uppercase"
                             style={{
