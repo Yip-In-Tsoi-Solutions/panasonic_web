@@ -219,17 +219,15 @@ const Evaluate = (props) => {
   };
   const updateDraftData = async (data, evaluate_date) => {
     try {
-      //console.log(draft_id);
       const updatePayload = {
         supplier: supplierName,
         evaluate_date: evaluate_date,
         comments: updateComment.current.resizableTextArea.textArea.value,
         updateScore: data,
-        flag_status: score.every((item) => item.EVALUATE_TOPIC_SCORE !== 0)
-          ? "waiting"
-          : "draft",
-        //flag_status: eva_amount === "14/14" ? "Waiting" : "Draft",
-        full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
+        flag_status: data.every((item) => item.EVALUATE_TOPIC_SCORE !== 0)
+        ? "waiting"
+        : "draft",
+        full_score: score.length * 5,
       };
       const response = await axios.put(
         `${props.baseUrl}/api/evaluate/form/update/${draft_id}`,
@@ -237,7 +235,6 @@ const Evaluate = (props) => {
         { headers: { Authorization: `Bearer ${props.token_id}` } }
       );
       if (response.status === 200) {
-        setDraftDrawerOpen(false);
         window.location.reload();
       }
     } catch (error) {
@@ -262,7 +259,6 @@ const Evaluate = (props) => {
         { headers: { Authorization: `Bearer ${props.token_id}` } }
       );
       if (response.status === 200) {
-        setConfirmDrawerOpen(false);
         window.location.reload();
       }
     } catch (error) {
@@ -295,9 +291,9 @@ const Evaluate = (props) => {
     }
   };
   // export summary score to PDF
-  const exportSummaryPDF = async (data, summary_date)=> {
-    Summary_score_pdf(data, summary_date)
-  }
+  const exportSummaryPDF = async (data, summary_date) => {
+    Summary_score_pdf(data, summary_date);
+  };
   const DraftDrawer = ({ open, onClose, data }) => {
     const [SelectScore, setSelectScore] = useState([]);
     if (!data || data.length === 0) {
