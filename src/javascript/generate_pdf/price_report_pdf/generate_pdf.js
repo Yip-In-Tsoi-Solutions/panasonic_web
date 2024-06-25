@@ -3,7 +3,7 @@ import "jspdf-autotable";
 import { font } from "../../tahoma-normal";
 import schema from "../../print_schema";
 import numberWithCommas from "../../numberWithCommas";
-import moment from 'moment';
+import moment from "moment";
 async function generatePDF(data, fileName) {
   try {
     const currentDate = new Date();
@@ -65,14 +65,33 @@ async function generatePDF(data, fileName) {
       margin: { left: startX1 },
       body: table1Data,
       columnStyles: {
-        0: { columnWidth: columnWidth1, halign: "center", lineWidth: 0.1 }, // GM
-        1: { columnWidth: columnWidth1, halign: "center", lineWidth: 0.1 }, // MG
-        2: { columnWidth: columnWidth1, halign: "center", lineWidth: 0.1 }, // PIC
+        0: {
+          columnWidth: columnWidth1,
+          halign: "center",
+          lineWidth: 0.1,
+        }, // GM
+        1: {
+          columnWidth: columnWidth1,
+          halign: "center",
+          lineWidth: 0.1,
+        }, // MG
+        2: {
+          columnWidth: columnWidth1,
+          halign: "center",
+          lineWidth: 0.1,
+        }, // PIC
       },
       styles: {
         lineColor: [0, 0, 0], // Black border color
         fillColor: [255, 255, 255], // White background color
-        halign: "center",
+        halign: "center"
+      },
+      didParseCell: function (data) {
+        if (data.row.raw.every(cell => cell === "")) {
+          data.cell.styles.minCellHeight = 15;
+        } else {
+          data.cell.styles.minCellHeight = 5;
+        }
       },
     });
 
@@ -93,6 +112,13 @@ async function generatePDF(data, fileName) {
         lineColor: [0, 0, 0], // Black border color
         halign: "center",
       },
+      didParseCell: function (data) {
+        if (data.row.raw.every(cell => cell === "")) {
+          data.cell.styles.minCellHeight = 15;
+        } else {
+          data.cell.styles.minCellHeight = 5;
+        }
+      },
     });
 
     // Titles
@@ -109,7 +135,8 @@ async function generatePDF(data, fileName) {
     const dataTable = data.map((item) => ({
       supplier: item?.VENDOR_NAME,
       invoice_no: item?.INVOICE_NUM,
-      invoice_date: moment(item?.INVOICE_DATE).format('YYYY-MM-DD'),
+      invoice_date: moment(item?.INVOICE_DATE).format("YYYY-MM-DD"),
+      po_number: item?.PO_NUMBER,
       po_release: `${item?.PO_NUMBER}/${item?.RELEASE_NUM}`, // Combined PO_NUMBER and RELEASE_NUM
       item: item?.ITEM,
       description: item?.DESCRIPTION,
@@ -120,7 +147,7 @@ async function generatePDF(data, fileName) {
       INVOICE_PRICE: numberWithCommas(item.INV_UNIT_PRICE.toFixed(3)),
       DIFF: numberWithCommas(item?.DIFF),
       DIFF_AMOUNT_THB: numberWithCommas(item?.DIFF_AMOUNT_THB),
-      currency: "THB",
+      currency: item?.INV_CURRENCY_CODE,
       buyer: item?.BUYER,
       remark: item?.REMARK,
     }));
@@ -137,50 +164,55 @@ async function generatePDF(data, fileName) {
     });
     doc.autoTable({
       startY: 80,
+      head: [
+        [
+          "vendor name".toUpperCase(),
+          "invoice number".toUpperCase(),
+          "invoice date".toUpperCase(),
+          "po number".toUpperCase(),
+          "po release".toUpperCase(),
+          "item".toUpperCase(),
+          "description".toUpperCase(),
+          "uom".toUpperCase(),
+          "qty order".toUpperCase(),
+          "qty received".toUpperCase(),
+          "po price".toUpperCase(),
+          "invoice price".toUpperCase(),
+          "diff".toUpperCase(),
+          "diff amount (THB)".toUpperCase(),
+          "currency".toUpperCase(),
+          "buyer".toUpperCase(),
+          "remark".toUpperCase(),
+        ],
+      ],
       body: dataTable,
       columns: schema(dataTable),
       styles: {
-        fontSize: 6,
+        fontSize: 5,
         font: "tahoma",
       },
       headerStyles: {
         fillColor: "#016255",
         font: "tahoma",
-        fontSize: 6,
+        fontSize: 5,
       },
     });
 
     if (height > 270) {
-      doc.addPage()
+      doc.addPage();
     }
 
     // Displaying totals
     doc.setFontSize(10);
-    doc.setFontSize(12);
-    doc.setFont("tahoma", "bold");
-    doc.text('Summary Total', 15, doc.lastAutoTable.finalY + 10)
-    doc.setFontSize(10);
-    doc.setFont("tahoma", "normal");
     const total = totals.DIFF_AMOUNT_THB;
-    const vat = total * 0.07;
+    doc.setFont("tahoma", "bold");
     doc.text(
-      `SUB_TOTAL:   ${numberWithCommas(total.toFixed(3))} /THB`,
-      15,
-      doc.lastAutoTable.finalY + 15
-    );
-    doc.text(
-      `VAT 7%:   ${numberWithCommas(
-        (total * 0.07).toFixed(3)
-      )} /THB`,
-      15,
-      doc.lastAutoTable.finalY + 20
-    );
-    doc.text(
-      `GRAND TOTAL:   ${numberWithCommas(
-        (total + total * 0.07).toFixed(3)
-      )} /THB`,
-      15,
-      doc.lastAutoTable.finalY + 25
+      `GRAND TOTAL:   ${numberWithCommas(total.toFixed(3))} THB`,
+      width / 2,
+      doc.lastAutoTable.finalY + 10,
+      {
+        align: "center",
+      }
     );
     // Saving the PDF
     doc.save(`${fileName}_${current_date}.pdf`);

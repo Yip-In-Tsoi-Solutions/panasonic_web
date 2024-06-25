@@ -63,6 +63,13 @@ async function Summary_score_pdf(data, summary_date) {
       lineColor: [0, 0, 0], // Black border color
       halign: "center",
     },
+    didParseCell: function (data) {
+      if (data.row.raw.every(cell => cell === "")) {
+        data.cell.styles.minCellHeight = 10;
+      } else {
+        data.cell.styles.minCellHeight = 5;
+      }
+    },
   });
 
   // Texts below the table

@@ -3,6 +3,7 @@ import "jspdf-autotable";
 import { font } from "../../tahoma-normal";
 import schema from "../../print_schema";
 import numberWithCommas from "../../numberWithCommas";
+import { text } from "body-parser";
 
 async function generatePDF(data, fileName) {
   try {
@@ -72,6 +73,13 @@ async function generatePDF(data, fileName) {
         fillColor: [255, 255, 255], // White background color
         halign: "center",
       },
+      didParseCell: function (data) {
+        if (data.row.raw.every(cell => cell === "")) {
+          data.cell.styles.minCellHeight = 15;
+        } else {
+          data.cell.styles.minCellHeight = 5;
+        }
+      },
     });
 
     // Define starting positions for the tables
@@ -90,6 +98,13 @@ async function generatePDF(data, fileName) {
       styles: {
         lineColor: [0, 0, 0], // Black border color
         halign: "center",
+      },
+      didParseCell: function (data) {
+        if (data.row.raw.every(cell => cell === "")) {
+          data.cell.styles.minCellHeight = 15;
+        } else {
+          data.cell.styles.minCellHeight = 5;
+        }
       },
     });
 
@@ -151,29 +166,32 @@ async function generatePDF(data, fileName) {
         fontSize: 7,
       },
     });
-    doc.setFontSize(12);
-    doc.setFont("tahoma", "bold");
-    doc.text("Summary Total", 15, doc.lastAutoTable.finalY + 10);
     doc.setFontSize(10);
-    doc.setFont("tahoma", "normal");
+    doc.setFont("tahoma", "bold");
+    // doc.text("Summary Total", 15, doc.lastAutoTable.finalY + 10);
+    // doc.setFontSize(10);
+    // doc.setFont("tahoma", "normal");
+    // doc.text(
+    //   `SUB_TOTAL:   ${numberWithCommas(totalQtyReceived.toFixed(3))} /THB`,
+    //   15,
+    //   doc.lastAutoTable.finalY + 15
+    // );
+    // doc.text(
+    //   `VAT 7%:   ${numberWithCommas(
+    //     (totalQtyReceived * 0.07).toFixed(3)
+    //   )} /THB`,
+    //   15,
+    //   doc.lastAutoTable.finalY + 20
+    // );
     doc.text(
-      `SUB_TOTAL:   ${numberWithCommas(totalQtyReceived.toFixed(3))} /THB`,
-      15,
-      doc.lastAutoTable.finalY + 15
-    );
-    doc.text(
-      `VAT 7%:   ${numberWithCommas(
-        (totalQtyReceived * 0.07).toFixed(3)
-      )} /THB`,
-      15,
-      doc.lastAutoTable.finalY + 20
-    );
-    doc.text(
-      `GRAND TOTAL:   ${numberWithCommas(
-        (totalQtyReceived + totalQtyReceived * 0.07).toFixed(3)
-      )} /THB`,
-      15,
-      doc.lastAutoTable.finalY + 25
+      `QTY RECEIVED TOTAL:   ${numberWithCommas(
+        (totalQtyReceived).toFixed(3)
+      )}`,
+      width/2,
+      doc.lastAutoTable.finalY + 15,
+      {
+        align:"center"
+      }
     );
 
     // Saving the PDF
