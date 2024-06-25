@@ -34,7 +34,7 @@ const Supplier_filter = (props) => {
     <>
       <Form.Item
         label={"Supplier"}
-        name={"Supplier"}
+        name={`Supplier_${props.pageTitle}`}
         rules={[
           {
             required: true,

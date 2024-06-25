@@ -263,7 +263,7 @@ function Buyer_Reason(props) {
           form={form}
           className="grid grid-cols-3 gap-3 gap-y-0 clear-both"
         >
-          <Buyer_filter token_id={props.token_id} baseUrl={export_url} />
+          <Buyer_filter pageTitle={props.page_title} token_id={props.token_id} baseUrl={props.baseUrl} />
           <Promise_date_from
             dateFormat={dateFormat}
             promise_start_date={promise_start_date}
@@ -345,13 +345,13 @@ function Buyer_Reason(props) {
                         <Tooltip
                           placement="top"
                           title={
-                            record?.REASON != null
+                            record?.CONFIRM_REASON_DATE != null
                               ? "This buyer has been updated for the reason".toUpperCase()
                               : "Update Reason".toUpperCase()
                           }
                         >
                           <Button
-                            disabled={record?.REASON != null ? true : false}
+                            disabled={record?.CONFIRM_REASON_DATE != null ? true : false}
                             onClick={() => updateReasonDetail(record)}
                             className="uppercase"
                             style={{

@@ -163,7 +163,7 @@ const Original_delivery = (props) => {
       >
         <Form.Item
           label={"Buyer"}
-          name={"buyer"}
+          name={`buyer_${props.page_title}`}
           rules={[
             {
               required: true,
@@ -183,7 +183,7 @@ const Original_delivery = (props) => {
             ))}
           </Select>
         </Form.Item>
-        <Form.Item label="SUPPLIER" name={"SUPPLIER_list"}>
+        <Form.Item label="SUPPLIER" name={`SUPPLIER_${props.page_title}`}>
           <Select
             value={original_delivery_report.temp_state_filter.vendor} // Set the value of the Select component
             onChange={handleVendorChange}
@@ -196,7 +196,7 @@ const Original_delivery = (props) => {
             ))}
           </Select>
         </Form.Item>
-        <Form.Item label="PO Numbers" name={"PO Numbers"}>
+        <Form.Item label="PO Numbers" name={`PO_Numbers_${props.page_title}`}>
           <Select
             value={original_delivery_report.temp_state_filter.purchaseNo} // Set the value of the Select component
             onChange={handlePOChange}
