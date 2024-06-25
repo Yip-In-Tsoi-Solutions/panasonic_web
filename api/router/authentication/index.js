@@ -81,7 +81,7 @@ authentication.get("/auth/user/login/getUser", authenticateToken, async (req, re
     request.input("employeeId", decryptedEmployeeId.toLowerCase());
     const result = await request.query(
       "SELECT CASE WHEN COUNT(*) > 0 THEN 'true' ELSE 'false' END AS [user_status] " +
-      "FROM [dbo].[USER_PERMISSION] " +
+      "FROM [dbo].[v_PECTH_USER_PERMISSION] " +
       "WHERE LOWER([employeeId]) = @employeeId " +
       "GROUP BY [employeeId]"
     );
