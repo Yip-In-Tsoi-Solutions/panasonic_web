@@ -217,12 +217,17 @@ const GoodsReturn = (props) => {
           dateFormat={dateFormat}
           promise_start_date={promise_start_date}
         />
-        <Supplier_filter token_id={props.token_id} baseUrl={props.baseUrl} />
+        <Supplier_filter
+          pageTitle={props.page_title}
+          token_id={props.token_id}
+          baseUrl={props.baseUrl}
+        />
         <ItemNo_filter_typing
           token_id={props.token_id}
           baseUrl={props.baseUrl}
         />
         <PurchaseOrder_filter
+          pageTitle={props.page_title}
           token_id={props.token_id}
           baseUrl={props.baseUrl}
         />

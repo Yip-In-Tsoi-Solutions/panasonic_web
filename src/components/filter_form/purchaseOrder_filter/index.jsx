@@ -36,7 +36,7 @@ const PurchaseOrder_filter = (props) => {
   };
   return (
     <>
-      <Form.Item label="PO Numbers" name={"PO Numbers"}>
+      <Form.Item label="PO Numbers" name={`PONumbers_${props.pageTitle}`}>
         <Select
           value={filter.temp_state_filter.purchaseNo} // Set the value of the Select component
           onChange={handlePOChange}

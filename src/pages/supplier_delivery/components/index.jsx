@@ -127,7 +127,7 @@ const Supplier_delivery = (props) => {
       </div>
       <Form onFinish={manageFilter} form={form}>
         <div className="grid grid-cols-3 gap-3 gap-y-0 clear-both">
-          <Buyer_filter token_id={props.token_id} baseUrl={props.baseUrl} />
+          <Buyer_filter pageTitle={props.page_title} token_id={props.token_id} baseUrl={props.baseUrl} />
           <Promise_date_from
             dateFormat={dateFormat}
             promise_start_date={promise_start_date}

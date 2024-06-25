@@ -38,6 +38,7 @@ import schema from "../../../javascript/print_schema";
 import convert_year_th from "../../../javascript/convert_year_th";
 import generatePDF from "../../../javascript/generate_pdf/evaluation_pdf/generate_pdf";
 import { CloseCircleOutlined, FilePdfOutlined } from "@ant-design/icons";
+import Summary_score_pdf from "../../../javascript/generate_pdf/evaluate_summary_score_pdf/evaluate_summary_score_pdf";
 
 const dateFormat = "DD/MM/YYYY";
 
@@ -230,7 +231,6 @@ const Evaluate = (props) => {
         //flag_status: eva_amount === "14/14" ? "Waiting" : "Draft",
         full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
       };
-      console.log(updatePayload);
       const response = await axios.put(
         `${props.baseUrl}/api/evaluate/form/update/${draft_id}`,
         updatePayload,
@@ -256,7 +256,6 @@ const Evaluate = (props) => {
         flag_status: "confirm",
         full_score: score.length * 5, // Calculating the full score based on the length of the `score` array and multiplying it by 5.
       };
-      console.log(approve_payload);
       const response = await axios.put(
         `${props.baseUrl}/api/evaluate/form/update/${approve_id}`,
         approve_payload,
@@ -295,6 +294,10 @@ const Evaluate = (props) => {
       generatePDF(supplier, evaluate_date, department, response.data);
     }
   };
+  // export summary score to PDF
+  const exportSummaryPDF = async (data, summary_date)=> {
+    Summary_score_pdf(data, summary_date)
+  }
   const DraftDrawer = ({ open, onClose, data }) => {
     const [SelectScore, setSelectScore] = useState([]);
     if (!data || data.length === 0) {
@@ -682,6 +685,7 @@ const Evaluate = (props) => {
                     <SummaryScore
                       baseUrl={props.baseUrl}
                       token_id={props.token_id}
+                      exportSummaryPDF={exportSummaryPDF}
                     />
                   ),
                 },

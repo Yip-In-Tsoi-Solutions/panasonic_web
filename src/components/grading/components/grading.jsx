@@ -1,4 +1,5 @@
 import { Button, DatePicker, Form, Table } from "antd";
+import { FilePdfOutlined } from "@ant-design/icons";
 import schema from "../../../javascript/print_schema";
 import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,14 +10,11 @@ import {
 } from "../../summary_score/actions/summary_scoreSlice";
 import { useForm } from "antd/es/form/Form";
 import axios from "axios";
-
-const GradingTable = ({ baseUrl, token_id }) => {
+const GradingTable = ({ baseUrl, token_id, exportSummaryPDF }) => {
   const dispatch = useDispatch();
   const [filterSummaryForm] = useForm();
   //state
-  const summaryScore = useSelector(
-    (state) => state.summary_score
-  );
+  const summaryScore = useSelector((state) => state.summary_score);
   const convertToThaiBuddhistDate = (gregorianDate) => {
     let [year, month] = gregorianDate.split("-");
 
@@ -31,12 +29,12 @@ const GradingTable = ({ baseUrl, token_id }) => {
   };
   const clearFilter = async () => {
     dispatch(resetSummaryScore());
-    filterSummaryForm.resetFields()
+    filterSummaryForm.resetFields();
   };
-  const manageFilter = async ()=> {
+  const manageFilter = async () => {
     const filter_summaryScore_payload = {
       summary_date: convertToThaiBuddhistDate(summaryScore?.filter_eva_month),
-    }
+    };
     const response = await axios.post(
       `${baseUrl}/api/evaluate/summary_score/filter`,
       filter_summaryScore_payload,
@@ -44,17 +42,15 @@ const GradingTable = ({ baseUrl, token_id }) => {
     );
     if (response.status === 200) {
       filterSummaryForm.resetFields();
-      dispatch(resetSummaryScore());
       dispatch(setEvaluated_list(response?.data));
-    }
-    else {
+    } else {
       filterSummaryForm.resetFields();
       dispatch(resetSummaryScore());
     }
-  }
+  };
   return (
     <>
-      <div className="my-10">
+      <div className="my-10" id="summaryScore">
         <div class="overflow-x-auto">
           <table class="sm:w-auto md:w-full border-collapse">
             <tbody>
@@ -97,7 +93,11 @@ const GradingTable = ({ baseUrl, token_id }) => {
         </div>
       </div>
       <br />
-      <Form onFinish={manageFilter} form={filterSummaryForm} initialValues={summaryScore}>
+      <Form
+        onFinish={manageFilter}
+        form={filterSummaryForm}
+        initialValues={summaryScore}
+      >
         <div className="flex flex-row">
           <Form.Item className="mr-5" name={"summary_date"}>
             <DatePicker
@@ -146,6 +146,12 @@ const GradingTable = ({ baseUrl, token_id }) => {
                   />
                 </svg>
                 Clear Filter
+              </div>
+            </Button>
+            <Button disabled={summaryScore?.evaluated_list.length > 0 ? false : true} className="uppercase ml-5" onClick={()=> exportSummaryPDF(summaryScore?.evaluated_list, summaryScore?.filter_eva_month)}>
+              <div className="flex flex-row">
+                <FilePdfOutlined className="mr-[10px] text-[20px]" />
+                {"Save as PDF"}
               </div>
             </Button>
           </Form.Item>

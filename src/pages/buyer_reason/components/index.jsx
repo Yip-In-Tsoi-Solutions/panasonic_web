@@ -263,7 +263,7 @@ function Buyer_Reason(props) {
           form={form}
           className="grid grid-cols-3 gap-3 gap-y-0 clear-both"
         >
-          <Buyer_filter token_id={props.token_id} baseUrl={export_url} />
+          <Buyer_filter pageTitle={props.page_title} token_id={props.token_id} baseUrl={props.baseUrl} />
           <Promise_date_from
             dateFormat={dateFormat}
             promise_start_date={promise_start_date}
