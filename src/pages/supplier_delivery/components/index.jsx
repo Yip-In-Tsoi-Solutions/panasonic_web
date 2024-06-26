@@ -108,7 +108,7 @@ const Supplier_delivery = (props) => {
           <h1 className="text-2xl font-bold pl-0 p-3 uppercase">
             Supplier Delivery Report
           </h1>
-          <p className="text-left">
+          <p className="text-left text-[red]">
             *** Data will show when the actual delivery date differs from the
             promised date ***
             {/* <strong className="underline uppercase">diff</strong> only */}
