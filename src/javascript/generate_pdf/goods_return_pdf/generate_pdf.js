@@ -35,27 +35,6 @@ async function generatePDF(dataset, supplierName, fileName, return_doc) {
     //   margin + 120,
     //   finalY + 10
     // );
-
-    const return_total = dataset.reduce(
-      (sum, item) => (sum += item?.return_qty),
-      0
-    );
-
-    // Calculate totals and VAT
-    const total = dataset.reduce(
-      (sum, item) => (sum += item?.return_qty * item?.unitPrice),
-      0
-    );
-    const vat = total * 0.07;
-    const grandTotal = total + vat;
-    doc.setFontSize(10);
-    dataTable.push({
-      "po number": `จำนวนที่คืน (Quantity) ${numberWithCommas(return_total)}\n\nTOTAL :  ${numberWithCommas(
-        total.toFixed(3)
-      )}  VAT : ${numberWithCommas(
-        vat.toFixed(3)
-      )}  GRAND TOTAL : ${numberWithCommas(grandTotal.toFixed(3))}`,
-    });
     // `Sub Total : ${total}\nGRAND TOTAL + VAT (${vat.toFixed(3)}) : ${grandTotal.toFixed(3)}`,
     // Embedding custom font
     doc.addFileToVFS("tahoma.ttf", font);
@@ -133,6 +112,23 @@ async function generatePDF(dataset, supplierName, fileName, return_doc) {
       showHead: "firstPage",
       theme: "striped",
     });
+
+    const return_total = dataset.reduce(
+      (sum, item) => (sum += item?.return_qty),
+      0
+    );
+
+    // Calculate totals and VAT
+    const total = dataset.reduce(
+      (sum, item) => (sum += item?.return_qty * item?.unitPrice),
+      0
+    );
+    const vat = total * 0.07;
+    const grandTotal = total + vat;
+    doc.setFontSize(8);
+    doc.text(`จำนวนที่คืน (Quantity) ${numberWithCommas(return_total)}`, 15, doc.autoTable.previous.finalY +10)
+    doc.text(`VAT 7% (${numberWithCommas(vat.toFixed(3))} THB)`, 15, doc.autoTable.previous.finalY +15)
+    doc.text(`GRAND TOTAL ${numberWithCommas(grandTotal.toFixed(3))} THB`, 15, doc.autoTable.previous.finalY +20)
 
     const finalY = doc.autoTable.previous.finalY; // Reduced space between table and totals
     doc.setFontSize(9);
