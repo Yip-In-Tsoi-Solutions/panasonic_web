@@ -13,7 +13,7 @@ const schema = (data) => {
     };
 
     // Fix the first two columns
-    if (columnsData.length < 2) {
+    if (columnsData.length < 4) {
       col_data.fixed = 'left';
     }
 

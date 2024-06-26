@@ -3,6 +3,21 @@ const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const authenticateToken = require("../../secure/jwt");
 const evaluate_form = express();
 evaluate_form.use(express.json());
+//
+evaluate_form.get("/evaluate/dropdown/supplier", authenticateToken, async (req, res)=> {
+  try {
+    const sql = await sql_serverConn();
+    const result = sql.query(
+      `
+        SELECT * FROM [dbo].[PECTH_SUPPLIER_MASTER] ORDER by SUPPLIER_NAME ASC
+      `
+    )
+    res.status(200).send((await result).recordset);
+  } catch (error) {
+    console.error("Error:", error.message);
+    res.status(500).send("Internal Server Error");
+  }
+})
 // display all questionaire
 evaluate_form.get("/evaluate/topic", authenticateToken, async (req, res) => {
   try {

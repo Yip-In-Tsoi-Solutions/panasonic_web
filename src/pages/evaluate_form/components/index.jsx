@@ -77,9 +77,10 @@ const Evaluate = (props) => {
     fetchEvaluateConfirm();
   }, []);
 
+  // get list of SUPPLIER / VENDORS
   const fetchDropdownVendor = async () => {
     try {
-      const response = await axios.get(`${props.baseUrl}/api/dropdown/vendor`, {
+      const response = await axios.get(`${props.baseUrl}/api/evaluate/dropdown/supplier`, {
         headers: { Authorization: `Bearer ${props.token_id}` },
       });
       dispatch(setVendorList(response.data));

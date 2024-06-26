@@ -1,8 +1,7 @@
 import { Layout, Menu } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 const { Sider } = Layout;
 const Navigation = (props) => {
-  const disPatch = useDispatch();
   const items = useSelector((state) => state?.navigations?.items);
   return (
     <Sider width={240} className="h-screen">
@@ -15,7 +14,9 @@ const Navigation = (props) => {
           items.map((i) => (
             <Menu.Item
               key={i.key}
-              onClick={(e) => props.setSelected(sessionStorage.setItem('pageId', e.key))}
+              onClick={(e) =>
+                props.setSelected(sessionStorage.setItem("pageId", e.key))
+              }
             >
               {i.label}
             </Menu.Item>
