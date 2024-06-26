@@ -51,6 +51,7 @@ const PriceReport = (props) => {
           convertDateFormat(promise_end_date)
         ).replace(/"/g, "'")}`;
         sessionStorage.setItem("price_report_between_date", queryString);
+        sessionStorage.setItem("price_report_date_from_to", JSON.stringify(`${promise_start_date} - ${promise_end_date}`));
       }
       dispatch(resetAllState());
       const response = await axios.post(
