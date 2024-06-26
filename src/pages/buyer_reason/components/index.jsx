@@ -345,7 +345,7 @@ function Buyer_Reason(props) {
                         <Tooltip
                           placement="top"
                           title={
-                            record?.CONFIRM_REASON_DATE != null
+                            record?.CONFIRM_REASON_DATE != '' && record?.REASON_REMARK != ''
                               ? "This buyer has been updated for the reason".toUpperCase()
                               : "Update Reason".toUpperCase()
                           }

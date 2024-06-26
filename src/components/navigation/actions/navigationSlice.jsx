@@ -1,4 +1,3 @@
-import { LogoutOutlined } from "@ant-design/icons";
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 async function logout() {

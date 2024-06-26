@@ -34,7 +34,7 @@ const Supplier_Eva = ({ value, supplier_list }) => {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
             {supplier_list.map((item) => (
-              <Option value={item.SUPPLIER_ID} disabled={item.SUPPLIER_NAME === value}>{item.SUPPLIER_NAME}</Option>
+              <Option key={item.SUPPLIER_ID} value={item.SUPPLIER_NAME} disabled={item.SUPPLIER_NAME === value}>{item.SUPPLIER_NAME}</Option>
             ))}
           </Select>
         </Form.Item>
