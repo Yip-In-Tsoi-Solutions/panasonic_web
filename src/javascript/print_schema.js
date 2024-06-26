@@ -17,14 +17,24 @@ const schema = (data) => {
       col_data.fixed = 'left';
     }
 
-    // Check if the column dataIndex ends with '_DATE' for datetime columns
-    if (item.toUpperCase().endsWith('_DATE')) {
-      col_data.render = (text) => moment(text).format('YYYY-MM-DD');
+    // Check if the column is not a string or date
+    if (typeof data[0][item] !== 'string' && !(data[0][item] instanceof Date)) {
+      // Check if the column is a number (integer or float)
+      if (typeof data[0][item] === 'number') {
+        col_data.render = (text) => {
+          // Check if it's a float
+          if (Number.isInteger(text)) {
+            return text.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+          } else {
+            return parseFloat(text).toFixed(3).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+          }
+        };
+      }
     }
 
-    // Check if the column is numeric (integer or float) but not a date or string
-    if (isNumericColumn(item, data)) {
-      col_data.render = (text) => addCommasToNumber(text);
+    // Check if the column dataIndex ends with '_DATE' for datetime columns
+    if (item.toUpperCase().endsWith('_DATE')) {
+      col_data.render = (text) => text ? moment(text).format('YYYY-MM-DD') : '';
     }
 
     columnsData.push(col_data);
@@ -32,23 +42,5 @@ const schema = (data) => {
 
   return columnsData;
 };
-
-// Helper function to check if column is numeric (integer or float)
-function isNumericColumn(column, data) {
-  const firstRow = data[0];
-  const value = firstRow[column];
-
-  // Check if the value is numeric and not a string or date
-  return !isNaN(value) && typeof value !== 'string' && !moment(value, 'YYYY-MM-DD', true).isValid();
-}
-
-// Helper function to add commas to numbers
-function addCommasToNumber(text) {
-  // Convert text to number, add commas, and return as string
-  const number = parseFloat(text);
-  if (isNaN(number)) return text; // Return original text if not a valid number
-
-  return number.toLocaleString(); // Add commas to number
-}
 
 export default schema;
