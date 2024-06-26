@@ -34,7 +34,7 @@ const schema = (data) => {
 
     // Check if the column dataIndex ends with '_DATE' for datetime columns
     if (item.toUpperCase().endsWith('_DATE')) {
-      col_data.render = (text) => text ? moment(text).format('YYYY-MM-DD') : '';
+      col_data.render = (text) => text ? moment(new Date(text)).format('YYYY-MM-DD') : '';
     }
 
     columnsData.push(col_data);
