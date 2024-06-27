@@ -72,6 +72,7 @@ const LoginPage = () => {
   useEffect(() => {
     if (checkAuth === "true") {
       window.location.href = '/home';
+      form.resetFields()
       sessionStorage.setItem('pageId', '1');
     }
   }, [checkAuth]);
