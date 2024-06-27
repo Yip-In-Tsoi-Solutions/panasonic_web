@@ -138,7 +138,7 @@ async function Summary_score_pdf(data, summary_date) {
   });
 
   // Save the PDF
-  doc.save(`evaluate_summary_score.pdf`);
+  doc.save(`evaluate_summary_score_${summary_date}.pdf`);
 }
 
 export default Summary_score_pdf;

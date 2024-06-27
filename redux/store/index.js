@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import navigationSlice from "../../src/components/navigation/actions/navigationSlice";
-import list_viewSlice from "../../src/components/ListViewWithDrawer/actions/list_viewSlice";
+import list_viewSlice from "../../src/components/PowerBi_report_list/actions/list_viewSlice";
 import tableActionSlice from "../../src/components/table_withActions/actions/tableActionSlice";
 import buyer_reasonSlice from "../../src/pages/buyer_reason/actions/buyer_reasonSlice";
 import evaluate_formSlice from "../../src/pages/evaluate_form/actions/evaluate_formSlice";

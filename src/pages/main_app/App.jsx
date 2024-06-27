@@ -8,10 +8,10 @@ const GoodsReturn = lazy(() => import("../goods_return/components"));
 const Evaluate = lazy(() => import("../evaluate_form/components"));
 const Original_delivery = lazy(() => import("../original_delivery/components"));
 const PowerBi_report_list = lazy(() =>
-  import("../powerbi_report/components/report_list")
+  import("../powerbi_report/components/report_client")
 );
-const PowerBi_reportAdmin = lazy(() =>
-  import("../powerbi_report/components/add_report")
+const PowerBiAdmin = lazy(() =>
+  import("../powerbi_report/components/manage_powerbi_report")
 );
 const { Content } = Layout;
 const App = () => {
@@ -95,7 +95,7 @@ const App = () => {
               />
             )}
             {selected_items === 8 && (
-              <PowerBi_reportAdmin
+              <PowerBiAdmin
                 token_id={token_id}
                 page_title={"PowerBi_reportAdmin".toUpperCase()}
                 baseUrl={url}

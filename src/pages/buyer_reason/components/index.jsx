@@ -154,7 +154,7 @@ function Buyer_Reason(props) {
         }
       );
       if (response.status === 200) {
-        form.resetFields()
+        form.resetFields();
         dispatch(resetAllState());
         dispatch(setBuyer_reason(response.data));
       } else {
@@ -263,7 +263,11 @@ function Buyer_Reason(props) {
           form={form}
           className="grid grid-cols-3 gap-3 gap-y-0 clear-both"
         >
-          <Buyer_filter pageTitle={props.page_title} token_id={props.token_id} baseUrl={props.baseUrl} />
+          <Buyer_filter
+            pageTitle={props.page_title}
+            token_id={props.token_id}
+            baseUrl={props.baseUrl}
+          />
           <Promise_date_from
             dateFormat={dateFormat}
             promise_start_date={promise_start_date}
@@ -345,13 +349,16 @@ function Buyer_Reason(props) {
                         <Tooltip
                           placement="top"
                           title={
-                            record?.CONFIRM_REASON_DATE != null
+                            record?.CONFIRM_REASON_DATE != "" &&
+                            record?.REASON_REMARK != ""
                               ? "This buyer has been updated for the reason".toUpperCase()
                               : "Update Reason".toUpperCase()
                           }
                         >
                           <Button
-                            disabled={record?.CONFIRM_REASON_DATE != null ? true : false}
+                            disabled={
+                              record?.CONFIRM_REASON_DATE != null ? true : false
+                            }
                             onClick={() => updateReasonDetail(record)}
                             className="uppercase"
                             style={{
@@ -401,19 +408,19 @@ function Buyer_Reason(props) {
             <h1 className="italic uppercase">Current data</h1>
             <Form className="grid grid-cols-3 gap-3 clear-both">
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   promise date
                 </label>
                 <Input disabled={true} value={current_selected?.promiseDate} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   vendor
                 </label>
                 <Input disabled={true} value={current_selected?.vendor} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   ITEM_NO
                 </label>
                 <Input disabled={true} value={current_selected?.item_no} />
@@ -421,19 +428,19 @@ function Buyer_Reason(props) {
             </Form>
             <Form className="grid grid-cols-3 gap-3 clear-both">
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   BUYER
                 </label>
                 <Input disabled={true} value={current_selected?.buyer} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   PO_NUMBER
                 </label>
                 <Input disabled={true} value={current_selected?.po_number} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   PO RELEASE
                 </label>
                 <Input disabled={true} value={current_selected?.po_release} />
@@ -496,7 +503,10 @@ function Buyer_Reason(props) {
             <Form>
               <Form.Item>
                 <label className="uppercase font-bold">
-                  write reason (Optional)
+                  write reason (Optional){"   "}
+                  <span className="font-normal text-[red] text-[12px] italic">
+                    No more than 250 characters
+                  </span>
                 </label>
                 <TextArea
                   placeholder="write buyer reason here"

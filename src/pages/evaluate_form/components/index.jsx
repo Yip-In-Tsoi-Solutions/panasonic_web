@@ -77,11 +77,15 @@ const Evaluate = (props) => {
     fetchEvaluateConfirm();
   }, []);
 
+  // get list of SUPPLIER / VENDORS
   const fetchDropdownVendor = async () => {
     try {
-      const response = await axios.get(`${props.baseUrl}/api/dropdown/vendor`, {
-        headers: { Authorization: `Bearer ${props.token_id}` },
-      });
+      const response = await axios.get(
+        `${props.baseUrl}/api/evaluate/dropdown/supplier`,
+        {
+          headers: { Authorization: `Bearer ${props.token_id}` },
+        }
+      );
       dispatch(setVendorList(response.data));
     } catch (error) {
       console.log(error);
@@ -225,8 +229,8 @@ const Evaluate = (props) => {
         comments: updateComment.current.resizableTextArea.textArea.value,
         updateScore: data,
         flag_status: data.every((item) => item.EVALUATE_TOPIC_SCORE !== 0)
-        ? "waiting"
-        : "draft",
+          ? "waiting"
+          : "draft",
         full_score: score.length * 5,
       };
       const response = await axios.put(
@@ -349,10 +353,17 @@ const Evaluate = (props) => {
             </div>
             <br />
             <Form.Item>
+            <label className="uppercase font-bold text-[14px]">
+                comments (ข้อเสนอแนะ) {"   "}
+                <span className="font-normal text-[red] text-[12px] italic">
+                  No more than 250 characters
+                </span>
+              </label>
               <TextArea
                 type="text"
                 placeholder="ระบุข้อเสนอแนะ"
                 defaultValue={data[0].EVALUATE_COMMENT}
+                className="mt-5"
                 autoSize={{
                   minRows: 6,
                   maxRows: 24,
@@ -441,9 +452,16 @@ const Evaluate = (props) => {
             </div>
             <br />
             <Form.Item>
+              <label className="uppercase font-bold text-[14px]">
+                comments (ข้อเสนอแนะ) {"   "}
+                <span className="font-normal text-[red] text-[12px] italic">
+                  No more than 250 characters
+                </span>
+              </label>
               <TextArea
                 placeholder="ระบุข้อเสนอแนะ"
                 defaultValue={data[0].EVALUATE_COMMENT}
+                className="mt-5"
                 autoSize={{
                   minRows: 6,
                   maxRows: 24,
@@ -523,9 +541,15 @@ const Evaluate = (props) => {
                           setScore={setScore}
                         />
                       </div>
+                      <label className="uppercase font-bold text-[14px]">
+                        comments (ข้อเสนอแนะ) {"   "}
+                        <span className="font-normal text-[red] text-[12px] italic">
+                          No more than 250 characters
+                        </span>
+                      </label>
                       <TextArea
                         placeholder="ระบุข้อเสนอแนะ"
-                        className="mb-5"
+                        className="mt-5 mb-5"
                         autoSize={{
                           minRows: 6,
                           maxRows: 24,
@@ -546,7 +570,7 @@ const Evaluate = (props) => {
                         columns={[
                           ...schema(evaluate_vendors?.evaluate_pending),
                           {
-                            title: "Action",
+                            title: "ACTION",
                             key: "action",
                             render: (record) => (
                               <Button onClick={() => openDraftDrawer(record)}>
@@ -604,7 +628,7 @@ const Evaluate = (props) => {
                         columns={[
                           ...schema(evaluate_vendors?.evaluate_confirm),
                           {
-                            title: "Action",
+                            title: "ACTION",
                             key: "action",
                             render: (record) => {
                               if (

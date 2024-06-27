@@ -4,7 +4,7 @@ import { font } from "../../tahoma-normal";
 import schema from "../../print_schema";
 import numberWithCommas from "../../numberWithCommas";
 import moment from "moment";
-async function generatePDF(data, fileName) {
+async function generatePDF(data, fileName, price_report_date_from_to) {
   try {
     const currentDate = new Date();
     const day = currentDate.getDate();
@@ -128,7 +128,7 @@ async function generatePDF(data, fileName) {
       align: "center",
     });
     doc.setFontSize(18);
-    doc.text(`AS OF ${current_date}`, width / 2, 70, {
+    doc.text(`AS OF  ${price_report_date_from_to}`, width / 2, 70, {
       align: "center",
     });
 

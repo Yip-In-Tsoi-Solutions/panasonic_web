@@ -117,7 +117,9 @@ buyer_reason.post(
       const result = await sql.query(
         `
           SELECT
-            *
+            [PROMISED_DATE] , [SUPPLIER] , [ITEM_NO] , [PO_NUMBER], [PO_RELEASE] , [ITEM_DESCRIPTION],
+            [UOM] , [QUANTITY_RECEIVED] , [BUYER] , [BEFORE] , [DELAY] , [TRANSACTION_ID] , [CONFIRM_REASON_DATE],
+            [REASON_REMARK]
           FROM
             dbo.[v_PECTH_SUPPLIER_BUYER_REASON]
           WHERE ${req.body.queryString}
@@ -154,20 +156,24 @@ buyer_reason.post(
   }
 );
 // export BuyerReason PDF
-buyer_reason.post("/buyerlist/export_pdf", authenticateToken, async (req, res) => {
-  try {
-    const sql = await sql_serverConn();
-    const result = await sql.query(
-      `
+buyer_reason.post(
+  "/buyerlist/export_pdf",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const result = await sql.query(
+        `
       SELECT * FROM [dbo].[PECTH_SUPPLIER_DELIVERY_HISTORICAL] WHERE ${req.body.queryString} AND DIFF_DAY != 0
       `
-    );
-    res.status(200).json(result.recordset);
-  } catch (error) {
-    console.error("Error inserting data:", error);
-    res.status(500).send("Internal Server Error");
+      );
+      res.status(200).json(result.recordset);
+    } catch (error) {
+      console.error("Error inserting data:", error);
+      res.status(500).send("Internal Server Error");
+    }
   }
-});
+);
 buyer_reason.get(
   "/dropdown/root_cause",
   authenticateToken,

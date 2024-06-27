@@ -3,6 +3,21 @@ const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const authenticateToken = require("../../secure/jwt");
 const evaluate_form = express();
 evaluate_form.use(express.json());
+//
+evaluate_form.get("/evaluate/dropdown/supplier", authenticateToken, async (req, res)=> {
+  try {
+    const sql = await sql_serverConn();
+    const result = sql.query(
+      `
+        SELECT * FROM [dbo].[PECTH_SUPPLIER_MASTER] ORDER by SUPPLIER_NAME ASC
+      `
+    )
+    res.status(200).send((await result).recordset);
+  } catch (error) {
+    console.error("Error:", error.message);
+    res.status(500).send("Internal Server Error");
+  }
+})
 // display all questionaire
 evaluate_form.get("/evaluate/topic", authenticateToken, async (req, res) => {
   try {
@@ -21,7 +36,7 @@ evaluate_form.get("/evaluate/topic", authenticateToken, async (req, res) => {
           , [CREATED_DATE]
           , [ACTIVE_DATE_FROM]
           , [ACTIVE_DATE_TO]
-        FROM [dbo].[PECTH_EVALUATION_MASTER]
+        FROM [dbo].[PECTH_EVALUATION_MASTER] WHERE SYSDATETIME() between ACTIVE_DATE_FROM and ACTIVE_DATE_TO
         ORDER BY TOPIC_KEY_ID asc
         `
     );
@@ -410,13 +425,14 @@ evaluate_form.post(
           a.TOPIC_HEADER_NAME_TH,
           a.TOPIC_HEADER_NAME_ENG,
           a.HEADER_INDEX, a.TOPIC_LINE,
+          c.EVALUATE_FULL_SCORE,
           c.EVALUATE_COMMENT
         FROM [dbo].PECTH_EVALUATION_MASTER a
             JOIN dbo.PECTH_EVALUATION_SCORE_DETAIL b
             ON a.TOPIC_KEY_ID = b.TOPIC_KEY_ID
             JOIN dbo.PECTH_EVALUATION_SCORE_HEADER c
             ON b.EVALUATE_ID = c.EVALUATE_ID
-        GROUP BY a.HEADER_INDEX, a.TOPIC_LINE, c.EVALUATE_ID, a.TOPIC_NAME_TH,a.TOPIC_NAME_EN,b.EVALUATE_TOPIC_SCORE,a.TOPIC_HEADER_NAME_TH,a.TOPIC_HEADER_NAME_ENG, c.EVALUATE_PERCENT, c.FLAG_STATUS, c.SUPPLIER, c.EVALUATE_COMMENT
+        GROUP BY a.HEADER_INDEX, a.TOPIC_LINE, c.EVALUATE_ID, a.TOPIC_NAME_TH,a.TOPIC_NAME_EN,b.EVALUATE_TOPIC_SCORE,a.TOPIC_HEADER_NAME_TH,a.TOPIC_HEADER_NAME_ENG, c.EVALUATE_PERCENT, c.FLAG_STATUS, c.SUPPLIER, c.EVALUATE_FULL_SCORE, c.EVALUATE_COMMENT
         HAVING LOWER(c.FLAG_STATUS)=@status and LOWER(c.SUPPLIER)=@supplier AND LOWER(c.EVALUATE_ID)=@evaluate_id
         ORDER BY a.HEADER_INDEX, a.TOPIC_LINE
         `

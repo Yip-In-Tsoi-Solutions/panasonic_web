@@ -51,6 +51,7 @@ const PriceReport = (props) => {
           convertDateFormat(promise_end_date)
         ).replace(/"/g, "'")}`;
         sessionStorage.setItem("price_report_between_date", queryString);
+        sessionStorage.setItem("price_report_date_from_to", JSON.stringify(`${promise_start_date} - ${promise_end_date}`));
       }
       dispatch(resetAllState());
       const response = await axios.post(
@@ -296,43 +297,43 @@ const PriceReport = (props) => {
         <Form form={updatedForm} onFinish={submitRemark}>
           <div className="grid grid-cols-3 gap-3 clear-both">
             <Form.Item>
-              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+              <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                 invoice_date
               </label>
               <Input disabled={true} value={currentSelected?.invoice_date} />
             </Form.Item>
             <Form.Item>
-              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+              <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                 Item No
               </label>
               <Input disabled={true} value={currentSelected?.item_no} />
             </Form.Item>
             <Form.Item>
-              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+              <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                 invoice_num
               </label>
               <Input disabled={true} value={currentSelected?.invoice_num} />
             </Form.Item>
             <Form.Item>
-              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+              <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                 po_number
               </label>
               <Input disabled={true} value={currentSelected?.po_number} />
             </Form.Item>
             <Form.Item>
-              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+              <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                 po_release
               </label>
               <Input disabled={true} value={currentSelected?.po_release} />
             </Form.Item>
             <Form.Item>
-              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+              <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                 vendor
               </label>
               <Input disabled={true} value={currentSelected?.vendor} />
             </Form.Item>
             <Form.Item>
-              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+              <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                 invoice_unit_price
               </label>
               <Input
@@ -341,13 +342,13 @@ const PriceReport = (props) => {
               />
             </Form.Item>
             <Form.Item>
-              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+              <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                 amount
               </label>
               <Input disabled={true} value={currentSelected?.amount} />
             </Form.Item>
             <Form.Item>
-              <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+              <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                 currency
               </label>
               <Input disabled={true} value={currentSelected?.currency} />
@@ -355,7 +356,12 @@ const PriceReport = (props) => {
           </div>
           <div className="grid grid-cols-1 gap-1 clear-both">
             <Form.Item>
-              <label className="uppercase font-bold">write remark</label>
+              <label className="uppercase font-bold">
+                  write remark {"   "}
+                  <span className="font-normal text-[red] text-[12px] italic">
+                    No more than 250 characters
+                  </span>
+                </label>
               <TextArea
                 className="w-full"
                 placeholder="remark here"

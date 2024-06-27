@@ -1,16 +1,27 @@
-import { Button, Drawer, Form, Input, List, Tag, Tooltip } from "antd";
+import {
+  Button,
+  Drawer,
+  Form,
+  Input,
+  List,
+  Popconfirm,
+  Tag,
+  Tooltip,
+} from "antd";
 import { memo, useEffect, useState } from "react";
 import axios from "axios";
 import { useForm } from "antd/es/form/Form";
-import Iframe from "react-iframe";
 
-const PowerBi_reportAdmin = (props) => {
+const PowerBiAdmin = (props) => {
   const [form] = useForm();
+  const [edit] = useForm();
   const [powerbi, settingPowerBi] = useState({
+    report_id: "",
     reportName: "",
     url: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editForm, setEditForm] = useState(false);
   const [getReport, setReport] = useState([]);
   const [reportName, setReportName] = useState("");
   const [reportURL, setReportURL] = useState("");
@@ -20,26 +31,10 @@ const PowerBi_reportAdmin = (props) => {
       [key]: e.target.value,
     }));
   };
-  const add_powerbi = async () => {
-    try {
-      let payload = {
-        reportName: powerbi.reportName,
-        url: powerbi.url,
-      };
-      form.resetFields();
-      await axios.post(`${props.baseUrl}/api/powerbi_connect`, payload, {
-        headers: {
-          Authorization: `Bearer ${props.token_id}`,
-        },
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
   const powerbi_addCondition =
     powerbi.reportName != "" && powerbi.url != "" ? false : true;
-
+  // display all PowerBI
   async function fetchPowerBi_report() {
     try {
       const response = await axios.get(
@@ -57,6 +52,30 @@ const PowerBi_reportAdmin = (props) => {
       console.log(error);
     }
   }
+  // connect PowerBI link
+  const add_powerbi = async () => {
+    try {
+      let payload = {
+        reportName: powerbi.reportName,
+        url: powerbi.url,
+      };
+      form.resetFields();
+      const response = await axios.post(
+        `${props.baseUrl}/api/powerbi_connect`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${props.token_id}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        fetchPowerBi_report();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     fetchPowerBi_report();
   }, []);
@@ -65,17 +84,64 @@ const PowerBi_reportAdmin = (props) => {
     setReportName(e.REPORT_NAME);
     setReportURL(e.REPORT_URL);
   };
-  const removeReport = async(url, id)=> {
-    await axios.delete(`${props.baseUrl}/api/powerbi_dashboard/${id}/${btoa(url)}`, {
-      headers: {
-        Authorization: `Bearer ${props.token_id}`,
-      },
-    });
-  }
+  // display remove PowerBI
+  const removeReport = async (url, id) => {
+    const delete_response = await axios.delete(
+      `${props.baseUrl}/api/powerbi_dashboard/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${props.token_id}`,
+        },
+      }
+    );
+    if (delete_response.status === 200) {
+      fetchPowerBi_report();
+    }
+  };
+  const selectEdit = async (item) => {
+    setEditForm(true);
+    settingPowerBi(
+      (prev) => ({
+        ...prev,
+        report_id: item?.REPORT_ID,
+        reportName: item?.REPORT_NAME,
+        url: item?.REPORT_URL,
+      }),
+      [powerbi]
+    );
+    // settingPowerBi((prevState) => ({
+    //   ...prevState,
+    //   [key]: e.target.value,
+    // }));
+  };
+  const updatePowerConn = async () => {
+    try {
+      let payload = {
+        reportName: powerbi.reportName,
+        url: powerbi.url,
+      };
+      edit.resetFields();
+      const response = await axios.put(
+        `${props.baseUrl}/api/powerbi_connect/update/${powerbi.report_id}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${props.token_id}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        sessionStorage.setItem("pageId", JSON.stringify(7));
+        window.location.reload();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div>
       <h1 className="text-2xl font-bold pl-0 p-3 mb-5 uppercase">
-        Power Bi Report (Admin User)
+        Power Bi ADMIN
       </h1>
       <div className="flex flex-col">
         <Form form={form} onFinish={add_powerbi}>
@@ -141,7 +207,9 @@ const PowerBi_reportAdmin = (props) => {
                           placement="top"
                           title={"VIEW"}
                           className="mr-4"
-                          onClick={() => previewDashboard(item)}
+                          onClick={() =>
+                            window.open(item?.REPORT_URL, "_blank")
+                          }
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -167,6 +235,7 @@ const PowerBi_reportAdmin = (props) => {
                           placement="top"
                           title={"EDIT"}
                           className="mr-4"
+                          onClick={selectEdit.bind(this, item)}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -183,21 +252,37 @@ const PowerBi_reportAdmin = (props) => {
                             />
                           </svg>
                         </Tooltip>
-                        <Tooltip placement="top" title={"REMOVE REPORT"} onClick={()=> removeReport(item?.REPORT_URL, item?.REPORT_ID)}>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="size-5 cursor-pointer"
+                        <Tooltip placement="top" title={"REMOVE REPORT"}>
+                          <Popconfirm
+                            title="Delete REPORT"
+                            description="Are you sure to delete this report?"
+                            onConfirm={() =>
+                              removeReport(item?.REPORT_URL, item?.REPORT_ID)
+                            }
+                            okText={"YES"}
+                            cancelText="No"
+                            okButtonProps={{
+                              style: {
+                                backgroundColor: "#036153",
+                                borderColor: "#036153",
+                              },
+                            }}
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                            />
-                          </svg>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                              className="size-5 cursor-pointer"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                              />
+                            </svg>
+                          </Popconfirm>
                         </Tooltip>
                       </div>
                     </div>
@@ -207,21 +292,56 @@ const PowerBi_reportAdmin = (props) => {
             </List.Item>
           )}
         />
-        {/* <Drawer
-          title={reportName}
-          onClose={() => setIsModalOpen(false)}
-          open={isModalOpen}
-          width={window.innerWidth}
+        <Drawer
+          title={"EDIT POWER BI"}
+          onClose={() => setEditForm(false)}
+          open={editForm}
+          width={window.innerWidth / 2.5}
         >
-          <Iframe
-            id="powerBiReport"
-            title={reportName}
-            className="w-full h-screen"
-            src={reportURL}
-          />
-        </Drawer> */}
+          <Form onFinish={updatePowerConn.bind(this)} form={edit}>
+            <div class="grid gap-1 mb-1 md:grid-cols-1">
+              <Form.Item
+                label="Report Name"
+                name={"edit_reportName"}
+                // rules={[
+                //   { required: true, message: "Please input the Report Name" },
+                //   { pattern: urlPattern, message: "Please enter a valid Report Name!" },
+                // ]}
+              >
+                <Input
+                  type="text"
+                  defaultValue={powerbi.reportName}
+                  onChange={(e) => handleChange(e, "reportName")}
+                />
+              </Form.Item>
+              <Form.Item
+                label="URL"
+                name={"edit_URL"}
+                // rules={[
+                //   { required: true, message: "Please input the URL!" },
+                //   { pattern: urlPattern, message: "Please enter a valid URL!" },
+                // ]}
+              >
+                <Input
+                  type="text"
+                  defaultValue={powerbi.url}
+                  onChange={(e) => handleChange(e, "url")}
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  style={{ backgroundColor: "#036153", color: "white" }}
+                  className="uppercase"
+                  htmlType="submit"
+                >
+                  EDIT
+                </Button>
+              </Form.Item>
+            </div>
+          </Form>
+        </Drawer>
       </div>
     </div>
   );
 };
-export default memo(PowerBi_reportAdmin);
+export default memo(PowerBiAdmin);
