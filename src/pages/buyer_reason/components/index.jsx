@@ -408,19 +408,19 @@ function Buyer_Reason(props) {
             <h1 className="italic uppercase">Current data</h1>
             <Form className="grid grid-cols-3 gap-3 clear-both">
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   promise date
                 </label>
                 <Input disabled={true} value={current_selected?.promiseDate} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   vendor
                 </label>
                 <Input disabled={true} value={current_selected?.vendor} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   ITEM_NO
                 </label>
                 <Input disabled={true} value={current_selected?.item_no} />
@@ -428,19 +428,19 @@ function Buyer_Reason(props) {
             </Form>
             <Form className="grid grid-cols-3 gap-3 clear-both">
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   BUYER
                 </label>
                 <Input disabled={true} value={current_selected?.buyer} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   PO_NUMBER
                 </label>
                 <Input disabled={true} value={current_selected?.po_number} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   PO RELEASE
                 </label>
                 <Input disabled={true} value={current_selected?.po_release} />
