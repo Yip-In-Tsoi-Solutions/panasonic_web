@@ -356,7 +356,12 @@ const PriceReport = (props) => {
           </div>
           <div className="grid grid-cols-1 gap-1 clear-both">
             <Form.Item>
-              <label className="uppercase font-bold">write remark</label>
+              <label className="uppercase font-bold">
+                  write remark {"   "}
+                  <span className="font-normal text-[red] text-[12px] italic">
+                    No more than 250 characters
+                  </span>
+                </label>
               <TextArea
                 className="w-full"
                 placeholder="remark here"

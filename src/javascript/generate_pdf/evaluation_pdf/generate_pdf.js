@@ -190,7 +190,7 @@ async function generatePDF(supplier, evaluate_date, department, questionaire) {
     doc.autoTable.previous.finalY + 10
   );
   doc.text(
-    `คะแนนรวม (%) : ${totalPercentage}% (${grade})`,
+    `%=คะแนนรวมx100/${questionaire[0]?.EVALUATE_FULL_SCORE} (คะแนนเต็ม) : ${totalPercentage}% (${grade})`,
     15,
     doc.autoTable.previous.finalY + 15
   );
