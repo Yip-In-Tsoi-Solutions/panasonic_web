@@ -1,7 +1,7 @@
 import { memo, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setListView } from "../../../components/ListViewWithDrawer/actions/list_viewSlice";
-import ListViewWithDrawer from "../../../components/ListViewWithDrawer/components";
+import { setListView } from "../../../components/PowerBi_report_list/actions/list_viewSlice";
+import Overview_all_report from "../../../components/PowerBi_report_list/components/overview_all_report";
 import axios from "axios";
 
 const PowerBi_report_list = (props) => {
@@ -28,7 +28,7 @@ const PowerBi_report_list = (props) => {
     <div>
       <h1 className="text-2xl font-bold pl-0 p-3 mb-5 uppercase">Report Summarize</h1>
       <div className="clear-both">
-        <ListViewWithDrawer listView_data={dashboard} />
+        <Overview_all_report listView_data={dashboard} />
       </div>
     </div>
   );

@@ -11,9 +11,8 @@ import {
 import { memo, useEffect, useState } from "react";
 import axios from "axios";
 import { useForm } from "antd/es/form/Form";
-import Iframe from "react-iframe";
 
-const PowerBi_reportAdmin = (props) => {
+const PowerBiAdmin = (props) => {
   const [form] = useForm();
   const [edit] = useForm();
   const [powerbi, settingPowerBi] = useState({
@@ -131,7 +130,7 @@ const PowerBi_reportAdmin = (props) => {
   return (
     <div>
       <h1 className="text-2xl font-bold pl-0 p-3 mb-5 uppercase">
-        Power Bi Report (Admin User)
+        Power Bi ADMIN
       </h1>
       <div className="flex flex-col">
         <Form form={form} onFinish={add_powerbi}>
@@ -327,4 +326,4 @@ const PowerBi_reportAdmin = (props) => {
     </div>
   );
 };
-export default memo(PowerBi_reportAdmin);
+export default memo(PowerBiAdmin);
