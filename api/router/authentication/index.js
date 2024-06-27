@@ -1,44 +1,57 @@
 const express = require("express");
-const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const bodyParser = require("body-parser");
-const generateAccessToken = require("../../secure/generateAccessToken");
+const passport = require("passport");
+const JwtStrategy = require("passport-jwt").Strategy;
+const ExtractJwt = require("passport-jwt").ExtractJwt;
 const CryptoJS = require("crypto-js");
-const authenticateToken = require("../../secure/jwt");
+const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const fs = require("fs");
 const path = require("path");
-const session = require("express-session");
+const generateAccessToken = require("../../secure/generateAccessToken");
 require("dotenv").config();
+const authenticateToken = require("../../secure/jwt");
 const authentication = express();
 authentication.use(bodyParser.json());
-// Use session middleware
-authentication.use(
-  session({
-    secret: process.env.SECRET_KEY, // Store your session secret in your .env file
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }, // For production, set secure to true and use HTTPS
+
+// Setup Passport.js JWT Strategy
+const jwtOptions = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.SECRET_KEY,
+};
+
+passport.use(
+  new JwtStrategy(jwtOptions, async (jwtPayload, done) => {
+    try {
+      // Decrypt the employee_id from JWT payload
+      const bytes = CryptoJS.AES.decrypt(
+        jwtPayload.employee_id,
+        process.env.SECRET_KEY
+      );
+      const decryptedEmployeeId = bytes.toString(CryptoJS.enc.Utf8);
+
+      // Check database for user based on decrypted employee_id
+      const sql = await sql_serverConn();
+      const request = sql.request();
+      request.input("employeeId", decryptedEmployeeId.toLowerCase());
+      const result = await request.query(`
+        SELECT CASE WHEN COUNT(*) > 0 THEN 'true' ELSE 'false' END AS [user_status]
+        FROM [dbo].[v_PECTH_USER_PERMISSION]
+        WHERE LOWER([employeeId]) = @employeeId
+        GROUP BY [employeeId]
+      `);
+
+      if (result.recordset.length > 0) {
+        return done(null, { employee_id: decryptedEmployeeId });
+      } else {
+        return done(null, false);
+      }
+    } catch (error) {
+      return done(error, false);
+    }
   })
 );
 
-// Helper function to update .env file
-function updateEnv(key, value) {
-  const envFilePath = path.resolve(__dirname, "../../.env");
-  const envVars = fs.readFileSync(envFilePath, "utf8").split("\n");
-
-  const targetIndex = envVars.findIndex((line) => line.startsWith(`${key}=`));
-
-  const quotedValue = `"${value}"`; // Add quotes around the value
-
-  if (targetIndex >= 0) {
-    envVars[targetIndex] = `${key}=${quotedValue}`;
-  } else {
-    envVars.push(`${key}=${quotedValue}`);
-  }
-
-  fs.writeFileSync(envFilePath, envVars.join("\n"), "utf8");
-}
-
-// Generate token key
+// Login route
 authentication.post("/auth/user/login", async (req, res) => {
   try {
     const { employee_id } = req.body;
@@ -53,14 +66,11 @@ authentication.post("/auth/user/login", async (req, res) => {
       process.env.SECRET_KEY
     ).toString();
 
-    // Update .env file with the encrypted employee_id (if needed)
-    updateEnv("SECRET_KEY", process.env.SECRET_KEY);
-
-    // Generate a token with the encrypted employee_id
-    const token = generateAccessToken(encryptedEmployeeId);
-
-    // Store the token in the session
-    req.session.token = token;
+    // Generate JWT token
+    const token = generateAccessToken(
+      { employee_id: encryptedEmployeeId },
+      process.env.SECRET_KEY
+    );
 
     res.status(200).send({ token });
   } catch (error) {
@@ -69,7 +79,7 @@ authentication.post("/auth/user/login", async (req, res) => {
   }
 });
 
-// Protected route using the authenticateToken middleware
+// Protected route
 authentication.get(
   "/auth/user/login/getUser",
   authenticateToken,
@@ -81,11 +91,10 @@ authentication.get(
       // Decrypt the employee_id from the token
       if (req.user.employee_id != "") {
         const bytes = CryptoJS.AES.decrypt(
-          req.user.employee_id,
+          req.user.employee_id.employee_id,
           process.env.SECRET_KEY
         );
         const decryptedEmployeeId = bytes.toString(CryptoJS.enc.Utf8);
-
         // Query the database using the decrypted employee_id
         request.input("employeeId", decryptedEmployeeId.toLowerCase());
         const result = await request.query(
@@ -105,14 +114,9 @@ authentication.get(
 );
 
 // Logout route
-authentication.post("/auth/user/logout", async (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).send("Could not log out. Please try again.");
-    } else {
-      res.status(200).send("Logout successful.");
-    }
-  });
+authentication.post("/auth/user/logout", (req, res) => {
+  // Implement logout functionality as needed
+  res.status(200).send("Logout successful.");
 });
 
 module.exports = authentication;

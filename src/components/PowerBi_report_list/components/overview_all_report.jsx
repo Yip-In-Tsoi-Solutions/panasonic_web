@@ -17,11 +17,6 @@ const Overview_all_report = (props) => {
     <>
       <div>
         <List
-          header={
-            <div className="font-bold flex flex-row uppercase">
-              my Report List
-            </div>
-          }
           footer={null}
           bordered
           dataSource={props.listView_data}
@@ -31,27 +26,12 @@ const Overview_all_report = (props) => {
                 title={
                   <div key={item?.REPORT_URL}>
                     <div className="flex flex-row mt-5 mb-5">
-                      {/* <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="size-6 mr-2"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z"
-                        />
-                      </svg> */}
                       <h1 className="font-bold mr-5">{item?.REPORT_NAME}</h1>
                       <div className="flex flex-row">
                         <Tooltip
                           placement="top"
                           title={"VIEW"}
                           className="mr-4"
-                          // onClick={() => previewDashboard(item)}
                         >
                           <a href={item.REPORT_URL} target="_blank">
                             <svg
