@@ -11,12 +11,14 @@ require("dotenv").config();
 const authentication = express();
 authentication.use(bodyParser.json());
 // Use session middleware
-authentication.use(session({
-  secret: process.env.SECRET_KEY, // Store your session secret in your .env file
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false } // For production, set secure to true and use HTTPS
-}));
+authentication.use(
+  session({
+    secret: process.env.SECRET_KEY, // Store your session secret in your .env file
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }, // For production, set secure to true and use HTTPS
+  })
+);
 
 // Helper function to update .env file
 function updateEnv(key, value) {
@@ -68,30 +70,39 @@ authentication.post("/auth/user/login", async (req, res) => {
 });
 
 // Protected route using the authenticateToken middleware
-authentication.get("/auth/user/login/getUser", authenticateToken, async (req, res) => {
-  try {
-    const sql = await sql_serverConn();
-    const request = sql.request();
+authentication.get(
+  "/auth/user/login/getUser",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const request = sql.request();
 
-    // Decrypt the employee_id from the token
-    const bytes = CryptoJS.AES.decrypt(req.user.employee_id, process.env.SECRET_KEY);
-    const decryptedEmployeeId = bytes.toString(CryptoJS.enc.Utf8);
+      // Decrypt the employee_id from the token
+      if (req.user.employee_id != "") {
+        const bytes = CryptoJS.AES.decrypt(
+          req.user.employee_id,
+          process.env.SECRET_KEY
+        );
+        const decryptedEmployeeId = bytes.toString(CryptoJS.enc.Utf8);
 
-    // Query the database using the decrypted employee_id
-    request.input("employeeId", decryptedEmployeeId.toLowerCase());
-    const result = await request.query(
-      "SELECT CASE WHEN COUNT(*) > 0 THEN 'true' ELSE 'false' END AS [user_status] " +
-      "FROM [dbo].[v_PECTH_USER_PERMISSION] " +
-      "WHERE LOWER([employeeId]) = @employeeId " +
-      "GROUP BY [employeeId]"
-    );
-
-    res.status(200).send(result.recordset[0]);
-  } catch (error) {
-    console.error("Error:", error.message);
-    res.status(500).send("Internal Server Error");
+        // Query the database using the decrypted employee_id
+        request.input("employeeId", decryptedEmployeeId.toLowerCase());
+        const result = await request.query(
+          `
+          SELECT CASE WHEN COUNT(*) > 0 THEN 'true' ELSE 'false' END AS [user_status] FROM [dbo].[v_PECTH_USER_PERMISSION] 
+          WHERE LOWER([employeeId]) = @employeeId
+          GROUP BY [employeeId]
+        `
+        );
+        res.status(200).send(result.recordset[0]);
+      }
+    } catch (error) {
+      console.error("Error:", error.message);
+      res.status(500).send("Internal Server Error");
+    }
   }
-});
+);
 
 // Logout route
 authentication.post("/auth/user/logout", async (req, res) => {

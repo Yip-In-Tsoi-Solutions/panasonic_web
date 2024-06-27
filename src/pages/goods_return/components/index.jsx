@@ -444,61 +444,61 @@ const GoodsReturn = (props) => {
           <Form form={return_qty_form} onFinish={submitReturnForm.bind(this)}>
             <div className="grid grid-cols-3 gap-3 clear-both">
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   PO_NUMBER
                 </label>
                 <Input disabled={true} value={curentSelect?.po_number} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   po_release
                 </label>
                 <Input disabled={true} value={curentSelect?.po_release} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   item_no
                 </label>
                 <Input disabled={true} value={curentSelect?.item_no} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 font-bold">
                   description
                 </label>
                 <Input disabled={true} value={curentSelect?.description} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 font-bold">
                   uom
                 </label>
                 <Input disabled={true} value={curentSelect?.unit} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   unit price
                 </label>
                 <Input disabled={true} value={curentSelect?.unitPrice} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   curency
                 </label>
                 <Input disabled={true} value={curentSelect?.curency} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   invoice_no
                 </label>
                 <Input disabled={true} value={curentSelect?.invoice_no} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   invoice date
                 </label>
                 <Input disabled={true} value={curentSelect?.invoice_date} />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   return_qty
                 </label>
                 <InputNumber
@@ -510,7 +510,7 @@ const GoodsReturn = (props) => {
                 />
               </Form.Item>
               <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 dark:text-white uppercase font-bold">
+                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   cause
                 </label>
                 <Input

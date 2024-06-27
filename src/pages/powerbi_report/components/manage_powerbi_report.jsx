@@ -16,6 +16,7 @@ const PowerBiAdmin = (props) => {
   const [form] = useForm();
   const [edit] = useForm();
   const [powerbi, settingPowerBi] = useState({
+    report_id: "",
     reportName: "",
     url: "",
   });
@@ -24,7 +25,6 @@ const PowerBiAdmin = (props) => {
   const [getReport, setReport] = useState([]);
   const [reportName, setReportName] = useState("");
   const [reportURL, setReportURL] = useState("");
-  const [report_id, setReportId] = useState("");
   const handleChange = (e, key) => {
     settingPowerBi((prevState) => ({
       ...prevState,
@@ -100,7 +100,19 @@ const PowerBiAdmin = (props) => {
   };
   const selectEdit = async (item) => {
     setEditForm(true);
-    setReportId(item?.REPORT_ID);
+    settingPowerBi(
+      (prev) => ({
+        ...prev,
+        report_id: item?.REPORT_ID,
+        reportName: item?.REPORT_NAME,
+        url: item?.REPORT_URL,
+      }),
+      [powerbi]
+    );
+    // settingPowerBi((prevState) => ({
+    //   ...prevState,
+    //   [key]: e.target.value,
+    // }));
   };
   const updatePowerConn = async () => {
     try {
@@ -108,9 +120,9 @@ const PowerBiAdmin = (props) => {
         reportName: powerbi.reportName,
         url: powerbi.url,
       };
-      form.resetFields();
+      edit.resetFields();
       const response = await axios.put(
-        `${props.baseUrl}/api/powerbi_connect/update/${report_id}`,
+        `${props.baseUrl}/api/powerbi_connect/update/${powerbi.report_id}`,
         payload,
         {
           headers: {
@@ -119,9 +131,8 @@ const PowerBiAdmin = (props) => {
         }
       );
       if (response.status === 200) {
-        edit.resetFields();
-        fetchPowerBi_report();
-        setEditForm(false);
+        sessionStorage.setItem("pageId", JSON.stringify(7));
+        window.location.reload();
       }
     } catch (error) {
       console.log(error);
@@ -289,24 +300,31 @@ const PowerBiAdmin = (props) => {
         >
           <Form onFinish={updatePowerConn.bind(this)} form={edit}>
             <div class="grid gap-1 mb-1 md:grid-cols-1">
-              <Form.Item label="Report Name" name={"name"}>
+              <Form.Item
+                label="Report Name"
+                name={"edit_reportName"}
+                // rules={[
+                //   { required: true, message: "Please input the Report Name" },
+                //   { pattern: urlPattern, message: "Please enter a valid Report Name!" },
+                // ]}
+              >
                 <Input
-                  placeholder="Report Name"
+                  type="text"
+                  defaultValue={powerbi.reportName}
                   onChange={(e) => handleChange(e, "reportName")}
                 />
               </Form.Item>
               <Form.Item
                 label="URL"
                 name={"edit_URL"}
-                rules={[
-                  { required: true, message: "Please input the URL!" },
-                  { pattern: urlPattern, message: "Please enter a valid URL!" },
-                ]}
+                // rules={[
+                //   { required: true, message: "Please input the URL!" },
+                //   { pattern: urlPattern, message: "Please enter a valid URL!" },
+                // ]}
               >
                 <Input
                   type="text"
-                  name="url"
-                  placeholder="URL"
+                  defaultValue={powerbi.url}
                   onChange={(e) => handleChange(e, "url")}
                 />
               </Form.Item>
