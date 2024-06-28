@@ -196,6 +196,9 @@ async function generatePDF(data, fileName, price_report_date_from_to) {
         font: "tahoma",
         fontSize: 5,
       },
+      columnStyles: {
+        16: {cellWidth: 50}
+      }
     });
 
     if (height > 270) {

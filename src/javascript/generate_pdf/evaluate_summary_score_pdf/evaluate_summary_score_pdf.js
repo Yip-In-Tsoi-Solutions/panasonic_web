@@ -77,6 +77,7 @@ async function Summary_score_pdf(data, summary_date) {
   //   doc.text(`หน่วยงาน / แผนก : ${String(department).toUpperCase()}`, 15, 50);
   //   doc.text(`ชื่อผู้ส่งมอบ : ${String(supplier).toUpperCase()}`, 15, 60);
   doc.setFont("tahoma", "normal");
+  // ต่่าราง SUPPLIER list
   doc.autoTable({
     startY: 65,
     body: data,
@@ -91,10 +92,18 @@ async function Summary_score_pdf(data, summary_date) {
       font: "tahoma",
       fontSize: 8,
     },
+    columnStyles: {
+      0: {cellWidth: 10},  
+      1: {cellWidth: 50},  
+      2: {cellWidth: 23},  
+      3: {cellWidth: 15},  
+      4: {cellWidth: 18},  
+      5: {cellWidth: 65}
+    },
     margin: { left: 15, right: 15 },
   });
 
-  // Grade condition table
+  // Grade condition table / ตาราง เกณฑ์การให้คะแนน
   const gradeConditionHeaders = [
     [
       {

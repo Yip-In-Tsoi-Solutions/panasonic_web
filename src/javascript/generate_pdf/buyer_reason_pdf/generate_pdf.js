@@ -74,7 +74,7 @@ async function generatePDF(data, fileName) {
         halign: "center",
       },
       didParseCell: function (data) {
-        if (data.row.raw.every(cell => cell === "")) {
+        if (data.row.raw.every((cell) => cell === "")) {
           data.cell.styles.minCellHeight = 15;
         } else {
           data.cell.styles.minCellHeight = 5;
@@ -100,7 +100,7 @@ async function generatePDF(data, fileName) {
         halign: "center",
       },
       didParseCell: function (data) {
-        if (data.row.raw.every(cell => cell === "")) {
+        if (data.row.raw.every((cell) => cell === "")) {
           data.cell.styles.minCellHeight = 15;
         } else {
           data.cell.styles.minCellHeight = 5;
@@ -165,6 +165,16 @@ async function generatePDF(data, fileName) {
         font: "tahoma",
         fontSize: 7,
       },
+      columnStyles: {
+        0: { cellWidth: 50 },
+        1: { cellWidth: 15 },
+        2: { cellWidth: 15 },
+        3: { cellWidth: 23 },
+        4: { cellWidth: 50 },
+        5: { cellWidth: 20 },
+        6: { cellWidth: 35 },
+        7: { cellWidth: 65 },
+      },
     });
     doc.setFontSize(10);
     doc.setFont("tahoma", "bold");
@@ -184,13 +194,11 @@ async function generatePDF(data, fileName) {
     //   doc.lastAutoTable.finalY + 20
     // );
     doc.text(
-      `QTY RECEIVED TOTAL:   ${numberWithCommas(
-        (totalQtyReceived).toFixed(3)
-      )}`,
-      width/2,
+      `QTY RECEIVED TOTAL:   ${numberWithCommas(totalQtyReceived.toFixed(3))}`,
+      width / 2,
       doc.lastAutoTable.finalY + 15,
       {
-        align:"center"
+        align: "center",
       }
     );
 
