@@ -1,13 +1,4 @@
-import {
-  Button,
-  Drawer,
-  Form,
-  Input,
-  List,
-  Popconfirm,
-  Tag,
-  Tooltip,
-} from "antd";
+import { Button, Drawer, Form, Input, List, Popconfirm, Tooltip } from "antd";
 import { memo, useEffect, useState } from "react";
 import axios from "axios";
 import { useForm } from "antd/es/form/Form";
@@ -155,9 +146,7 @@ const PowerBiAdmin = (props) => {
   };
   return (
     <div className="uppercase">
-      <h1 className="text-2xl font-bold pl-0 p-3 mb-5">
-        Power Bi ADMIN
-      </h1>
+      <h1 className="text-2xl font-bold pl-0 p-3 mb-5">Power Bi ADMIN</h1>
       <div className="flex flex-col">
         <Form form={form} onFinish={add_powerbi}>
           <div class="grid gap-6 mb-6 md:grid-cols-4">
@@ -309,7 +298,9 @@ const PowerBiAdmin = (props) => {
                   </svg>
                 }
                 title={<h1 className="font-bold">{item?.REPORT_NAME}</h1>}
-                description={item?.REPORT_URL.slice(0, 100)}
+                description={
+                  <p className="lowercase">{item?.REPORT_URL.slice(0, 100)}</p>
+                }
               />
             </List.Item>
           )}
