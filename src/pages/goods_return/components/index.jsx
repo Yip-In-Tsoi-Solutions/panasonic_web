@@ -88,7 +88,7 @@ const GoodsReturn = (props) => {
         )}`;
       }
       if (filter?.itemNo != "") {
-        queryString += `AND lower([ITEM]) like ${JSON.stringify(
+        queryString += `AND lower([ITEM]) LIKE ${JSON.stringify(
           filter?.itemNo.slice(0, 2) + "%"
         )
           .toLowerCase()
@@ -207,7 +207,7 @@ const GoodsReturn = (props) => {
       <Form
         onFinish={manageFilter.bind(this)}
         form={filter_form}
-        className="grid grid-cols-3 gap-3 gap-y-0 clear-both"
+        className="grid grid-cols-3 gap-3 gap-y-0 clear-both uppercase"
       >
         <Promise_date_from
           dateFormat={dateFormat}

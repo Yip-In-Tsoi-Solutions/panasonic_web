@@ -33,6 +33,7 @@ const Buyer_filter = (props) => {
   return (
     <>
       <Form.Item
+        className="uppercase"
         label={"Buyer"}
         name={`buyer_${props.pageTitle}`}
         rules={[

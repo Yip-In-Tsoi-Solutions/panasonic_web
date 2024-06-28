@@ -8,7 +8,7 @@ const ItemNo_filter_typing = (props) => {
   const dispatch = useDispatch();
   return (
     <>
-      <Form.Item label="ItemNo" name={"Item_no_typing"}>
+      <Form.Item label="Item No" name={"Item_no_typing"}>
         <Input onChange={(e) => dispatch(setItemNo(e.target.value))} />
       </Form.Item>
     </>

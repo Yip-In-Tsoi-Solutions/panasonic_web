@@ -254,8 +254,8 @@ function Buyer_Reason(props) {
   const export_url = props.baseUrl;
   return (
     <>
-      <div>
-        <h1 className="text-2xl font-bold pl-0 p-3 mb-5 uppercase">
+      <div className="uppercase">
+        <h1 className="text-2xl font-bold pl-0 p-3 mb-5">
           Buyer reason
         </h1>
         <Form

@@ -154,8 +154,8 @@ const PowerBiAdmin = (props) => {
     }
   };
   return (
-    <div>
-      <h1 className="text-2xl font-bold pl-0 p-3 mb-5 uppercase">
+    <div className="uppercase">
+      <h1 className="text-2xl font-bold pl-0 p-3 mb-5">
         Power Bi ADMIN
       </h1>
       <div className="flex flex-col">
@@ -321,7 +321,7 @@ const PowerBiAdmin = (props) => {
           width={window.innerWidth / 2.5}
         >
           <Form onFinish={updatePowerConn.bind(this)} form={edit}>
-            <div class="grid gap-1 mb-1 md:grid-cols-1">
+            <div class="grid gap-1 mb-1 md:grid-cols-1 uppercase">
               <Form.Item
                 label="Report Name"
                 name={"edit_reportName"}

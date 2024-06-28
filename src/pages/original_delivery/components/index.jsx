@@ -159,7 +159,7 @@ const Original_delivery = (props) => {
       <Form
         onFinish={manageFilter}
         form={form}
-        className="grid grid-cols-3 gap-3 gap-y-0 clear-both"
+        className="grid grid-cols-3 gap-3 gap-y-0 clear-both uppercase"
       >
         <Form.Item
           label={"Buyer"}

@@ -32,7 +32,7 @@ const Supplier_filter = (props) => {
   };
   return (
     <>
-      <Form.Item label={"Supplier"} name={"Supplier"}>
+      <Form.Item className="uppercase" label={"Supplier"} name={"Supplier"}>
         <Select
           value={filter.temp_state_filter.vendor} // Set the value of the Select component
           onChange={handleVendorChange}
