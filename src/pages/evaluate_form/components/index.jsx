@@ -519,7 +519,7 @@ const Evaluate = (props) => {
               centered
               items={[
                 {
-                  label: "Evaluate FORM",
+                  label: "Evaluate FORM".toUpperCase(),
                   key: "1",
                   children: (
                     <Form onFinish={submitForm} form={save_draft}>

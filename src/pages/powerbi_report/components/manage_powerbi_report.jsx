@@ -205,6 +205,7 @@ const PowerBiAdmin = (props) => {
           footer={null}
           bordered
           dataSource={getReport}
+          className={"p-3"}
           renderItem={(item) => (
             <List.Item
               actions={[
@@ -220,7 +221,7 @@ const PowerBiAdmin = (props) => {
                       viewBox="0 0 24 24"
                       strokeWidth={1.5}
                       stroke="currentColor"
-                      className="size-5 cursor-pointer"
+                      className="size-5 cursor-pointer text-[black]"
                     >
                       <path
                         strokeLinecap="round"
@@ -243,8 +244,7 @@ const PowerBiAdmin = (props) => {
                       viewBox="0 0 24 24"
                       strokeWidth={1.5}
                       stroke="currentColor"
-                      className="size-5 cursor-pointer"
-                      //onClick={()=> selectEdit(item)}
+                      className="size-5 cursor-pointer text-[black]"
                       onClick={editFormOpen.bind(this, item)}
                     >
                       <path
@@ -278,7 +278,7 @@ const PowerBiAdmin = (props) => {
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        className="size-5 cursor-pointer"
+                        className="size-5 cursor-pointer text-[black]"
                       >
                         <path
                           strokeLinecap="round"
