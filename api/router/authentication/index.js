@@ -55,24 +55,26 @@ passport.use(
 authentication.post("/auth/user/login", async (req, res) => {
   try {
     const { employee_id } = req.body;
-
-    if (!employee_id) {
+    if (employee_id === "NULL") {
       return res.status(400).send("Employee ID is required");
     }
+    else {
+      // Encrypt the employee_id
+      if (employee_id != null && employee_id != "NULL") {
+        const encryptedEmployeeId = CryptoJS.AES.encrypt(
+          employee_id,
+          process.env.SECRET_KEY
+        ).toString();
 
-    // Encrypt the employee_id
-    const encryptedEmployeeId = CryptoJS.AES.encrypt(
-      employee_id,
-      process.env.SECRET_KEY
-    ).toString();
+        // Generate JWT token
+        const token = generateAccessToken(
+          { employee_id: encryptedEmployeeId },
+          process.env.SECRET_KEY
+        );
 
-    // Generate JWT token
-    const token = generateAccessToken(
-      { employee_id: encryptedEmployeeId },
-      process.env.SECRET_KEY
-    );
-
-    res.status(200).send({ token });
+        res.status(200).send({ token });
+      }
+    }
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).send("Internal Server Error");
@@ -87,8 +89,7 @@ authentication.get(
     try {
       const sql = await sql_serverConn();
       const request = sql.request();
-
-      // Decrypt the employee_id from the token
+      //Decrypt the employee_id from the token
       if (req.user.employee_id != "") {
         const bytes = CryptoJS.AES.decrypt(
           req.user.employee_id.employee_id,
@@ -99,7 +100,7 @@ authentication.get(
         request.input("employeeId", decryptedEmployeeId.toLowerCase());
         const result = await request.query(
           `
-          SELECT CASE WHEN COUNT(*) > 0 THEN 'true' ELSE 'false' END AS [user_status] FROM [dbo].[v_PECTH_USER_PERMISSION] 
+          SELECT CASE WHEN COUNT(*) > 0 THEN 'true' ELSE 'false' END AS [user_status] FROM [dbo].[v_PECTH_USER_PERMISSION]
           WHERE LOWER([employeeId]) = @employeeId
           GROUP BY [employeeId]
         `
