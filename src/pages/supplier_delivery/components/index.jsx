@@ -197,6 +197,7 @@ const Supplier_delivery = (props) => {
           columns={schema(suppliery_list_filter_result)}
           scroll={{ x: "max-content" }}
           pagination={{
+            showSizeChanger: true,
             pageSize: pageSize, // Set the initial page size
             defaultPageSize: 5,
             pageSizeOptions: ["5", "10", "20", "50", "100", "200"],
