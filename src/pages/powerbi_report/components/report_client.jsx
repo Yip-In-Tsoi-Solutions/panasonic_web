@@ -46,10 +46,9 @@ const PowerBi_report_list = (props) => {
       <h1 className="text-2xl font-bold pl-0 p-3 mb-5 uppercase float-left">
         Report Summarize
       </h1>
-      <p className="text-[16px] font-normal pl-0 mb-5 clear-both uppercase">
-        All Report
-      </p>
-      <Overview_all_report className="clear-both" listView_data={dashboard} />
+      <div className="clear-both">
+        <Overview_all_report listView_data={dashboard} />
+      </div>
     </div>
   );
 };

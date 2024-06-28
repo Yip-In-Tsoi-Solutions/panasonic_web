@@ -139,7 +139,7 @@ async function generatePDF(dataset, supplierName, fileName, return_doc) {
     // Add sign lines with adjusted positions
     const signatureMargin = margin; // Increased margin for signatures
     const rightSignatureMargin = width - margin - 120; // Adjusted right margin for better alignment
-    const signatureY = finalY + 30; // Reduced white space before signatures
+    const signatureY = finalY + 40; // Reduced white space before signatures
 
     // Left column signatures
     doc.text(
