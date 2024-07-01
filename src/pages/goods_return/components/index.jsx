@@ -410,7 +410,7 @@ const GoodsReturn = (props) => {
                           defaultValue={item?.cause}
                         />
                         <svg
-                          onClick={() => dispatch(removeDocs())}
+                          onClick={() => dispatch(removeDocs(item?.id))}
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"

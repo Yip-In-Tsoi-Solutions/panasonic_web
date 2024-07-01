@@ -32,7 +32,7 @@ const goods_returnSlice = createSlice({
       state.temp_state_filter = initial_state.temp_state_filter;
     },
     removeDocs(state, action) {
-      state.return_doc = state.return_doc.filter(item => item === action.payload);
+      state.return_doc = state.return_doc.filter(item => item?.id !== action.payload);
     },
     clear_Alldocs: (state) => {
       state.return_doc = [];
