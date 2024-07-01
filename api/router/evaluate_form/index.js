@@ -194,7 +194,7 @@ evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
                 a.[FLAG_STATUS],
                 a.DEPARTMENT
         HAVING LOWER(a.FLAG_STATUS) in ('waiting', 'confirm')
-        ORDER BY a.[EVALUATE_ID] asc
+        ORDER BY a.[FLAG_STATUS] desc
       `
     );
     res.status(200).send(result.recordset);
