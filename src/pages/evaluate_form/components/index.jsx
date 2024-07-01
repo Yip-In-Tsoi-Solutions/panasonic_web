@@ -677,6 +677,7 @@ const Evaluate = (props) => {
                           },
                         ]}
                         pagination={{
+                          showSizeChanger: true,
                           pageSize: pageSize,
                           pageSizeOptions: [
                             "5",
