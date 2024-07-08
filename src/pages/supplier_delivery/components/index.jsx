@@ -122,6 +122,7 @@ const Supplier_delivery = (props) => {
             confirmBtnStatus={confirmBtnStatus}
             setConfirm={setConfirm}
             token_id={props.token_id}
+            setSuppliery_list_filter_result={setSuppliery_list_filter_result}
           />
         </div>
       </div>

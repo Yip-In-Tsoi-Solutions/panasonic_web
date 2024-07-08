@@ -9,13 +9,14 @@ const SupplierDeliveryConfirm = (props) => {
   const dispatch = useDispatch();
   const [alertMessage, setAlertMessage] = useState(false);
   const [confirmStatus, setConfirmStatus] = useState(true);
-  const { baseUrl, payload, confirmBtnStatus, setConfirm } = props;
+  const { baseUrl, payload, confirmBtnStatus, setConfirm, setSuppliery_list_filter_result } = props;
   const load_toBuyer_reason = async () => {
     try {
       message.success("Loading finished", 0.7);
       setAlertMessage(false); // closed modal
       setConfirm(true); // disabled
       dispatch(resetAllState()); // clear all value
+      setSuppliery_list_filter_result([])
       setTimeout(async()=> {
         await axios.post(
           `${baseUrl}/api/load_data_buyer_reason`,
