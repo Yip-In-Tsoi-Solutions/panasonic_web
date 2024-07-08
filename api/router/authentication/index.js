@@ -71,7 +71,6 @@ authentication.post("/auth/user/login", async (req, res) => {
           { employee_id: encryptedEmployeeId },
           process.env.SECRET_KEY
         );
-
         res.status(200).send({ token });
       }
     }

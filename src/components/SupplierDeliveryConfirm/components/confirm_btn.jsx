@@ -12,21 +12,21 @@ const SupplierDeliveryConfirm = (props) => {
   const { baseUrl, payload, confirmBtnStatus, setConfirm } = props;
   const load_toBuyer_reason = async () => {
     try {
-      const response = await axios.post(
-        `${baseUrl}/api/load_data_buyer_reason`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${props.token_id}`,
-          },
-        }
-      );
-      if (response.status === 200) {
-        message.success("Loading finished", 0.7);
-        setAlertMessage(false); // closed modal
-        setConfirm(true); // disabled
-        dispatch(resetAllState()); // clear all value
-      }
+      message.success("Loading finished", 0.7);
+      setAlertMessage(false); // closed modal
+      setConfirm(true); // disabled
+      dispatch(resetAllState()); // clear all value
+      setTimeout(async()=> {
+        await axios.post(
+          `${baseUrl}/api/load_data_buyer_reason`,
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${props.token_id}`,
+            },
+          }
+        );
+      }, 300)
     } catch (error) {
       if (error) {
         window.location.href = "/error_login";
