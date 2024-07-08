@@ -7,7 +7,6 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 const SupplierDeliveryConfirm = (props) => {
   const dispatch = useDispatch();
-  const [messageApi, contextHolder] = message.useMessage();
   const [alertMessage, setAlertMessage] = useState(false);
   const { baseUrl, payload, confirmBtnStatus, setConfirm } = props;
   const load_toBuyer_reason = async () => {
@@ -21,19 +20,12 @@ const SupplierDeliveryConfirm = (props) => {
           },
         }
       );
-      messageApi
-        .open({
-          type: "success",
-          content: "Action in progress..",
-        })
-        .then(() => {
-          if (response.status === 200) {
-            message.success("Loading finished", 0.7);
-            setAlertMessage(false);
-            setConfirm(true);
-            dispatch(resetAllState());
-          }
-        });
+      if (response.status === 200) {
+        message.success("Loading finished", 0.7);
+        setAlertMessage(false); // closed modal
+        setConfirm(true); // disabled
+        dispatch(resetAllState()); // clear all value
+      }
     } catch (error) {
       if (error) {
         window.location.href = "/error_login";
@@ -57,7 +49,6 @@ const SupplierDeliveryConfirm = (props) => {
           เมื่อยืนยันแล้วจะไม่สามารถทำรายการ ที่หน้านี้ได้อีกทุกกรณี
         </p>
         <div className="table flex-row m-auto mt-5 mb-5">
-          {contextHolder}
           <Button
             type="button"
             onClick={load_toBuyer_reason}
