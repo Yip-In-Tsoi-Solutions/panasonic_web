@@ -20,12 +20,9 @@ const SupplierDeliveryConfirm = (props) => {
           },
         }
       );
-      if (response.status === 200) {
-        message.success("Loading finished", 0.7);
-        setAlertMessage(false); // closed modal
-        setConfirm(true); // disabled
-        dispatch(resetAllState()); // clear all value
-      }
+      setAlertMessage(false); // closed modal
+      setConfirm(true); // disabled
+      dispatch(resetAllState()); // clear all value
     } catch (error) {
       if (error) {
         window.location.href = "/error_login";
