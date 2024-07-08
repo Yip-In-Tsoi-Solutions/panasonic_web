@@ -8,6 +8,7 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 const SupplierDeliveryConfirm = (props) => {
   const dispatch = useDispatch();
   const [alertMessage, setAlertMessage] = useState(false);
+  const [confirmStatus, setConfirmStatus] = useState(true);
   const { baseUrl, payload, confirmBtnStatus, setConfirm } = props;
   const load_toBuyer_reason = async () => {
     try {
@@ -20,9 +21,12 @@ const SupplierDeliveryConfirm = (props) => {
           },
         }
       );
-      setAlertMessage(false); // closed modal
-      setConfirm(true); // disabled
-      dispatch(resetAllState()); // clear all value
+      if (response.status === 200) {
+        message.success("Loading finished", 0.7);
+        setAlertMessage(false); // closed modal
+        setConfirm(true); // disabled
+        dispatch(resetAllState()); // clear all value
+      }
     } catch (error) {
       if (error) {
         window.location.href = "/error_login";
@@ -47,7 +51,7 @@ const SupplierDeliveryConfirm = (props) => {
         </p>
         <div className="table flex-row m-auto mt-5 mb-5">
           <Button
-            type="button"
+            disabled={confirmBtnStatus}
             onClick={load_toBuyer_reason}
             className="bg-[#006254] text-[white] font-bold uppercase rounded-2xl border-solid border-2 border-[#006254] mr-5"
           >
