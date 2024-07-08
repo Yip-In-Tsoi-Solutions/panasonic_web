@@ -4,7 +4,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
 import schema from "../../../javascript/print_schema";
-import Confirm_btn from "../../../components/confirm_supplier/components/confirm_btn";
+import SupplierDeliveryConfirm from "../../../components/SupplierDeliveryConfirm/components/confirm_btn";
 import Buyer_filter from "../../../components/filter_form/buyer_filter";
 import Promise_date_from from "../../../components/filter_form/promise_date_from";
 import Promise_date_to from "../../../components/filter_form/promise_date_to";
@@ -116,7 +116,7 @@ const Supplier_delivery = (props) => {
           <br />
         </div>
         <div className="flex flex-row float-right">
-          <Confirm_btn
+          <SupplierDeliveryConfirm
             baseUrl={props.baseUrl}
             payload={export_datasetAPI}
             confirmBtnStatus={confirmBtnStatus}

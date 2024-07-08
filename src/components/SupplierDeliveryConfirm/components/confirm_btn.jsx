@@ -5,7 +5,7 @@ import { resetAllState } from "../../filter_form/actions/filterSlice";
 import { memo, useState } from "react";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
-const Confirm_btn = (props) => {
+const SupplierDeliveryConfirm = (props) => {
   const dispatch = useDispatch();
   const [messageApi, contextHolder] = message.useMessage();
   const [alertMessage, setAlertMessage] = useState(false);
@@ -77,4 +77,4 @@ const Confirm_btn = (props) => {
     </>
   );
 };
-export default memo(Confirm_btn);
+export default memo(SupplierDeliveryConfirm);
