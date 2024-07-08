@@ -26,7 +26,7 @@ const SupplierDeliveryConfirm = (props) => {
             },
           }
         );
-      }, 300)
+      }, 3000)
     } catch (error) {
       if (error) {
         window.location.href = "/error_login";
