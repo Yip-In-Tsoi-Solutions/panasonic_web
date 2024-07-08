@@ -84,7 +84,6 @@ const Supplier_delivery = (props) => {
           setExportDataset(exportAPI.data);
           setConfirm(false);
           form.resetFields();
-          dispatch(resetAllState());
         }
       }
     } catch (error) {

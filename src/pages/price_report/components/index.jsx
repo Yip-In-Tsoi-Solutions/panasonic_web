@@ -84,7 +84,6 @@ const PriceReport = (props) => {
     dispatch(resetAllState());
     sessionStorage.removeItem("price_report_between_date")
   };
-
   const selectRemarkForm = (item) => {
     setCurrentSelected({
       id: item?.ID,
@@ -102,7 +101,6 @@ const PriceReport = (props) => {
     setRemark(item?.REMARK);
     setUpdateForm(true);
   };
-
   const submitRemark = async () => {
     try {
       const payload = {
@@ -118,7 +116,7 @@ const PriceReport = (props) => {
           },
         }
       );
-
+      dispatch(resetAllState());
       if (response.status === 200) {
         // Update local state after successful submission
         updatedForm.resetFields(); // Reset form fields (assuming from Ant Design or similar)
@@ -148,7 +146,6 @@ const PriceReport = (props) => {
         if (reply.status === 200) {
           dispatch(setSupplieryList(reply.data));
           setUpdateForm(false);
-          dispatch(resetAllState());
         }
       }
     } catch (error) {
