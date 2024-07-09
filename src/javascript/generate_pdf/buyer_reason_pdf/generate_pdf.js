@@ -134,6 +134,9 @@ async function generatePDF(data, fileName) {
         item_desc: item?.ITEM_DESCRIPTION,
         qty_received: numberWithCommas(item?.QUANTITY_RECEIVED.toFixed(3)),
         buyer: item?.BUYER,
+        effect_production_shipment: item?.EFFECT_PRODUCTION_SHIPMENT,
+        root_cause: item?.ROOT_CAUSE,
+        action: item?.ACTION,
         remark: item?.REASON_REMARK,
       };
     });
@@ -151,6 +154,9 @@ async function generatePDF(data, fileName) {
           "ITEM DESC",
           "QTY RECEIVED",
           "BUYER",
+          "EFFECT PRODUCTION SHIPMENT",
+          "ROOT CAUSE",
+          "ACTION",
           "REMARK",
         ],
       ],
@@ -163,36 +169,25 @@ async function generatePDF(data, fileName) {
       headerStyles: {
         fillColor: "#016255",
         font: "tahoma",
-        fontSize: 7,
+        fontSize: 6,
       },
       columnStyles: {
-        0: { cellWidth: 50 },
+        0: { cellWidth: 35 },
         1: { cellWidth: 15 },
         2: { cellWidth: 15 },
-        3: { cellWidth: 23 },
-        4: { cellWidth: 50 },
+        3: { cellWidth: 20 },
+        4: { cellWidth: 30 },
         5: { cellWidth: 20 },
-        6: { cellWidth: 35 },
-        7: { cellWidth: 65 },
+        6: { cellWidth: 30 },
+        7: { cellWidth: 30 },
+        8: { cellWidth: 30 },
+        9: { cellWidth: 30 },
+        10: { cellWidth: 30 },
+
       },
     });
     doc.setFontSize(10);
     doc.setFont("tahoma", "bold");
-    // doc.text("Summary Total", 15, doc.lastAutoTable.finalY + 10);
-    // doc.setFontSize(10);
-    // doc.setFont("tahoma", "normal");
-    // doc.text(
-    //   `SUB_TOTAL:   ${numberWithCommas(totalQtyReceived.toFixed(3))} /THB`,
-    //   15,
-    //   doc.lastAutoTable.finalY + 15
-    // );
-    // doc.text(
-    //   `VAT 7%:   ${numberWithCommas(
-    //     (totalQtyReceived * 0.07).toFixed(3)
-    //   )} /THB`,
-    //   15,
-    //   doc.lastAutoTable.finalY + 20
-    // );
     doc.text(
       `QTY RECEIVED TOTAL:   ${numberWithCommas(totalQtyReceived.toFixed(3))}`,
       width / 2,
