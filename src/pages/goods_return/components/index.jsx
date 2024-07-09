@@ -31,6 +31,7 @@ import {
 import Export from "../../../components/export_data";
 import convertDateFormat from "../../../javascript/convertDateFormat";
 import Goods_return_pdf from "../../../components/generate_pdf/goods_return_pdf/components";
+import TextArea from "antd/es/input/TextArea";
 const GoodsReturn = (props) => {
   const [filter_form] = useForm();
   const [return_qty_form] = useForm();
@@ -510,7 +511,7 @@ const GoodsReturn = (props) => {
                   onChange={(value) => dispatch(setReturnQty(value))}
                 />
               </Form.Item>
-              <Form.Item>
+              {/* <Form.Item>
                 <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
                   cause
                 </label>
@@ -518,8 +519,27 @@ const GoodsReturn = (props) => {
                   value={goods_return_list?.temp_state_filter?.cause}
                   onChange={(e) => dispatch(setCause(e.target.value))}
                 />
-              </Form.Item>
+              </Form.Item> */}
             </div>
+            <Form.Item>
+              <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
+                cause
+              </label>
+              <TextArea
+                value={goods_return_list?.temp_state_filter?.cause}
+                autoSize={{
+                  minRows: 6,
+                  maxRows: 12,
+                }}
+                maxLength={250}
+                onChange={(e) => dispatch(setCause(e.target.value))}
+              />
+              <br />
+              <span className="float-right uppercase">
+                current {goods_return_list?.temp_state_filter?.cause.length}/250
+                words
+              </span>
+            </Form.Item>
             <div>
               <Form.Item>
                 <Button htmlType="submit">Submit</Button>

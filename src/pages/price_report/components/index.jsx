@@ -364,12 +364,15 @@ const PriceReport = (props) => {
                 className="w-full"
                 placeholder="remark here"
                 value={remark}
+                maxLength={250}
                 autoSize={{
                   minRows: 6,
                   maxRows: 12,
                 }}
                 onChange={(e) => setRemark(e.target.value)}
               />
+              <br/>
+              <span className="float-right uppercase">current {remark.length}/250 words</span>
               <Button
                 htmlType="submit"
                 disabled={!remark}
