@@ -504,7 +504,8 @@ function Buyer_Reason(props) {
             <Form>
               <Form.Item>
                 <label className="uppercase font-bold">
-                  write reason (Optional){"   "}
+                  write reason 
+                  <br/>
                   <span className="font-normal text-[red] text-[12px] italic">
                     No more than 250 characters
                   </span>
@@ -516,8 +517,11 @@ function Buyer_Reason(props) {
                     minRows: 6,
                     maxRows: 12,
                   }}
+                  maxLength={250}
                   onChange={(e) => setReason(e.target.value)}
                 />
+                <br/>
+                <span className="float-right uppercase">current {reason.length}/250 words</span>
                 <Button
                   disabled={
                     buyer_reason?.temp_state_filter?.rootCause != "" &&
