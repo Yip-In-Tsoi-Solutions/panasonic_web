@@ -554,6 +554,7 @@ const Evaluate = (props) => {
                           minRows: 6,
                           maxRows: 24,
                         }}
+                        maxLength={250}
                         onChange={(e)=> setComment(e.target.value)}
                       />
                       <br/>
