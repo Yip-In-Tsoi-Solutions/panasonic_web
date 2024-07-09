@@ -353,7 +353,7 @@ const Evaluate = (props) => {
             </div>
             <br />
             <Form.Item>
-            <label className="uppercase font-bold text-[14px]">
+              <label className="uppercase font-bold text-[14px]">
                 comments (ข้อเสนอแนะ) {"   "}
                 <span className="font-normal text-[red] text-[12px] italic">
                   No more than 250 characters
@@ -368,6 +368,8 @@ const Evaluate = (props) => {
                   minRows: 6,
                   maxRows: 24,
                 }}
+                showCount
+                maxLength={250}
                 ref={updateComment}
               />
             </Form.Item>
@@ -466,6 +468,8 @@ const Evaluate = (props) => {
                   minRows: 6,
                   maxRows: 24,
                 }}
+                showCount
+                maxLength={250}
                 ref={approveComment}
               />
             </Form.Item>
@@ -554,11 +558,10 @@ const Evaluate = (props) => {
                           minRows: 6,
                           maxRows: 24,
                         }}
+                        showCount
                         maxLength={250}
-                        onChange={(e)=> setComment(e.target.value)}
+                        onChange={(e) => setComment(e.target.value)}
                       />
-                      <br/>
-                      <span className="float-right uppercase">current {comments.length}/250 words</span>
                       <Button htmlType="submit">SAVE Draft</Button>
                     </Form>
                   ),

@@ -531,14 +531,10 @@ const GoodsReturn = (props) => {
                   minRows: 6,
                   maxRows: 12,
                 }}
+                showCount
                 maxLength={250}
                 onChange={(e) => dispatch(setCause(e.target.value))}
               />
-              <br />
-              <span className="float-right uppercase">
-                current {goods_return_list?.temp_state_filter?.cause.length}/250
-                words
-              </span>
             </Form.Item>
             <div>
               <Form.Item>
