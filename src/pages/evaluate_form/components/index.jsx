@@ -48,7 +48,7 @@ const Evaluate = (props) => {
   const [draft_form] = useForm();
   const [approve_form] = useForm();
   const dispatch = useDispatch();
-  const comments = useRef("");
+  const [comments, setComment] = useState("");
   const updateComment = useRef("");
   const approveComment = useRef("");
   const evaluate_vendors = useSelector((state) => state.evaluate_vendors);
@@ -554,8 +554,10 @@ const Evaluate = (props) => {
                           minRows: 6,
                           maxRows: 24,
                         }}
-                        ref={comments}
+                        onChange={(e)=> setComment(e.target.value)}
                       />
+                      <br/>
+                      <span className="float-right uppercase">current {comments.length}/250 words</span>
                       <Button htmlType="submit">SAVE Draft</Button>
                     </Form>
                   ),
