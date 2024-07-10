@@ -1,10 +1,10 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "main": "express_server.js",
+  "main": "backend_server.js",
   "license": "MIT",
   "scripts": {
-    "api": "pm2 start express_server.js"
+    "api": "pm2 start backend_server.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
