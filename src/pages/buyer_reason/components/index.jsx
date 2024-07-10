@@ -517,11 +517,10 @@ function Buyer_Reason(props) {
                     minRows: 6,
                     maxRows: 12,
                   }}
+                  showCount
                   maxLength={250}
                   onChange={(e) => setReason(e.target.value)}
                 />
-                <br/>
-                <span className="float-right uppercase">current {reason.length}/250 words</span>
                 <Button
                   disabled={
                     buyer_reason?.temp_state_filter?.rootCause != "" &&

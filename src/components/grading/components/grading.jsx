@@ -1,7 +1,7 @@
 import { Button, DatePicker, Form, Table } from "antd";
 import { FilePdfOutlined } from "@ant-design/icons";
 import schema from "../../../javascript/print_schema";
-import { memo } from "react";
+import { memo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   resetSummaryScore,
@@ -14,6 +14,7 @@ const GradingTable = ({ baseUrl, token_id, exportSummaryPDF }) => {
   const dispatch = useDispatch();
   const [filterSummaryForm] = useForm();
   //state
+  const [pageSize, setPageSize] = useState(5);
   const summaryScore = useSelector((state) => state.summary_score);
   const convertToThaiBuddhistDate = (gregorianDate) => {
     let [year, month] = gregorianDate.split("-");
@@ -48,17 +49,17 @@ const GradingTable = ({ baseUrl, token_id, exportSummaryPDF }) => {
       dispatch(resetSummaryScore());
     }
   };
-  let rowId = 0
-  let tableData = summaryScore?.evaluated_list.map((item)=> {
+  let rowId = 0;
+  let tableData = summaryScore?.evaluated_list.map((item) => {
     return {
-      no: rowId+=1,
+      no: (rowId += 1),
       supplier: item?.SUPPLIER,
       percentage: item?.EVALUATE_PERCENT,
       grade: item?.EVALUATE_GRADE,
       status: item?.FLAG_STATUS,
-      comments: item?.EVALUATE_COMMENT
-    }
-  })
+      comments: item?.EVALUATE_COMMENT,
+    };
+  });
   return (
     <>
       <div className="my-10" id="summaryScore">
@@ -159,7 +160,13 @@ const GradingTable = ({ baseUrl, token_id, exportSummaryPDF }) => {
                 Clear Filter
               </div>
             </Button>
-            <Button disabled={summaryScore?.evaluated_list.length > 0 ? false : true} className="uppercase ml-5" onClick={()=> exportSummaryPDF(tableData, summaryScore?.filter_eva_month)}>
+            <Button
+              disabled={summaryScore?.evaluated_list.length > 0 ? false : true}
+              className="uppercase ml-5"
+              onClick={() =>
+                exportSummaryPDF(tableData, summaryScore?.filter_eva_month)
+              }
+            >
               <div className="flex flex-row">
                 <FilePdfOutlined className="mr-[10px] text-[20px]" />
                 {"Save as PDF"}
@@ -168,11 +175,25 @@ const GradingTable = ({ baseUrl, token_id, exportSummaryPDF }) => {
           </Form.Item>
         </div>
       </Form>
-      <div className="mt-[10px]">
-        <Table
+      <div className="mt-[10px] w-full">
+        {/* <Table
           dataSource={tableData}
           columns={schema(tableData)}
           pagination={false}
+        /> */}
+        <Table
+          className="w-full overflow-y-hidden"
+          dataSource={tableData}
+          columns={schema(tableData)}
+          scroll={{ x: "max-content" }}
+          pagination={{
+            showSizeChanger: true,
+            pageSize: pageSize, // Set the initial page size
+            defaultPageSize: 5,
+            pageSizeOptions: ["5", "10", "20", "50", "100", "200"],
+            onShowSizeChange: (current, size) => setPageSize(size), // Function to handle page size changes
+            position: ["bottomCenter"],
+          }}
         />
       </div>
     </>
