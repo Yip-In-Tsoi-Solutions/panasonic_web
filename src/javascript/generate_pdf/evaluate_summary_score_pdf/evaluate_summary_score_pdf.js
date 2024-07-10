@@ -94,11 +94,10 @@ async function Summary_score_pdf(data, summary_date) {
     },
     columnStyles: {
       0: {cellWidth: 10},  
-      1: {cellWidth: 50},  
+      1: {cellWidth: 60},  
       2: {cellWidth: 23},  
       3: {cellWidth: 15},  
-      4: {cellWidth: 18},  
-      5: {cellWidth: 65}
+      4: {cellWidth: 70},
     },
     margin: { left: 15, right: 15 },
   });

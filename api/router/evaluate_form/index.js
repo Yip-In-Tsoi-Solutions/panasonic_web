@@ -489,7 +489,6 @@ evaluate_form.post(
             SUPPLIER,
             ROUND(EVALUATE_PERCENT, 2) as EVALUATE_PERCENT,
             EVALUATE_GRADE,
-            FLAG_STATUS,
             EVALUATE_COMMENT
         FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER]
         WHERE [EVALUATE_DATE] BETWEEN CAST(CONCAT(@eva_date,'-01') AS DATE) AND EOMONTH(CAST(CONCAT(@eva_date,'-01') AS DATE))

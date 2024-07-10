@@ -56,7 +56,6 @@ const GradingTable = ({ baseUrl, token_id, exportSummaryPDF }) => {
       supplier: item?.SUPPLIER,
       percentage: item?.EVALUATE_PERCENT,
       grade: item?.EVALUATE_GRADE,
-      status: item?.FLAG_STATUS,
       comments: item?.EVALUATE_COMMENT,
     };
   });
