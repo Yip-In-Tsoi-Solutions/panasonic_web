@@ -2,9 +2,10 @@
   "name": "panasonic_web_app",
   "private": true,
   "version": "0.0.0",
+  "main": "frontend_server.js",
   "type": "module",
   "scripts": {
-    "front_end": "pm2 start frontend_server.js",
+    "front_end": "pm2 start -i 2 frontend_server.js",
     "server": "vite --host",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
@@ -58,5 +59,8 @@
     "tailwindcss": "^3.4.1",
     "vite": "^5.2.0",
     "vite-plugin-express": "^1.0.3"
-  }
+  },
+  "repository": "https://github.com/Yip-In-Tsoi-Solutions/panasonic_web.git",
+  "author": "panjamapon <panjamapon.ka@yipintsoi.com>",
+  "license": "MIT"
 }
