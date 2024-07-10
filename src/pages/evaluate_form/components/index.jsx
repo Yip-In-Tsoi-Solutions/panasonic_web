@@ -151,7 +151,7 @@ const Evaluate = (props) => {
       const payload = {
         supplier: evaluate_vendors.temp_state_filter.vendor,
         evaluate_date: month,
-        comments: comments.current.resizableTextArea.textArea.value,
+        comments: comments,
         eval_form: score,
         flag_status: score.every((item) => item.EVALUATE_TOPIC_SCORE !== 0)
           ? "waiting"
@@ -427,8 +427,6 @@ const Evaluate = (props) => {
           )}
           form={approve_form}
         >
-          {/* Form fields for approving evaluation */}
-          {/* <Button htmlType="submit">Approve</Button> */}
           <div className="flex-row">
             <h1 className="text-2xl text-center font-bold">{supplierName}</h1>
             <br />
