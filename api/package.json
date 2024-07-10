@@ -4,7 +4,7 @@
   "main": "backend_server.js",
   "license": "MIT",
   "scripts": {
-    "api": "pm2 start backend_server.js"
+    "api": "pm2 start -i 2 backend_server.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
