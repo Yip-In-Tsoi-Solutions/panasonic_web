@@ -170,15 +170,14 @@ async function generatePDF(supplier, evaluate_date, department, questionaire) {
   // Calculate total percentage based on EVALUATE_PERCENT
   const totalPercentage = questionaire[0]?.EVALUATE_PERCENT.toFixed(3);
   let grade = "";
-
-  if (totalPercentage >= 90 && totalPercentage < 100) {
-    grade += "A ดีมาก";
-  } else if (totalPercentage >= 80 && totalPercentage < 89) {
-    grade += "B ดี";
-  } else if (totalPercentage >= 70 && totalPercentage < 79) {
-    grade += "C พอใช้";
+  if (totalPercentage >= 90 && totalPercentage <= 100) {
+    grade = "A ดีมาก";
+  } else if (totalPercentage >= 80 && totalPercentage < 90) {
+    grade = "B ดี";
+  } else if (totalPercentage >= 70 && totalPercentage < 80) {
+    grade = "C พอใช้";
   } else {
-    grade += "D ควรปรับปรุง";
+    grade = "D ควรปรับปรุง";
   }
 
   // Print total score and total percentage
