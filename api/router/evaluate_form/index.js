@@ -184,7 +184,8 @@ evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
                 COUNT(*)
             ) AS 'EVALUATED_AMOUNT',
             a.DEPARTMENT,
-            a.[FLAG_STATUS]
+            a.[FLAG_STATUS],
+            a.EVALUATE_GRADE
         FROM [dbo].[PECTH_EVALUATION_SCORE_HEADER] a
             JOIN [dbo].[PECTH_EVALUATION_SCORE_DETAIL] b
             ON a.EVALUATE_ID = b.EVALUATE_ID
@@ -192,7 +193,8 @@ evaluate_form.get("/evaluate/confirm", authenticateToken, async (req, res) => {
                 a.[SUPPLIER], 
                 a.[EVALUATE_DATE], 
                 a.[FLAG_STATUS],
-                a.DEPARTMENT
+                a.DEPARTMENT,
+                a.EVALUATE_GRADE
         HAVING LOWER(a.FLAG_STATUS) in ('waiting', 'confirm')
         ORDER BY a.[FLAG_STATUS] desc
       `
@@ -426,13 +428,14 @@ evaluate_form.post(
           a.TOPIC_HEADER_NAME_ENG,
           a.HEADER_INDEX, a.TOPIC_LINE,
           c.EVALUATE_FULL_SCORE,
-          c.EVALUATE_COMMENT
+          c.EVALUATE_COMMENT,
+          c.EVALUATE_GRADE
         FROM [dbo].PECTH_EVALUATION_MASTER a
             JOIN dbo.PECTH_EVALUATION_SCORE_DETAIL b
             ON a.TOPIC_KEY_ID = b.TOPIC_KEY_ID
             JOIN dbo.PECTH_EVALUATION_SCORE_HEADER c
             ON b.EVALUATE_ID = c.EVALUATE_ID
-        GROUP BY a.HEADER_INDEX, a.TOPIC_LINE, c.EVALUATE_ID, a.TOPIC_NAME_TH,a.TOPIC_NAME_EN,b.EVALUATE_TOPIC_SCORE,a.TOPIC_HEADER_NAME_TH,a.TOPIC_HEADER_NAME_ENG, c.EVALUATE_PERCENT, c.FLAG_STATUS, c.SUPPLIER, c.EVALUATE_FULL_SCORE, c.EVALUATE_COMMENT
+        GROUP BY a.HEADER_INDEX, a.TOPIC_LINE, c.EVALUATE_ID, a.TOPIC_NAME_TH,a.TOPIC_NAME_EN,b.EVALUATE_TOPIC_SCORE,a.TOPIC_HEADER_NAME_TH,a.TOPIC_HEADER_NAME_ENG, c.EVALUATE_PERCENT, c.FLAG_STATUS, c.SUPPLIER, c.EVALUATE_FULL_SCORE, c.EVALUATE_COMMENT, c.EVALUATE_GRADE
         HAVING LOWER(c.FLAG_STATUS)=@status and LOWER(c.SUPPLIER)=@supplier AND LOWER(c.EVALUATE_ID)=@evaluate_id
         ORDER BY a.HEADER_INDEX, a.TOPIC_LINE
         `
