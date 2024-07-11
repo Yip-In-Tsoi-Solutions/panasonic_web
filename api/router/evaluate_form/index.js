@@ -4,20 +4,24 @@ const authenticateToken = require("../../secure/jwt");
 const evaluate_form = express();
 evaluate_form.use(express.json());
 //
-evaluate_form.get("/evaluate/dropdown/supplier", authenticateToken, async (req, res)=> {
-  try {
-    const sql = await sql_serverConn();
-    const result = sql.query(
-      `
+evaluate_form.get(
+  "/evaluate/dropdown/supplier",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const result = sql.query(
+        `
         SELECT * FROM [dbo].[PECTH_SUPPLIER_MASTER] ORDER by SUPPLIER_NAME ASC
       `
-    )
-    res.status(200).send((await result).recordset);
-  } catch (error) {
-    console.error("Error:", error.message);
-    res.status(500).send("Internal Server Error");
+      );
+      res.status(200).send((await result).recordset);
+    } catch (error) {
+      console.error("Error:", error.message);
+      res.status(500).send("Internal Server Error");
+    }
   }
-})
+);
 // display all questionaire
 evaluate_form.get("/evaluate/topic", authenticateToken, async (req, res) => {
   try {
@@ -74,57 +78,76 @@ evaluate_form.post(
       let latestId = latestIdResult.recordset[0].LatestID;
       let id = latestId ? parseInt(latestId.split("_")[1], 10) : 0;
       id++;
-      const EVALUATE_ID = `evaluation_${String(id).padStart(4, "0")}`;
-      // Prepare headers insertion query
-      const request = sql.request();
-      // Insert headers outside loop
-      request.input("EVALUATE_ID", EVALUATE_ID);
-      request.input("SUPPLIER", supplier);
-      request.input("DEPARTMENT", "Store PC");
-      request.input("EVALUATE_DATE", evaluate_date);
-      request.input("EVALUATE_TOTAL_SCORE", totalScore);
-      request.input("EVALUATE_FULL_SCORE", full_score);
-      let evaluatePercent = (totalScore / full_score) * 100;
-      request.input("EVALUATE_PERCENT", evaluatePercent);
-      request.input(
-        "EVALUATE_GRADE",
-        evaluatePercent <= 69
-          ? "D"
-          : evaluatePercent <= 79
-          ? "C"
-          : evaluatePercent <= 89
-          ? "B"
-          : "A"
-      );
-      request.input("EVALUATE_COMMENT", comments);
-      request.input("FLAG_STATUS", String(flag_status).toUpperCase());
-      await request.query(
+
+      //
+      const checked_month = await sql.query(
         `
+        SELECT
+            count(*) as count
+        FROM
+            dbo.[PECTH_EVALUATION_SCORE_HEADER]
+        WHERE 
+          SUPPLIER = '${supplier}' AND FORMAT(CAST('${evaluate_date}' as date) ,'yyyy-MM') = FORMAT(EVALUATE_DATE ,'yyyy-MM')
+        `
+      );
+      let month = checked_month.recordset[0].count;
+      if (month === 0) {
+        // insert statement
+        const EVALUATE_ID = `evaluation_${String(id).padStart(4, "0")}`;
+        // Prepare headers insertion query
+        const request = sql.request();
+        // Insert headers outside loop
+        request.input("EVALUATE_ID", EVALUATE_ID);
+        request.input("SUPPLIER", supplier);
+        request.input("DEPARTMENT", "Store PC");
+        request.input("EVALUATE_DATE", evaluate_date);
+        request.input("EVALUATE_TOTAL_SCORE", totalScore);
+        request.input("EVALUATE_FULL_SCORE", full_score);
+        let evaluatePercent = (totalScore / full_score) * 100;
+        request.input("EVALUATE_PERCENT", evaluatePercent);
+        request.input(
+          "EVALUATE_GRADE",
+          evaluatePercent <= 69
+            ? "D"
+            : evaluatePercent <= 79
+            ? "C"
+            : evaluatePercent <= 89
+            ? "B"
+            : "A"
+        );
+        request.input("EVALUATE_COMMENT", comments);
+        request.input("FLAG_STATUS", String(flag_status).toUpperCase());
+        await request.query(
+          `
         INSERT INTO dbo.[PECTH_EVALUATION_SCORE_HEADER]
         ([EVALUATE_ID], [SUPPLIER], [DEPARTMENT], [EVALUATE_DATE], [EVALUATE_TOTAL_SCORE], [EVALUATE_FULL_SCORE], [EVALUATE_PERCENT], [EVALUATE_GRADE], [EVALUATE_COMMENT], [SUBMIT_FORM_DATE], [FLAG_STATUS])
         VALUES (@EVALUATE_ID, @SUPPLIER, @DEPARTMENT, @EVALUATE_DATE, @EVALUATE_TOTAL_SCORE, @EVALUATE_FULL_SCORE, @EVALUATE_PERCENT, @EVALUATE_GRADE, @EVALUATE_COMMENT, GETDATE(), @FLAG_STATUS)
         `
-      );
-      // Insert details inside loop
-      for (let i = 0; i < totalEntries; i++) {
-        const { HEADER_INDEX, TOPIC_KEY_ID, EVALUATE_TOPIC_SCORE } =
-          eval_form[i];
-        // Create new request object for each detail insertion
-        const detailRequest = sql.request();
-        detailRequest.input("EVALUATE_ID", EVALUATE_ID);
-        detailRequest.input("HEADER_INDEX", HEADER_INDEX); // Corrected here
-        detailRequest.input("TOPIC_KEY_ID", TOPIC_KEY_ID);
-        detailRequest.input("SUPPLIER", supplier);
-        detailRequest.input("DEPARTMENT", "Store PC");
-        detailRequest.input("EVALUATE_DATE", evaluate_date);
-        detailRequest.input("EVALUATE_TOPIC_SCORE", EVALUATE_TOPIC_SCORE);
-        await detailRequest.query(`
+        );
+        // Insert details inside loop
+        for (let i = 0; i < totalEntries; i++) {
+          const { HEADER_INDEX, TOPIC_KEY_ID, EVALUATE_TOPIC_SCORE } =
+            eval_form[i];
+          // Create new request object for each detail insertion
+          const detailRequest = sql.request();
+          detailRequest.input("EVALUATE_ID", EVALUATE_ID);
+          detailRequest.input("HEADER_INDEX", HEADER_INDEX); // Corrected here
+          detailRequest.input("TOPIC_KEY_ID", TOPIC_KEY_ID);
+          detailRequest.input("SUPPLIER", supplier);
+          detailRequest.input("DEPARTMENT", "Store PC");
+          detailRequest.input("EVALUATE_DATE", evaluate_date);
+          detailRequest.input("EVALUATE_TOPIC_SCORE", EVALUATE_TOPIC_SCORE);
+          await detailRequest.query(`
           INSERT INTO dbo.[PECTH_EVALUATION_SCORE_DETAIL]
           ([EVALUATE_ID], [HEADER_INDEX], [TOPIC_KEY_ID], [SUPPLIER], [DEPARTMENT], [EVALUATE_DATE], [EVALUATE_TOPIC_SCORE], [SUBMIT_FORM_DATE])
           VALUES (@EVALUATE_ID, @HEADER_INDEX, @TOPIC_KEY_ID, @SUPPLIER, @DEPARTMENT, @EVALUATE_DATE, @EVALUATE_TOPIC_SCORE, GETDATE())
         `);
+        }
+        res.status(200)
       }
-      res.status(200).send("Data is inserted");
+      else {
+        res.status(500).send('hello duplicated')
+      }
     } catch (error) {
       console.error("Error:", error.message);
       res.status(500).send("Internal Server Error");
@@ -483,7 +506,7 @@ evaluate_form.post(
     try {
       const sql = await sql_serverConn();
       const request = sql.request();
-      const {summary_date} = req.body;
+      const { summary_date } = req.body;
       request.input("eva_date", summary_date);
       const result = await request.query(
         `
