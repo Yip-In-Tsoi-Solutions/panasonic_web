@@ -27,6 +27,7 @@ import SummaryScore from "../../../components/summary_score/components";
 
 // Actions
 import {
+  resetEValuate,
   setEvaluateConfirm,
   setEvaluatePending,
   setEvaluateResultTable,
@@ -177,6 +178,7 @@ const Evaluate = (props) => {
           duration: 6,
         });
         save_draft.resetFields();
+        dispatch(resetEValuate());
       }
     }
   };
