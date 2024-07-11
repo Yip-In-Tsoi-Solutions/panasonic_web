@@ -143,10 +143,9 @@ evaluate_form.post(
           VALUES (@EVALUATE_ID, @HEADER_INDEX, @TOPIC_KEY_ID, @SUPPLIER, @DEPARTMENT, @EVALUATE_DATE, @EVALUATE_TOPIC_SCORE, GETDATE())
         `);
         }
-        res.status(200)
-      }
-      else {
-        res.status(500).send('hello duplicated')
+        res.status(200).send("Data Inserted");
+      } else {
+        res.status(500).send("Internal Server Error");
       }
     } catch (error) {
       console.error("Error:", error.message);

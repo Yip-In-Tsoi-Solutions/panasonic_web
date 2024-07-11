@@ -6,6 +6,7 @@ import {
   Drawer,
   Form,
   Input,
+  message,
   Row,
   Space,
   Table,
@@ -43,6 +44,7 @@ import Summary_score_pdf from "../../../javascript/generate_pdf/evaluate_summary
 const dateFormat = "DD/MM/YYYY";
 
 const Evaluate = (props) => {
+  const [messageApi, contextHolder] = message.useMessage();
   const [supplierName, setSupplierName] = useState("");
   const [save_draft] = useForm();
   const [draft_form] = useForm();
@@ -52,7 +54,6 @@ const Evaluate = (props) => {
   const updateComment = useRef("");
   const approveComment = useRef("");
   const evaluate_vendors = useSelector((state) => state.evaluate_vendors);
-
   const [activeTabView, setActiveTabView] = useState("1");
   const [pageSize, setPageSize] = useState(5);
   const [month, setSelectMonth] = useState("");
@@ -168,7 +169,15 @@ const Evaluate = (props) => {
         window.location.reload();
       }
     } catch (error) {
-      console.log(error);
+      if (error) {
+        messageApi.open({
+          type: "error",
+          content:
+            "ไม่สามารถทำการประเมิน Supplier รายนี้ได้เนื่องจากได้ทำการประเมินไปแล้ว กรุณาประเมินโดยระบุเดือนถัดไป (Supplier performance appraisal for the current month)",
+          duration: 6,
+        });
+        save_draft.resetFields();
+      }
     }
   };
   // open form
@@ -196,7 +205,6 @@ const Evaluate = (props) => {
       console.log(error);
     }
   };
-
   const openConfirmDrawer = async (record) => {
     try {
       const payload = {
@@ -525,6 +533,7 @@ const Evaluate = (props) => {
                   key: "1",
                   children: (
                     <Form onFinish={submitForm} form={save_draft}>
+                      {contextHolder}
                       <Supplier_Eva
                         value={evaluate_vendors.temp_state_filter.vendor}
                         supplier_list={evaluate_vendors?.vendor_list}
