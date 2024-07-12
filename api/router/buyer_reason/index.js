@@ -165,7 +165,7 @@ buyer_reason.post(
       const sql = await sql_serverConn();
       const result = await sql.query(
         `
-      SELECT * FROM [dbo].[PECTH_SUPPLIER_DELIVERY_HISTORICAL] WHERE ${req.body.queryString} AND DIFF_DAY != 0
+      SELECT * FROM [dbo].[PECTH_SUPPLIER_DELIVERY_HISTORICAL] WHERE ${req.body.queryString} AND ON_TIME = 0
       `
       );
       res.status(200).json(result.recordset);
