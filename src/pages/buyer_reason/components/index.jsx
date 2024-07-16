@@ -252,6 +252,11 @@ function Buyer_Reason(props) {
     }
   };
   const export_url = props.baseUrl;
+  useMemo(() => {
+    if (!openUpdateForm) {
+      form.resetFields();
+    }
+  }, [openUpdateForm, form]);
   return (
     <>
       <div className="uppercase">

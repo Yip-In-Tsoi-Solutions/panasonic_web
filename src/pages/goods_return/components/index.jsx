@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import {
   Button,
   Drawer,
@@ -200,6 +200,11 @@ const GoodsReturn = (props) => {
       }
     }
   };
+  useMemo(() => {
+    if (!returnForm) {
+      return_qty_form.resetFields();
+    }
+  }, [returnForm, return_qty_form]);
   return (
     <>
       <h1 className="text-2xl font-bold pl-0 p-3 mb-5 uppercase">
@@ -499,10 +504,7 @@ const GoodsReturn = (props) => {
                 </label>
                 <Input disabled={true} value={curentSelect?.invoice_date} />
               </Form.Item>
-              <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
-                  return_qty
-                </label>
+              <Form.Item label="RETURN QTY" name={"return_qty"}>
                 <InputNumber
                   className="w-full"
                   min={0}
@@ -511,20 +513,8 @@ const GoodsReturn = (props) => {
                   onChange={(value) => dispatch(setReturnQty(value))}
                 />
               </Form.Item>
-              {/* <Form.Item>
-                <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
-                  cause
-                </label>
-                <Input
-                  value={goods_return_list?.temp_state_filter?.cause}
-                  onChange={(e) => dispatch(setCause(e.target.value))}
-                />
-              </Form.Item> */}
             </div>
-            <Form.Item>
-              <label className="block mb-2 text-sm text-gray-900 uppercase font-bold">
-                cause
-              </label>
+            <Form.Item label="CAUSE" name={"CAUSE"}>
               <TextArea
                 value={goods_return_list?.temp_state_filter?.cause}
                 autoSize={{

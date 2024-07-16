@@ -8,7 +8,7 @@ import { setSupplieryList } from "../actions/priceReportSlice";
 import Export from "../../../components/export_data";
 import schema from "../../../javascript/print_schema";
 import axios from "axios";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import PriceReport_PDF from "../../../components/generate_pdf/price_report_pdf/components";
 import convertDateFormat from "../../../javascript/convertDateFormat";
@@ -158,6 +158,11 @@ const PriceReport = (props) => {
     setUpdateForm(false);
     setRemark("");
   };
+  useMemo(() => {
+    if (!openUpdateForm) {
+      updatedForm.resetFields();
+    }
+  }, [openUpdateForm, updatedForm]);
   return (
     <div>
       <h1 className="text-2xl font-bold pl-0 p-3 mb-5 uppercase">
