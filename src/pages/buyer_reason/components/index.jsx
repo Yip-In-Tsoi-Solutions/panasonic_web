@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Form, Select, Table, Drawer, Input, Tooltip } from "antd";
 import axios from "axios";
@@ -252,7 +252,7 @@ function Buyer_Reason(props) {
     }
   };
   const export_url = props.baseUrl;
-  useMemo(() => {
+  useEffect(() => {
     if (!openUpdateForm) {
       form.resetFields();
       setReason("");
