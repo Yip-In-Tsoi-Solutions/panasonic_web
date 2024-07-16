@@ -51,7 +51,10 @@ const PriceReport = (props) => {
           convertDateFormat(promise_end_date)
         ).replace(/"/g, "'")}`;
         sessionStorage.setItem("price_report_between_date", queryString);
-        sessionStorage.setItem("price_report_date_from_to", JSON.stringify(`${promise_start_date} - ${promise_end_date}`));
+        sessionStorage.setItem(
+          "price_report_date_from_to",
+          JSON.stringify(`${promise_start_date} - ${promise_end_date}`)
+        );
       }
       dispatch(resetAllState());
       const response = await axios.post(
@@ -82,7 +85,7 @@ const PriceReport = (props) => {
     form.resetFields();
     dispatch(setSupplieryList([]));
     dispatch(resetAllState());
-    sessionStorage.removeItem("price_report_between_date")
+    sessionStorage.removeItem("price_report_between_date");
   };
   const selectRemarkForm = (item) => {
     setCurrentSelected({
@@ -360,11 +363,11 @@ const PriceReport = (props) => {
           <div className="grid grid-cols-1 gap-1 clear-both">
             <Form.Item>
               <label className="uppercase font-bold">
-                  write remark {"   "}
-                  <span className="font-normal text-[red] text-[12px] italic">
-                    No more than 250 characters
-                  </span>
-                </label>
+                write remark {"   "}
+                <span className="font-normal text-[red] text-[12px] italic">
+                  No more than 250 characters
+                </span>
+              </label>
               <TextArea
                 className="w-full"
                 placeholder="remark here"
