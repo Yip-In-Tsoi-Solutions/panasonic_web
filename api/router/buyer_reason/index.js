@@ -119,8 +119,7 @@ buyer_reason.post(
           SELECT
             [PROMISED_DATE] , [SUPPLIER] , [ITEM_NO] , [PO_NUMBER], [PO_RELEASE] , [ITEM_DESCRIPTION],
             [UOM] , [QUANTITY_RECEIVED] , [BUYER] , [BEFORE] , [DELAY] , [TRANSACTION_ID] , [CONFIRM_REASON_DATE],
-            [EFFECT_PRODUCTION_SHIPMENT],[ROOT_CAUSE],[ACTION]
-            [REASON_REMARK]
+            [EFFECT_PRODUCTION_SHIPMENT],[ROOT_CAUSE],[ACTION], [REASON_REMARK]
           FROM
             dbo.[v_PECTH_SUPPLIER_BUYER_REASON]
           WHERE ${req.body.queryString}
