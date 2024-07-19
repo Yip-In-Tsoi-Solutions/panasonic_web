@@ -125,10 +125,23 @@ async function generatePDF(dataset, supplierName, fileName, return_doc) {
     );
     const vat = total * 0.07;
     const grandTotal = total + vat;
+    const rightX = width-50;
     doc.setFontSize(8);
-    doc.text(`จำนวนที่คืน (Quantity) ${numberWithCommas(return_total)}`, 15, doc.autoTable.previous.finalY +10)
-    doc.text(`VAT 7% (${numberWithCommas(vat.toFixed(3))} THB)`, 15, doc.autoTable.previous.finalY +15)
-    doc.text(`GRAND TOTAL ${numberWithCommas(grandTotal.toFixed(3))} THB`, 15, doc.autoTable.previous.finalY +20)
+    doc.text(
+      `จำนวนที่คืน (Quantity) ${numberWithCommas(return_total)}`,
+      rightX,
+      doc.autoTable.previous.finalY + 10
+    );
+    doc.text(
+      `VAT 7% (${numberWithCommas(vat.toFixed(3))} THB)`,
+      rightX,
+      doc.autoTable.previous.finalY + 15
+    );
+    doc.text(
+      `GRAND TOTAL ${numberWithCommas(grandTotal.toFixed(3))} THB`,
+      rightX,
+      doc.autoTable.previous.finalY + 20
+    );
 
     const finalY = doc.autoTable.previous.finalY; // Reduced space between table and totals
     doc.setFontSize(9);
