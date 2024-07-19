@@ -22,7 +22,7 @@ async function Summary_score_pdf(data, summary_date) {
   });
   doc.setFontSize(10);
   doc.setFont("tahoma", "bold");
-  doc.text(`SUMMARY OF SUPPLIER'S DELIVERY EVALUATION`, width / 2, 22, {
+  doc.text(`SUMMARY OF SERVICE EVALUATION`, width / 2, 22, {
     align: "center",
   });
   doc.setFontSize(11);
