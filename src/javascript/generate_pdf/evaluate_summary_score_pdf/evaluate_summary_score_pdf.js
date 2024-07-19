@@ -20,11 +20,16 @@ async function Summary_score_pdf(data, summary_date) {
   doc.text(`Panasonic Energy (Thailand) Co.,Ltd.`, width / 2, 15, {
     align: "center",
   });
+  doc.setFontSize(10);
+  doc.setFont("tahoma", "bold");
+  doc.text(`SUMMARY OF SUPPLIER'S DELIVERY EVALUATION`, width / 2, 22, {
+    align: "center",
+  });
   doc.setFontSize(11);
   doc.setFont("tahoma", "normal");
   const titleText =
     "การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ";
-  doc.text(titleText, 15, 30);
+  doc.text(titleText, 15, 37);
 
   // Table for REVIEWER and PIC
   const columnWidth2 = 60 / 3;
@@ -33,7 +38,7 @@ async function Summary_score_pdf(data, summary_date) {
     ["", "", ""], // Empty row, you can remove this line if you don't need it
   ];
   doc.autoTable({
-    startY: 25,
+    startY: 33,
     margin: { left: width - 75 },
     body: table2Data,
     columnStyles: {
@@ -73,13 +78,13 @@ async function Summary_score_pdf(data, summary_date) {
   });
 
   // Texts below the table
-  doc.text(`ประจำเดือน : ${summary_date}`, width - 60, 50);
+  doc.text(`ประจำเดือน : ${summary_date}`, width - 55, 60);
   //   doc.text(`หน่วยงาน / แผนก : ${String(department).toUpperCase()}`, 15, 50);
   //   doc.text(`ชื่อผู้ส่งมอบ : ${String(supplier).toUpperCase()}`, 15, 60);
   doc.setFont("tahoma", "normal");
   // ต่่าราง SUPPLIER list
   doc.autoTable({
-    startY: 65,
+    startY: 70,
     body: data,
     columns: schema(data),
     theme: "grid",

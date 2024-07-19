@@ -8,7 +8,6 @@ import { clear_Alldocs } from "../../../../pages/goods_return/actions/goods_retu
 const Goods_return_pdf = ({
   token_id,
   page_title,
-  return_doc,
   baseUrl,
   dataset,
 }) => {

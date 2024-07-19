@@ -57,7 +57,6 @@ const GoodsReturn = (props) => {
   const [tabView, setTabView] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [return_doc, setDoc] = useState("");
-  const [return_number, setReturnNo] = useState([]);
   const [returnForm, setReturnForm] = useState(false);
   const goods_return_list = useSelector((state) => state.goods_return_list);
   const filter = useSelector((state) => state.filter);
@@ -124,35 +123,12 @@ const GoodsReturn = (props) => {
       }
     }
   };
-  const fetch_return_number = async () => {
-    try {
-      const response = await axios.get(
-        `${props.baseUrl}/api/matching_invoice/form/docs_no`,
-        {
-          headers: {
-            Authorization: `Bearer ${props.token_id}`,
-          },
-        }
-      );
-      if (response.status === 200) {
-        setReturnNo(response?.data);
-      }
-    } catch (error) {
-      if (error) {
-        window.location.href = "/error_login";
-      }
-    }
-  };
-  useEffect(() => {
-    fetch_return_number();
-  }, []);
   // Action of open & setPayload
   const openForm = (item) => {
     setCurrent(
       (prevState) => ({
         ...prevState,
         id: item?.ID,
-        returnId: return_number[0].RETURN_NO,
         supplier: item?.SUPPLIER,
         po_number: item?.PO_NUMBER,
         po_release: item?.PO_RELEASE,
@@ -378,7 +354,6 @@ const GoodsReturn = (props) => {
               <Goods_return_pdf
                 token_id={props.token_id}
                 page_title={props?.page_title}
-                return_doc={return_number[0].RETURN_NO}
                 baseUrl={props.baseUrl}
                 dataset={goods_return_list.return_doc.filter(
                   (i) => i.supplier === return_doc
