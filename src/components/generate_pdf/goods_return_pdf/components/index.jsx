@@ -28,7 +28,7 @@ const Goods_return_pdf = ({
         }
       );
       if (response.status === 200) {
-        generatePDF(dataset, dataset[0].supplier, page_title, return_doc);
+        generatePDF(dataset, dataset[0].supplier, page_title, response.data);
         dispatch(resetSlice());
         dispatch(clear_Alldocs());
       }

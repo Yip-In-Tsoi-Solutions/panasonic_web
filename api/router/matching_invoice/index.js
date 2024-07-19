@@ -158,8 +158,8 @@ matching_invoice.post(
       , MODIFIED_DATE=SYSDATETIME()
       `
       );
-      console.log("Data successfully inserted into the database.");
-      res.status(200).send("Data Inserted");
+      console.log(returnID);
+      res.status(200).send(returnID);
     } catch (error) {
       res.status(500).send(error);
     }
