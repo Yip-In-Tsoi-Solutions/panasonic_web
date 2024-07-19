@@ -90,7 +90,7 @@ const GoodsReturn = (props) => {
       }
       if (filter?.itemNo != "") {
         queryString += `AND lower([ITEM]) LIKE ${JSON.stringify(
-          filter?.itemNo.slice(0, 2) + "%"
+          "%" + filter?.itemNo + "%"
         )
           .toLowerCase()
           .replace(/"/g, "'")}`;
