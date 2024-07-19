@@ -2,8 +2,6 @@ import { Form, Input } from "antd";
 import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setItemNo } from "../actions/filterSlice";
-import axios from "axios";
-
 const ItemNo_filter_typing = (props) => {
   const dispatch = useDispatch();
   return (

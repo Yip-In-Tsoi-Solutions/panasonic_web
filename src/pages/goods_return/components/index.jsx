@@ -14,11 +14,10 @@ import Promise_date_from from "../../../components/filter_form/date_with_require
 import Promise_date_to from "../../../components/filter_form/date_with_require/promise_date_to";
 import { useDispatch, useSelector } from "react-redux";
 import { setBuyer_reason } from "../../buyer_reason/actions/buyer_reasonSlice";
-import { resetAllState } from "../../../components/filter_form/actions/filterSlice";
+import { resetAllState, setItemNo } from "../../../components/filter_form/actions/filterSlice";
 import Supplier_filter from "../../../components/filter_form/supplier_filter_require";
 import ItemNo_filter_typing from "../../../components/filter_form/item_number_filter_typing";
 import PurchaseOrder_filter from "../../../components/filter_form/purchaseOrder_filter";
-import axios from "axios";
 import schema from "../../../javascript/print_schema";
 import {
   removeDocs,
@@ -68,6 +67,7 @@ const GoodsReturn = (props) => {
     dispatch(setBuyer_reason([]));
     dispatch(setGoodsList([]));
     dispatch(resetAllState());
+    dispatch(setItemNo(""))
     setTabView(...tabView);
   };
   // Action of submit for filter
@@ -100,7 +100,6 @@ const GoodsReturn = (props) => {
           "'"
         )}`;
       }
-      dispatch(resetAllState());
       const response = await axios.post(
         `${props.baseUrl}/api/matching_invoice`,
         {
@@ -116,6 +115,8 @@ const GoodsReturn = (props) => {
         filter_form.resetFields();
         dispatch(setGoodsList(response.data));
         setTabView(1);
+        dispatch(resetAllState());
+        dispatch(setItemNo(""))
       }
     } catch (error) {
       if (error) {
