@@ -24,7 +24,9 @@ async function generatePDF(dataset, supplierName, fileName, return_doc) {
       "หน่วย\nunit": numberWithCommas(item?.unit),
       "จำนวนที่คืน\nQuantity": numberWithCommas(item?.return_qty),
       "ราคาต่อหน่วย\nunitPrice": numberWithCommas(item?.unitPrice),
-      "บาท\nBATH": numberWithCommas(item?.return_qty * item?.unitPrice),
+      "บาท\nBATH": numberWithCommas(
+        (item?.return_qty * item?.unitPrice).toFixed(3)
+      ),
       "สาเหตุ\ncause": item?.cause,
       "อ้างอิงถึงใบกำกับภาษี\ninvoice_number": item?.invoice_no,
     }));
@@ -125,7 +127,7 @@ async function generatePDF(dataset, supplierName, fileName, return_doc) {
     );
     const vat = total * 0.07;
     const grandTotal = total + vat;
-    const rightX = width-50;
+    const rightX = width - 50;
     doc.setFontSize(8);
     doc.text(
       `จำนวนที่คืน (Quantity) ${numberWithCommas(return_total)}`,
