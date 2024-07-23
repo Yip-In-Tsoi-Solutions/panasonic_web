@@ -189,7 +189,7 @@ const Supplier_delivery = (props) => {
               dataset={export_datasetAPI}
             />
             <Export_All
-              api_url={`${props.baseUrl}/api/supplier_list_filter_optional`}
+              api_url={`${props.baseUrl}/api/supplier_list_filter_export`}
               baseUrl={props.baseUrl}
               export_fileName={"supplier_delivery"}
               token_id={props.token_id}

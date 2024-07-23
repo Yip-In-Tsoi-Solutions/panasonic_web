@@ -107,7 +107,7 @@ buyer_reason.get("/buyerlist", authenticateToken, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-// display buyer by filter
+// display buyer by filter (Web Only)
 buyer_reason.post(
   "/buyerlist_filter_optional",
   authenticateToken,
@@ -122,6 +122,29 @@ buyer_reason.post(
             [EFFECT_PRODUCTION_SHIPMENT],[ROOT_CAUSE],[ACTION], [REASON_REMARK]
           FROM
             dbo.[v_PECTH_SUPPLIER_BUYER_REASON]
+          WHERE ${req.body.queryString}
+        `
+      );
+      res.status(200).json(result.recordset);
+    } catch (error) {
+      console.error("Error inserting data:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+//
+buyer_reason.post(
+  "/buyerlist_filter_export",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const result = await sql.query(
+        `
+          SELECT
+            *
+          FROM
+            dbo.[PECTH_SUPPLIER_DELIVERY_HISTORICAL]
           WHERE ${req.body.queryString}
         `
       );

@@ -16,7 +16,7 @@ supplier_api.get("/supplier_list", async (req, res) => {
     }
   }
 });
-// display all data from Buyer
+// display all data from Buyer (Web Only)
 supplier_api.post(
   "/supplier_list_filter_optional",
   authenticateToken,
@@ -26,6 +26,25 @@ supplier_api.post(
       const result = await sql.query(
         `
         SELECT * FROM dbo.v_PECTH_SUPPLIER_DELIVERY_DATEDIFF WHERE ${req.body.queryString} AND (QUANTITY_PO - QUANTITY_RECEIVED <> 0 OR (DATEDIFF(day,RECEIVE_DATE,PROMISED_DATE) <> 0) )
+        `
+      );
+      res.status(200).json(result.recordset);
+    } catch (error) {
+      console.error("Error inserting data:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+// using to export all data to excel files
+supplier_api.post(
+  "/supplier_list_filter_export",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const sql = await sql_serverConn();
+      const result = await sql.query(
+        `
+        SELECT * FROM dbo.v_PECTH_SUPPLIER_DELIVERY_DATEDIFF WHERE ${req.body.queryString}
         `
       );
       res.status(200).json(result.recordset);

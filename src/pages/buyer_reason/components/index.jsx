@@ -334,7 +334,7 @@ function Buyer_Reason(props) {
                 filterData={sessionStorage.getItem("buyer_between_date")}
               />
               <Export_All
-                api_url={`${props.baseUrl}/api/buyerlist_filter_optional`}
+                api_url={`${props.baseUrl}/api/buyerlist_filter_export`}
                 export_fileName={"Buyer_Reason"}
                 token_id={props.token_id}
               />
