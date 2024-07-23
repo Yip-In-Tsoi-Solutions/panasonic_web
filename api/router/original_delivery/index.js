@@ -13,7 +13,7 @@ original_delivery_api.post(
   async (req, res) => {
     try {
       const sql = await sql_serverConn();
-      const query = `SELECT * FROM dbo.[tbSupplierDelivery] WHERE ${req.body.queryString}`;
+      const query = `SELECT * FROM dbo.[tbSupplierDelivery_temp] WHERE ${req.body.queryString}`;
       // Execute the SQL query
       const result = await sql.query(query);
       res.status(200).send(result.recordset);
@@ -36,7 +36,7 @@ original_delivery_api.get(
       } else {
         const sql = await sql_serverConn();
         const result = await sql.query(
-          `SELECT DISTINCT [Buyer] from dbo.[tbSupplierDelivery] order by Buyer asc`
+          `SELECT DISTINCT [Buyer] from dbo.[tbSupplierDelivery_temp] order by Buyer asc`
         );
         cache.set(cacheKey, result.recordset);
         res.status(200).json(result.recordset);
@@ -60,7 +60,7 @@ original_delivery_api.get(
       } else {
         const sql = await sql_serverConn(); // Connect to SQL Server
         const result = await sql.query(
-          `SELECT DISTINCT SUPPLIER FROM dbo.tbSupplierDelivery ORDER BY SUPPLIER ASC`
+          `SELECT DISTINCT SUPPLIER FROM dbo.[tbSupplierDelivery_temp] ORDER BY SUPPLIER ASC`
         );
         cache.set(cacheKey, result.recordset); // Cache the result
         res.status(200).send(result.recordset); // Send JSON response with distinct vendors
@@ -84,7 +84,7 @@ original_delivery_api.get(
       } else {
         const sql = await sql_serverConn();
         const result = await sql.query(
-          `SELECT DISTINCT [PO_NUMBER] from dbo.[tbSupplierDelivery] order by [PO_NUMBER] asc`
+          `SELECT DISTINCT [PO_NUMBER] from dbo.[tbSupplierDelivery_temp] order by [PO_NUMBER] asc`
         );
         cache.set(cacheKey, result.recordset);
         res.status(200).send(result.recordset);

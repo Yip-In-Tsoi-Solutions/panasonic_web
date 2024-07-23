@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
 import schema from "../../../javascript/print_schema";
 import Export from "../../../components/export_data";
+import Export_All from "../../../components/export_all_data/components";
 const { Option } = Select;
 // class components
 const Original_delivery = (props) => {
@@ -115,13 +116,14 @@ const Original_delivery = (props) => {
     try {
       let queryString = "";
       if (buyer != "") {
-        queryString += `LOWER([Buyer]) = ${JSON.stringify(buyer).toLowerCase().replace(/"/g, "'")}`;
+        queryString += `LOWER([Buyer]) = ${JSON.stringify(buyer)
+          .toLowerCase()
+          .replace(/"/g, "'")}`;
       }
       if (vendor != "") {
-        queryString += ` AND LOWER([SUPPLIER]) = ${JSON.stringify(vendor).toLowerCase().replace(
-          /"/g,
-          "'"
-        )}`;
+        queryString += ` AND LOWER([SUPPLIER]) = ${JSON.stringify(vendor)
+          .toLowerCase()
+          .replace(/"/g, "'")}`;
       }
       if (purchaseNo != "") {
         queryString += ` AND [PO_NUMBER] = ${purchaseNo}`;
@@ -141,14 +143,14 @@ const Original_delivery = (props) => {
       if (response.status === 200) {
         setOriginal_delivery_report_filter_result(response.data);
         dispatch(resetAllState());
-        form.resetFields()
+        form.resetFields();
       }
     } catch (error) {
       if (error) {
         window.location.href = "/error_not_found";
       }
     }
-  }
+  };
   return (
     <>
       <div>
@@ -177,7 +179,14 @@ const Original_delivery = (props) => {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
             {original_delivery_report?.filterBuyer.map((item) => (
-              <Option key={item.Buyer} value={item.Buyer} disabled={item.Buyer === original_delivery_report.temp_state_filter.buyer}>
+              <Option
+                key={item.Buyer}
+                value={item.Buyer}
+                disabled={
+                  item.Buyer ===
+                  original_delivery_report.temp_state_filter.buyer
+                }
+              >
                 {item.Buyer}
               </Option>
             ))}
@@ -190,7 +199,14 @@ const Original_delivery = (props) => {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
             {original_delivery_report?.filterVendor.map((item) => (
-              <Option key={item.SUPPLIER} value={item.SUPPLIER} disabled={item.SUPPLIER === original_delivery_report.temp_state_filter.vendor}>
+              <Option
+                key={item.SUPPLIER}
+                value={item.SUPPLIER}
+                disabled={
+                  item.SUPPLIER ===
+                  original_delivery_report.temp_state_filter.vendor
+                }
+              >
                 {item.SUPPLIER}
               </Option>
             ))}
@@ -203,7 +219,14 @@ const Original_delivery = (props) => {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
             {original_delivery_report?.filterPO.map((item) => (
-              <Option key={item.PO_NUMBER} value={item.PO_NUMBER} disabled={item.PO_NUMBER === original_delivery_report.temp_state_filter.purchaseNo}>
+              <Option
+                key={item.PO_NUMBER}
+                value={item.PO_NUMBER}
+                disabled={
+                  item.PO_NUMBER ===
+                  original_delivery_report.temp_state_filter.purchaseNo
+                }
+              >
                 {item.PO_NUMBER}
               </Option>
             ))}
@@ -253,6 +276,12 @@ const Original_delivery = (props) => {
               baseUrl={props.baseUrl}
               export_fileName={"Original_Delivery"}
               dataset={original_delivery_report_filter_result}
+            />
+            <Export_All
+              api_url={`${props.baseUrl}/api/original_delivery_report/supplier_list_filter_optional`}
+              baseUrl={props.baseUrl}
+              export_fileName={"Original_Delivery"}
+              token_id={props.token_id}
             />
           </div>
         </Form.Item>

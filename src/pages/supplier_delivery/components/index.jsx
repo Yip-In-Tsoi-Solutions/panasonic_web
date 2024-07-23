@@ -16,6 +16,7 @@ import {
 } from "../../../components/filter_form/actions/filterSlice";
 import Export from "../../../components/export_data";
 import convertDateFormat from "../../../javascript/convertDateFormat";
+import Export_All from "../../../components/export_all_data/components";
 
 // class components
 const Supplier_delivery = (props) => {
@@ -186,6 +187,12 @@ const Supplier_delivery = (props) => {
               baseUrl={props.baseUrl}
               export_fileName={"supplier_delivery"}
               dataset={export_datasetAPI}
+            />
+            <Export_All
+              api_url={`${props.baseUrl}/api/supplier_list_filter_optional`}
+              baseUrl={props.baseUrl}
+              export_fileName={"supplier_delivery"}
+              token_id={props.token_id}
             />
           </div>
         </Form.Item>

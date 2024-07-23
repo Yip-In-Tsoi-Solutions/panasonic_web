@@ -24,6 +24,7 @@ import { resetAllState } from "../../../components/filter_form/actions/filterSli
 import Export from "../../../components/export_data";
 import Buyer_reason_pdf from "../../../components/generate_pdf/buyer_reason_pdf/components";
 import convertDateFormat from "../../../javascript/convertDateFormat";
+import Export_All from "../../../components/export_all_data/components";
 function Buyer_Reason(props) {
   const [form] = useForm();
   // State of Components
@@ -331,6 +332,11 @@ function Buyer_Reason(props) {
                 page_title={props.page_title}
                 buyer_data={buyer_reason?.buyer_reason_table}
                 filterData={sessionStorage.getItem("buyer_between_date")}
+              />
+              <Export_All
+                api_url={`${props.baseUrl}/api/buyerlist_filter_optional`}
+                export_fileName={"Buyer_Reason"}
+                token_id={props.token_id}
               />
             </div>
           </Form.Item>
