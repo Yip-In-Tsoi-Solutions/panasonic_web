@@ -17,12 +17,12 @@ async function Summary_score_pdf(data, summary_date) {
   // Document title and headers
   doc.setFontSize(18);
   doc.setFont("tahoma", "bold");
-  doc.text(`Panasonic Energy (Thailand) Co.,Ltd.`, width / 2, 15, {
+  doc.text(`Panasonic Energy (Thailand) Co.,Ltd.`.toUpperCase(), width / 2, 15, {
     align: "center",
   });
-  doc.setFontSize(10);
+  doc.setFontSize(16);
   doc.setFont("tahoma", "bold");
-  doc.text(`SUMMARY OF SERVICE EVALUATION`, width / 2, 22, {
+  doc.text(`SUMMARY OF SERVICE EVALUATION`.toUpperCase(), width / 2, 22, {
     align: "center",
   });
   doc.setFontSize(11);

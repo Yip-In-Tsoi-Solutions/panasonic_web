@@ -135,7 +135,7 @@ async function generatePDF(dataset, supplierName, fileName, return_doc) {
       doc.autoTable.previous.finalY + 10
     );
     doc.text(
-      `VAT 7% (${numberWithCommas(vat.toFixed(3))} THB)`,
+      `VAT 7% ${numberWithCommas(vat.toFixed(3))} THB`,
       rightX,
       doc.autoTable.previous.finalY + 15
     );
