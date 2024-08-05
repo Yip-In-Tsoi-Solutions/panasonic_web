@@ -132,7 +132,7 @@ buyer_reason.post(
     }
   }
 );
-//
+// Export All
 buyer_reason.post(
   "/buyerlist_filter_export",
   authenticateToken,
@@ -141,10 +141,41 @@ buyer_reason.post(
       const sql = await sql_serverConn();
       const result = await sql.query(
         `
-          SELECT
-            *
-          FROM
-            dbo.[PECTH_SUPPLIER_DELIVERY_HISTORICAL]
+          SELECT [ITEM_NO]
+              ,[ITEM_DESCRIPTION]
+              ,[UOM]
+              ,[BUYER]
+              ,[PO_NUMBER]
+              ,[PO_RELEASE]
+              ,[SUPPLIER]
+              ,[QUANTITY_PO]
+              ,[QUANTITY_RECEIVED]
+              ,[QTY_DIFF]
+              ,CONVERT([varchar], [NEED_BY_DATE], 23) as NEED_BY_DATE
+              ,CONVERT([varchar], [PROMISED_DATE], 23) as PROMISED_DATE
+              ,CONVERT([varchar], [RECEIVE_DATE], 23) as RECEIVE_DATE
+              ,[DIFF_DAY]
+              ,[BEFORE_3_DAYS_MORE]
+              ,[BEFORE_3_DAYS]
+              ,[BEFORE_2_DAYS]
+              ,[BEFORE_1_DAY]
+              ,[ON_TIME]
+              ,[DELAY_1_DAY]
+              ,[DELAY_2_DAYS]
+              ,[DELAY_3_DAYS]
+              ,[DELAY_3_DAYS_MORE]
+              ,[STATUS]
+              ,[TRANSACTION_ID]
+              ,[EFFECT_PRODUCTION_SHIPMENT]
+              ,[ROOT_CAUSE]
+              ,[ACTION]
+              ,[DELAY_CAUSE]
+              ,CONVERT([varchar], [VERIFIED_DATE], 23) as VERIFIED_DATE
+              ,CONVERT([varchar], [MODIFIED_DATE], 23) as MODIFIED_DATE
+              ,CONVERT([varchar], [CREATED_DATE], 23) as CREATED_DATE
+              ,CONVERT([varchar], [CONFIRM_REASON_DATE], 23) as CONFIRM_REASON_DATE
+              ,[REASON_REMARK]
+          FROM [KPI_PurchaseDB].[dbo].[PECTH_SUPPLIER_DELIVERY_HISTORICAL]
           WHERE ${req.body.queryString}
         `
       );

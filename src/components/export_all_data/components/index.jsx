@@ -61,6 +61,7 @@ const Export_All = (props) => {
     );
     if (response.status === 200) {
       exportToXlsx(response.data, export_fileName);
+      console.log(response.data)
       exportAll.resetFields()
     }
   };
