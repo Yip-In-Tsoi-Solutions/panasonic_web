@@ -25,7 +25,33 @@ supplier_api.post(
       const sql = await sql_serverConn();
       const result = await sql.query(
         `
-        SELECT * FROM dbo.v_PECTH_SUPPLIER_DELIVERY_DATEDIFF WHERE ${req.body.queryString} AND (QUANTITY_PO - QUANTITY_RECEIVED <> 0 OR (DATEDIFF(day,RECEIVE_DATE,PROMISED_DATE) <> 0) )
+          SELECT [ITEM_NO]
+              ,[ITEM_DESCRIPTION]
+              ,[UOM]
+              ,[BUYER]
+              ,[PO_NUMBER]
+              ,[PO_RELEASE]
+              ,[SUPPLIER]
+              ,[QUANTITY_PO]
+              ,[QUANTITY_RECEIVED]
+              ,[QTY_DIFF]
+              ,CONVERT(varchar, [NEED_BY_DATE], 23) AS NEED_BY_DATE
+              ,CONVERT(varchar, [PROMISED_DATE], 23) AS PROMISED_DATE
+              ,CONVERT(varchar, [RECEIVE_DATE], 23) AS RECEIVE_DATE
+              ,[DIFF_DAY]
+              ,[BEFORE_3_DAYS_MORE]
+              ,[BEFORE_3_DAYS]
+              ,[BEFORE_2_DAYS]
+              ,[BEFORE_1_DAY]
+              ,[ON_TIME]
+              ,[DELAY_1_DAY]
+              ,[DELAY_2_DAYS]
+              ,[DELAY_3_DAYS]
+              ,[DELAY_3_DAYS_MORE]
+              ,[STATUS]
+              ,[TRANSACTION_ID]
+          FROM [dbo].[v_PECTH_SUPPLIER_DELIVERY_DATEDIFF] 
+          WHERE ${req.body.queryString} AND (QUANTITY_PO - QUANTITY_RECEIVED <> 0 OR (DATEDIFF(day,RECEIVE_DATE,PROMISED_DATE) <> 0) )
         `
       );
       res.status(200).json(result.recordset);
@@ -145,7 +171,35 @@ supplier_api.post("/supplier_list/export_file", async (req, res) => {
   try {
     const sql = await sql_serverConn();
     const result = await sql.query(
-      `SELECT * from dbo.[v_PECTH_SUPPLIER_DELIVERY_DATEDIFF] WHERE ${req.body.queryString}`
+      `
+        SELECT [ITEM_NO]
+            ,[ITEM_DESCRIPTION]
+            ,[UOM]
+            ,[BUYER]
+            ,[PO_NUMBER]
+            ,[PO_RELEASE]
+            ,[SUPPLIER]
+            ,[QUANTITY_PO]
+            ,[QUANTITY_RECEIVED]
+            ,[QTY_DIFF]
+            ,CONVERT(varchar, [NEED_BY_DATE], 23) AS NEED_BY_DATE
+            ,CONVERT(varchar, [PROMISED_DATE], 23) AS PROMISED_DATE
+            ,CONVERT(varchar, [RECEIVE_DATE], 23) AS RECEIVE_DATE
+            ,[DIFF_DAY]
+            ,[BEFORE_3_DAYS_MORE]
+            ,[BEFORE_3_DAYS]
+            ,[BEFORE_2_DAYS]
+            ,[BEFORE_1_DAY]
+            ,[ON_TIME]
+            ,[DELAY_1_DAY]
+            ,[DELAY_2_DAYS]
+            ,[DELAY_3_DAYS]
+            ,[DELAY_3_DAYS_MORE]
+            ,[STATUS]
+            ,[TRANSACTION_ID]
+        FROM [dbo].[v_PECTH_SUPPLIER_DELIVERY_DATEDIFF]
+        WHERE ${req.body.queryString}
+      `
     );
     res.status(200).json(result.recordset);
   } catch (error) {

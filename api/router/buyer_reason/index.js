@@ -117,8 +117,10 @@ buyer_reason.post(
       const result = await sql.query(
         `
           SELECT
-            [PROMISED_DATE] , [SUPPLIER] , [ITEM_NO] , [PO_NUMBER], [PO_RELEASE] , [ITEM_DESCRIPTION],
-            [UOM] , [QUANTITY_RECEIVED] , [BUYER] , [BEFORE] , [DELAY], [QTY_DIFF], [DIFF_DAY] , [TRANSACTION_ID] , [CONFIRM_REASON_DATE],
+            CONVERT([varchar], [PROMISED_DATE], 23) AS PROMISED_DATE
+            , [SUPPLIER] , [ITEM_NO] , [PO_NUMBER], [PO_RELEASE] , [ITEM_DESCRIPTION],
+            [UOM] , [QUANTITY_RECEIVED] , [BUYER] , [BEFORE] , [DELAY], [QTY_DIFF], [DIFF_DAY] , [TRANSACTION_ID] , 
+            CONVERT([varchar], [CONFIRM_REASON_DATE], 23) AS CONFIRM_REASON_DATE,
             [EFFECT_PRODUCTION_SHIPMENT],[ROOT_CAUSE],[ACTION], [REASON_REMARK]
           FROM
             dbo.[v_PECTH_SUPPLIER_BUYER_REASON]
@@ -151,9 +153,9 @@ buyer_reason.post(
               ,[QUANTITY_PO]
               ,[QUANTITY_RECEIVED]
               ,[QTY_DIFF]
-              ,CONVERT([varchar], [NEED_BY_DATE], 23) as NEED_BY_DATE
-              ,CONVERT([varchar], [PROMISED_DATE], 23) as PROMISED_DATE
-              ,CONVERT([varchar], [RECEIVE_DATE], 23) as RECEIVE_DATE
+              ,CONVERT([varchar], [NEED_BY_DATE], 23) AS NEED_BY_DATE
+              ,CONVERT([varchar], [PROMISED_DATE], 23) AS PROMISED_DATE
+              ,CONVERT([varchar], [RECEIVE_DATE], 23) AS RECEIVE_DATE
               ,[DIFF_DAY]
               ,[BEFORE_3_DAYS_MORE]
               ,[BEFORE_3_DAYS]
@@ -170,10 +172,10 @@ buyer_reason.post(
               ,[ROOT_CAUSE]
               ,[ACTION]
               ,[DELAY_CAUSE]
-              ,CONVERT([varchar], [VERIFIED_DATE], 23) as VERIFIED_DATE
-              ,CONVERT([varchar], [MODIFIED_DATE], 23) as MODIFIED_DATE
-              ,CONVERT([varchar], [CREATED_DATE], 23) as CREATED_DATE
-              ,CONVERT([varchar], [CONFIRM_REASON_DATE], 23) as CONFIRM_REASON_DATE
+              ,CONVERT([varchar], [VERIFIED_DATE], 23) AS VERIFIED_DATE
+              ,CONVERT([varchar], [MODIFIED_DATE], 23) AS MODIFIED_DATE
+              ,CONVERT([varchar], [CREATED_DATE], 23) AS CREATED_DATE
+              ,CONVERT([varchar], [CONFIRM_REASON_DATE], 23) AS CONFIRM_REASON_DATE
               ,[REASON_REMARK]
           FROM [dbo].[PECTH_SUPPLIER_DELIVERY_HISTORICAL]
           WHERE ${req.body.queryString}
