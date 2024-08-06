@@ -175,7 +175,7 @@ buyer_reason.post(
               ,CONVERT([varchar], [CREATED_DATE], 23) as CREATED_DATE
               ,CONVERT([varchar], [CONFIRM_REASON_DATE], 23) as CONFIRM_REASON_DATE
               ,[REASON_REMARK]
-          FROM [KPI_PurchaseDB].[dbo].[PECTH_SUPPLIER_DELIVERY_HISTORICAL]
+          FROM [dbo].[PECTH_SUPPLIER_DELIVERY_HISTORICAL]
           WHERE ${req.body.queryString}
         `
       );

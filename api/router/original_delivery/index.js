@@ -13,7 +13,31 @@ original_delivery_api.post(
   async (req, res) => {
     try {
       const sql = await sql_serverConn();
-      const query = `SELECT * FROM dbo.[tbSupplierDelivery_temp] WHERE ${req.body.queryString}`;
+      const query = 
+      `
+        SELECT [ID]
+            ,[PO_NUMBER]
+            ,[RELEASE_NUM]
+            ,[LINE_NUM]
+            ,[SHIPMENT_NUM]
+            ,[ITEM_NO]
+            ,[ITEM_DES]
+            ,[UOM]
+            ,[SHIPMENT_AMOUNT]
+            ,[QUANTITY]
+            ,[QUANTITY_DUE]
+            ,[QUANTITY_RECEIVED]
+            ,[SUPPLIER]
+            ,[CURRENCY_CODE]
+            ,[BUYER]
+            ,CONVERT(varchar, [NEED_BY_DATE], 23) as NEED_BY_DATE
+            ,CONVERT(varchar, [PROMISED_DATE], 23) as PROMISED_DATE
+            ,CONVERT(varchar, [RECEIVE_DATE], 23) as RECEIVE_DATE
+            ,[TRANSACTION_ID]
+            ,CONVERT(varchar, [UPDATE_DATE], 23) as UPDATE_DATE
+        FROM [dbo].[tbSupplierDelivery_temp]
+        WHERE ${req.body.queryString}
+      `;
       // Execute the SQL query
       const result = await sql.query(query);
       res.status(200).send(result.recordset);

@@ -21,7 +21,7 @@ matching_invoice.post(
             ITEM as ITEM_CODE,
             DESCRIPTION,
             LINE_NUM,
-            INVOICE_DATE,
+            CONVERT(varchar, [INVOICE_DATE], 23) as INVOICE_DATE
             BATCH_NAME,
             UOM,
             INVOICE_NUM,
@@ -209,7 +209,7 @@ matching_invoice.post(
         UOM,
         ROUND(INV_UNIT_PRICE, 2) AS UNIT_PRICE,
         INV_CURRENCY_CODE,
-        INVOICE_DATE,
+        CONVERT(varchar, [INVOICE_DATE], 23) as INVOICE_DATE,
         RETURN_CAUSE
       FROM
         dbo.[PECTH_SUPPLIER_RETURN_HISTORICAL]

@@ -3,7 +3,46 @@ const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const authenticateToken = require("../../secure/jwt");
 const price_report = express();
 price_report.use(express.json());
-// get all data from db
+// get data filter
+const priceReportData = `
+SELECT [ID]
+      ,[VENDOR_NAME]
+      ,[INVOICE_NUM]
+      ,CONVERT(varchar, [INVOICE_DATE], 23) as INVOICE_DATE
+      ,[PO_NUMBER]
+      ,[RELEASE_NUM]
+      ,[ITEM]
+      ,[DESCRIPTION]
+      ,[UOM]
+      ,[PO_QTY]
+      ,[INV_QTY]
+      ,[PO_UNIT_PRICE]
+      ,[INV_UNIT_PRICE]
+      ,[INV_CURRENCY_CODE]
+      ,[DIFF]
+      ,[DIFF_AMOUNT]
+      ,[DIFF_AMOUNT_THB]
+      ,[BUYER]
+      ,CONVERT(varchar, [EXCHANGE_RATE], 23) as EXCHANGE_RATE
+      ,CONVERT(varchar, [EXCHANGE_DATE], 23) as EXCHANGE_DATE
+      ,[REMARK]
+  FROM [dbo].[v_PECTH_SUPPLIER_PRICEDIFF]
+`
+price_report.post("/price_report", authenticateToken, async (req, res) => {
+  try {
+    const sql = await sql_serverConn();
+    const result = await sql.query(
+      `
+      ${priceReportData}
+      WHERE ${req.body.queryString} ORDER BY id, remark asc
+    `
+    );
+    res.status(200).send(result.recordset);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+// get all data, after filter
 price_report.post(
   "/price_report/latest_data",
   authenticateToken,
@@ -12,9 +51,7 @@ price_report.post(
       const sql = await sql_serverConn();
       const result = await sql.query(
         `
-          SELECT 
-            *
-          FROM [dbo].[v_PECTH_SUPPLIER_PRICEDIFF]
+          ${priceReportData}
           WHERE ${req.body.between_date} ORDER BY id, remark asc
         `
       );
@@ -28,22 +65,6 @@ price_report.post(
     }
   }
 );
-price_report.post("/price_report", authenticateToken, async (req, res) => {
-  try {
-    const sql = await sql_serverConn();
-    const result = await sql.query(
-      `
-      SELECT 
-        *
-      FROM [dbo].[v_PECTH_SUPPLIER_PRICEDIFF]
-      WHERE ${req.body.queryString} ORDER BY id, remark asc
-    `
-    );
-    res.status(200).send(result.recordset);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
 price_report.put(
   "/price_report/:id/:item_no/:po_release",
   authenticateToken,
