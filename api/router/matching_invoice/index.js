@@ -21,7 +21,7 @@ matching_invoice.post(
             ITEM as ITEM_CODE,
             DESCRIPTION,
             LINE_NUM,
-            CONVERT(varchar, [INVOICE_DATE], 23) as INVOICE_DATE
+            CONVERT(varchar, [INVOICE_DATE], 23) as INVOICE_DATE,
             BATCH_NAME,
             UOM,
             INVOICE_NUM,

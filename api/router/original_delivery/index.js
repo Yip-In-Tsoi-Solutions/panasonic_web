@@ -30,11 +30,11 @@ original_delivery_api.post(
             ,[SUPPLIER]
             ,[CURRENCY_CODE]
             ,[BUYER]
-            ,CONVERT(varchar, [NEED_BY_DATE], 23) as NEED_BY_DATE
-            ,CONVERT(varchar, [PROMISED_DATE], 23) as PROMISED_DATE
-            ,CONVERT(varchar, [RECEIVE_DATE], 23) as RECEIVE_DATE
+            ,CONVERT(varchar, [NEED_BY_DATE], 23) AS NEED_BY_DATE
+            ,CONVERT(varchar, [PROMISED_DATE], 23) AS PROMISED_DATE
+            ,CONVERT(varchar, [RECEIVE_DATE], 23) AS RECEIVE_DATE
             ,[TRANSACTION_ID]
-            ,CONVERT(varchar, [UPDATE_DATE], 23) as UPDATE_DATE
+            ,CONVERT(varchar, [UPDATE_DATE], 23) AS UPDATE_DATE
         FROM [dbo].[tbSupplierDelivery_temp]
         WHERE ${req.body.queryString}
       `;
