@@ -259,6 +259,11 @@ function Buyer_Reason(props) {
       setReason("");
     }
   }, [openUpdateForm, form]);
+
+  const data_With_qtyDiff = buyer_reason?.buyer_reason_table.map(item => {
+    const { QTY_DIFF, ...rest } = item;
+    return rest;
+  });
   return (
     <>
       <div className="uppercase">
@@ -397,8 +402,8 @@ function Buyer_Reason(props) {
                         </Tooltip>
                       ),
                     },
-                  ].concat(schema(buyer_reason?.buyer_reason_table))
-                : schema(buyer_reason?.buyer_reason_table)
+                  ].concat(schema(data_With_qtyDiff))
+                : schema(data_With_qtyDiff)
             }
             scroll={{ x: "max-content" }}
             pagination={{

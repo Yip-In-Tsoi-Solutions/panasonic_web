@@ -101,6 +101,10 @@ const Supplier_delivery = (props) => {
     dispatch(resetAllState());
     setConfirm(true);
   };
+  const data_With_qtyDiff = suppliery_list_filter_result.map(item => {
+    const { QTY_DIFF, ...rest } = item;
+    return rest;
+  });
   return (
     <>
       <div>
@@ -200,8 +204,8 @@ const Supplier_delivery = (props) => {
       <div className="clear-both mt-5">
         <Table
           className="w-full overflow-y-hidden"
-          dataSource={suppliery_list_filter_result}
-          columns={schema(suppliery_list_filter_result)}
+          dataSource={data_With_qtyDiff}
+          columns={schema(data_With_qtyDiff)}
           scroll={{ x: "max-content" }}
           pagination={{
             showSizeChanger: true,
