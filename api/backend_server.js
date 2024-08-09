@@ -4,6 +4,7 @@ const app = express();
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const PORT = process.env.PORT || 9000;
+const front_end_port = 3000;
 const HOST = "0.0.0.0";
 const authentication = require("./router/authentication");
 const supplier_api = require("./router/supplier_delivery");
@@ -13,13 +14,12 @@ const evaluate_form = require("./router/evaluate_form");
 const original_delivery_api = require("./router/original_delivery");
 const price_report = require("./router/price_report");
 const matching_invoice = require("./router/matching_invoice");
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:9000'];
+const allowedOrigins = [`http://localhost:${front_end_port}`, `http://localhost:${PORT}`];
 const limiter = rateLimit({
-	windowMs: 15 * 60 * 1000, // 15 minutes
-	limit: 500, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-	standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
-	// store: ... , // Redis, Memcached, etc. See below.
+	windowMs: 15 * 60 * 1000,
+	limit: 500,
+	standardHeaders: 'draft-7',
+	legacyHeaders: false,
 })
 app.use(cors(allowedOrigins));
 app.use(limiter)
