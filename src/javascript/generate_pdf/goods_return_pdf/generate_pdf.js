@@ -62,7 +62,7 @@ async function generatePDF(dataset, supplierName, fileName, return_doc) {
       width - margin - 100,
       margin + 30
     );
-    addLeftAlignedText(`คืนให้สินค้า  ${supplierName}`, margin, margin + 40);
+    addLeftAlignedText(`คืนสินค้าให้ :  ${supplierName}`, margin, margin + 40);
     addLeftAlignedText(
       `วันที่คืนสินค้า (DATE) ${createForm_date}`.toUpperCase(),
       width - margin - 100,

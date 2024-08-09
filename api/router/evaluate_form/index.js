@@ -134,7 +134,7 @@ evaluate_form.post(
           detailRequest.input("HEADER_INDEX", HEADER_INDEX); // Corrected here
           detailRequest.input("TOPIC_KEY_ID", TOPIC_KEY_ID);
           detailRequest.input("SUPPLIER", supplier);
-          detailRequest.input("DEPARTMENT", "Store PC");
+          detailRequest.input("DEPARTMENT", "Purchase");
           detailRequest.input("EVALUATE_DATE", evaluate_date);
           detailRequest.input("EVALUATE_TOPIC_SCORE", EVALUATE_TOPIC_SCORE);
           await detailRequest.query(`
