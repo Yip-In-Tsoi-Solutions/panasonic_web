@@ -66,17 +66,15 @@ price_report.post(
   }
 );
 price_report.put(
-  "/price_report/:id/:item_no/:po_release",
+  "/price_report/:id/:po_release",
   authenticateToken,
   async (req, res) => {
     try {
       const id = req.params.id;
-      const item_no = req.params.item_no;
       const po_release = req.params.po_release;
       const sql = await sql_serverConn();
       const request = sql.request();
       request.input("id", id);
-      request.input("item_no", item_no);
       request.input("invoice_date", req.body.invoice_date);
       request.input("invoice_num", req.body.invoice_num);
       request.input("po_release", po_release);
@@ -88,7 +86,7 @@ price_report.put(
       SET
         [REMARK] = @remark, SAVED_Remark_DATE = SYSDATETIME()
       WHERE
-        ID = @id AND ITEM = @item_no AND INVOICE_NUM = @invoice_num AND RELEASE_NUM = @po_release
+        ID = @id AND INVOICE_NUM = @invoice_num AND RELEASE_NUM = @po_release
       `
       );
       res.status(200).send("Data is Updated");

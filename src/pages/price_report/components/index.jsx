@@ -111,7 +111,7 @@ const PriceReport = (props) => {
         remark: remark,
       };
       const response = await axios.put(
-        `${props.baseUrl}/api/price_report/${currentSelected.id}/${currentSelected.item_no}/${currentSelected.po_release}`,
+        `${props.baseUrl}/api/price_report/${currentSelected.id}/${currentSelected.po_release}`,
         payload,
         {
           headers: {
