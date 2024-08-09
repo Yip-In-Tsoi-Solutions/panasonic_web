@@ -73,40 +73,40 @@ buyer_reason.post(
 );
 
 // get data from PECTH_SUPPLIER_DELIVERY_HISTORICAL
-buyer_reason.get("/buyerlist", authenticateToken, async (req, res) => {
-  try {
-    const cacheKey = "buyerlist_api";
-    const cached_data = cache.get(cacheKey);
-    if (cached_data) {
-      res.status(200).send(cached_data);
-    } else {
-      const sql = await sql_serverConn();
-      const result = await sql.query(
-        `
-      SELECT
-        [PROMISED_DATE],
-        [RECEIVE_DATE],
-        [SUPPLIER],
-        [ITEM_NO],
-        [ITEM_DESCRIPTION],
-        [PO_NUMBER],
-        [PO_RELEASE],
-        [QUANTITY_PO],
-        [QUANTITY_RECEIVED],
-        [BUYER]
-      FROM
-        dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL
-      WHERE [DIFF_DAY] != 0 AND [REASON_REMARK] IS NULL
-      `
-      );
-      cache.set(cacheKey, result.recordset);
-      res.status(200).json(result.recordset);
-    }
-  } catch (error) {
-    console.error("Error inserting data:", error);
-    res.status(500).send("Internal Server Error");
-  }
-});
+// buyer_reason.get("/buyerlist", authenticateToken, async (req, res) => {
+//   try {
+//     const cacheKey = "buyerlist_api";
+//     const cached_data = cache.get(cacheKey);
+//     if (cached_data) {
+//       res.status(200).send(cached_data);
+//     } else {
+//       const sql = await sql_serverConn();
+//       const result = await sql.query(
+//         `
+//       SELECT
+//         [PROMISED_DATE],
+//         [RECEIVE_DATE],
+//         [SUPPLIER],
+//         [ITEM_NO],
+//         [ITEM_DESCRIPTION],
+//         [PO_NUMBER],
+//         [PO_RELEASE],
+//         [QUANTITY_PO],
+//         [QUANTITY_RECEIVED],
+//         [BUYER]
+//       FROM
+//         dbo.PECTH_SUPPLIER_DELIVERY_HISTORICAL
+//       WHERE [DIFF_DAY] != 0 AND [REASON_REMARK] IS NULL
+//       `
+//       );
+//       cache.set(cacheKey, result.recordset);
+//       res.status(200).json(result.recordset);
+//     }
+//   } catch (error) {
+//     console.error("Error inserting data:", error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
 // display buyer by filter (Web Only)
 buyer_reason.post(
   "/buyerlist_filter_optional",
@@ -219,8 +219,8 @@ buyer_reason.post(
     try {
       const sql = await sql_serverConn();
       const result = await sql.query(
-        `
-      SELECT * FROM [dbo].[PECTH_SUPPLIER_DELIVERY_HISTORICAL] WHERE ${req.body.queryString} AND ON_TIME = 0
+      `
+        SELECT * FROM [dbo].[PECTH_SUPPLIER_DELIVERY_HISTORICAL] WHERE ${req.body.queryString} AND DIFF_DAY != 0
       `
       );
       res.status(200).json(result.recordset);

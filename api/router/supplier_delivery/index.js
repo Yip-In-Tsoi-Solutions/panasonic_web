@@ -34,7 +34,6 @@ supplier_api.post(
               ,[SUPPLIER]
               ,[QUANTITY_PO]
               ,[QUANTITY_RECEIVED]
-              ,[QTY_DIFF]
               ,CONVERT(varchar, [NEED_BY_DATE], 23) AS NEED_BY_DATE
               ,CONVERT(varchar, [PROMISED_DATE], 23) AS PROMISED_DATE
               ,CONVERT(varchar, [RECEIVE_DATE], 23) AS RECEIVE_DATE
