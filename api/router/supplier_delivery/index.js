@@ -94,7 +94,8 @@ supplier_api.post(
             ,[DELAY_3_DAYS_MORE]
             ,[STATUS]
             ,[TRANSACTION_ID]
-        FROM [dbo].[v_PECTH_SUPPLIER_DELIVERY_DATEDIFF]
+            ,CONVERT(varchar, [VERIFIED_DATE], 23) as VERIFIED_DATE
+        FROM [dbo].[v_PECTH_SUPPLIER_DELIVERY_DATEDIFF_ALL]
         WHERE ${req.body.queryString}
         `
       );
