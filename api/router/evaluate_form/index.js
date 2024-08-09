@@ -99,7 +99,7 @@ evaluate_form.post(
         // Insert headers outside loop
         request.input("EVALUATE_ID", EVALUATE_ID);
         request.input("SUPPLIER", supplier);
-        request.input("DEPARTMENT", "Store PC");
+        request.input("DEPARTMENT", "Purchase");
         request.input("EVALUATE_DATE", evaluate_date);
         request.input("EVALUATE_TOTAL_SCORE", totalScore);
         request.input("EVALUATE_FULL_SCORE", full_score);
