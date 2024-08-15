@@ -59,7 +59,6 @@ const GradingTable = ({ baseUrl, token_id, exportSummaryPDF }) => {
       comments: item?.EVALUATE_COMMENT,
     };
   });
-  console.log(tableData)
   return (
     <>
       <div className="my-10" id="summaryScore">
