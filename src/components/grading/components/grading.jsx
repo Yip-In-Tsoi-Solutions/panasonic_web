@@ -54,11 +54,12 @@ const GradingTable = ({ baseUrl, token_id, exportSummaryPDF }) => {
     return {
       no: (rowId += 1),
       supplier: item?.SUPPLIER,
-      percentage: item?.EVALUATE_PERCENT,
+      percentage: item?.EVALUATE_PERCENT + '  %',
       grade: item?.EVALUATE_GRADE,
       comments: item?.EVALUATE_COMMENT,
     };
   });
+  console.log(tableData)
   return (
     <>
       <div className="my-10" id="summaryScore">
