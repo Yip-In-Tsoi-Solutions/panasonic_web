@@ -54,7 +54,7 @@ const GradingTable = ({ baseUrl, token_id, exportSummaryPDF }) => {
     return {
       no: (rowId += 1),
       supplier: item?.SUPPLIER,
-      percentage: item?.EVALUATE_PERCENT + '  %',
+      percentage: item?.EVALUATE_PERCENT.toFixed(2) + '  %',
       grade: item?.EVALUATE_GRADE,
       comments: item?.EVALUATE_COMMENT,
     };
