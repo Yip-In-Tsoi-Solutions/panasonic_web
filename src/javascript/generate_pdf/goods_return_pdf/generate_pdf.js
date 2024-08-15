@@ -48,7 +48,7 @@ async function generatePDF(dataset, supplierName, fileName, return_doc) {
     };
 
     doc.setFontSize(14);
-    doc.text("ใบคืนสินค้าในประเทศ", width / 2, margin, { align: "center" });
+    doc.text("ใบคืนสินค้า", width / 2, margin, { align: "center" });
 
     doc.setFontSize(18);
     doc.text("GOODS RETURN TO SUPPLIER".toUpperCase(), width / 2, margin + 10, {
