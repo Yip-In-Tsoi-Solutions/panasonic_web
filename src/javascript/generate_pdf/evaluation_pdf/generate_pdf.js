@@ -17,20 +17,7 @@ async function generatePDF(supplier, evaluate_date, department, questionaire) {
   const year = date.getUTCFullYear() - 543;
 
   // Array of month names
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
+  const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
   // Get the month name
   const monthName = monthNames[date.getUTCMonth()];
