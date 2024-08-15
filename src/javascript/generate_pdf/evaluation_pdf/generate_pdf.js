@@ -6,11 +6,37 @@ import schema from "../../print_schema";
 // Function to generate the PDF
 async function generatePDF(supplier, evaluate_date, department, questionaire) {
   // Date formatting
+  // const date = new Date(evaluate_date);
+  // const year = date.getUTCFullYear();
+  // const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  // const day = String(date.getUTCDate()).padStart(2, "0");
+  // const formattedDate = `${year}-${month}`;
   const date = new Date(evaluate_date);
-  const year = date.getUTCFullYear();
-  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(date.getUTCDate()).padStart(2, "0");
-  const formattedDate = `${year}-${month}`;
+
+  // Get the full year
+  const year = date.getUTCFullYear() - 543;
+
+  // Array of month names
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  // Get the month name
+  const monthName = monthNames[date.getUTCMonth()];
+
+  // Format the date as "Apr-2024"
+  const formattedDate = `${monthName} ${year}`;
 
   // Create a new jsPDF document
   const doc = new jsPDF("p", "mm", "a4");
@@ -64,7 +90,7 @@ async function generatePDF(supplier, evaluate_date, department, questionaire) {
       halign: "center",
     },
     didParseCell: function (data) {
-      if (data.row.raw.every(cell => cell === "")) {
+      if (data.row.raw.every((cell) => cell === "")) {
         data.cell.styles.minCellHeight = 10;
       } else {
         data.cell.styles.minCellHeight = 5;
@@ -171,11 +197,11 @@ async function generatePDF(supplier, evaluate_date, department, questionaire) {
   const totalPercentage = questionaire[0]?.EVALUATE_PERCENT.toFixed(3);
   let grade = "";
   const evaluate_grade = String(questionaire[0]?.EVALUATE_GRADE).toLowerCase();
-  if (evaluate_grade === 'a') {
+  if (evaluate_grade === "a") {
     grade = "A ดีมาก";
-  } else if (evaluate_grade === 'b') {
+  } else if (evaluate_grade === "b") {
     grade = "B ดี";
-  } else if (evaluate_grade === 'c') {
+  } else if (evaluate_grade === "c") {
     grade = "C พอใช้";
   } else {
     grade = "D ควรปรับปรุง";

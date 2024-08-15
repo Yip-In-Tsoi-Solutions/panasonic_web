@@ -9,6 +9,17 @@ async function Summary_score_pdf(data, summary_date) {
   const doc = new jsPDF("p", "mm", "a4");
   const width = doc.internal.pageSize.getWidth();
 
+  const [year, month] = summary_date.split('-');
+
+  // Array of abbreviated month names
+  const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+  // Convert month number to month name
+  const monthName = monthNames[parseInt(month, 10) - 1];
+
+  // Format the date as "JUN-2024"
+  const formattedDate = `${monthName} ${year}`; 
+
   // Load and set custom font (Tahoma)
   doc.addFileToVFS("tahoma.ttf", font);
   doc.addFont("tahoma.ttf", "tahoma", "normal");
@@ -78,7 +89,7 @@ async function Summary_score_pdf(data, summary_date) {
   });
 
   // Texts below the table
-  doc.text(`ประจำเดือน : ${summary_date}`, width - 55, 60);
+  doc.text(`ประจำเดือน : ${formattedDate}`, width - 55, 60);
   //   doc.text(`หน่วยงาน / แผนก : ${String(department).toUpperCase()}`, 15, 50);
   //   doc.text(`ชื่อผู้ส่งมอบ : ${String(supplier).toUpperCase()}`, 15, 60);
   doc.setFont("tahoma", "normal");
@@ -99,10 +110,10 @@ async function Summary_score_pdf(data, summary_date) {
     },
     columnStyles: {
       0: {cellWidth: 10},  
-      1: {cellWidth: 60},  
-      2: {cellWidth: 23},  
-      3: {cellWidth: 15},  
-      4: {cellWidth: 70},
+      1: {cellWidth: 70},  
+      2: {cellWidth: 28},  
+      3: {cellWidth: 20},  
+      4: {cellWidth: 50},
     },
     margin: { left: 15, right: 15 },
   });

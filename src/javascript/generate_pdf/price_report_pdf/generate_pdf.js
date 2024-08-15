@@ -136,8 +136,8 @@ async function generatePDF(data, fileName, price_report_date_from_to) {
       supplier: item?.VENDOR_NAME,
       invoice_no: item?.INVOICE_NUM,
       invoice_date: moment(item?.INVOICE_DATE).format("YYYY-MM-DD"),
-      po_number: item?.PO_NUMBER,
-      po_release: `${item?.PO_NUMBER}/${item?.RELEASE_NUM}`, // Combined PO_NUMBER and RELEASE_NUM
+      // po_number: item?.PO_NUMBER,
+      po_release: `${item?.PO_NUMBER}-${item?.RELEASE_NUM}`, // Combined PO_NUMBER and RELEASE_NUM
       item: item?.ITEM,
       description: item?.DESCRIPTION,
       uom: item?.UOM,
@@ -170,7 +170,6 @@ async function generatePDF(data, fileName, price_report_date_from_to) {
           "invoice number".toUpperCase(),
           "invoice date".toUpperCase(),
           "po number".toUpperCase(),
-          "po release".toUpperCase(),
           "item".toUpperCase(),
           "description".toUpperCase(),
           "uom".toUpperCase(),
@@ -188,16 +187,16 @@ async function generatePDF(data, fileName, price_report_date_from_to) {
       body: dataTable,
       columns: schema(dataTable),
       styles: {
-        fontSize: 5,
+        fontSize: 7,
         font: "tahoma",
       },
       headerStyles: {
         fillColor: "#016255",
         font: "tahoma",
-        fontSize: 5,
+        fontSize: 7,
       },
       columnStyles: {
-        16: {cellWidth: 50}
+        15: {cellWidth: 42}
       }
     });
 
