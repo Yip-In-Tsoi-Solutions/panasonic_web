@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "front_end": "pm2 start -i 2 frontend_server.js",
-    "server": "vite --host",
+    "front_end_dev": "vite --host",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
