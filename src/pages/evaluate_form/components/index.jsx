@@ -20,8 +20,6 @@ import moment from "moment";
 import Group_topic_evaluate_update from "../../../components/evaluateform/group_topic_evaluate_update";
 import Group_topic_approve from "../../../components/evaluateform/group_topic_approve";
 // Components
-import Supplier_Eva from "../../../components/evaluateform/select_supplier_list/index";
-import ReportMonth from "../../../components/evaluateform/select_report_month";
 import GroupTopic from "../../../components/evaluateform/group_topic";
 import SummaryScore from "../../../components/summary_score/components";
 
@@ -40,6 +38,7 @@ import convert_year_th from "../../../javascript/convert_year_th";
 import generatePDF from "../../../javascript/generate_pdf/evaluation_pdf/generate_pdf";
 import { CloseCircleOutlined, FilePdfOutlined } from "@ant-design/icons";
 import Summary_score_pdf from "../../../javascript/generate_pdf/evaluate_summary_score_pdf/evaluate_summary_score_pdf";
+import DatePickerSupplier from "../../../components/evaluateform/datepicker_supplier/components";
 
 const dateFormat = "DD/MM/YYYY";
 
@@ -522,7 +521,7 @@ const Evaluate = (props) => {
                         การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ
                       </p>
                       <br />
-                      <ReportMonth
+                      <DatePickerSupplier
                         url={props.baseUrl}
                         token_id={props.token_id}
                         dateFormat={dateFormat}
@@ -530,14 +529,9 @@ const Evaluate = (props) => {
                         moment={moment}
                         setSelectMonth={setSelectMonth}
                         convert_year_th={convert_year_th}
+                        value={evaluate_vendors.temp_state_filter.vendor}
+                        supplier_list={evaluate_vendors?.vendor_list}
                       />
-                      <div className="clear-both">
-                        <Supplier_Eva
-                          month={month}
-                          value={evaluate_vendors.temp_state_filter.vendor}
-                          supplier_list={evaluate_vendors?.vendor_list}
-                        />
-                      </div>
                       <div className="clear-both">
                         <GroupTopic
                           topicGroup={evaluate_vendors?.evaluate_form}

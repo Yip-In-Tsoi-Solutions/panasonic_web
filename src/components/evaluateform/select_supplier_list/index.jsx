@@ -19,7 +19,6 @@ const Supplier_Eva = ({ value, supplier_list }) => {
               required: true,
               message: "Please select a Vendors",
             },
-            // Add more rules as needed
           ]}
         >
           <Select
