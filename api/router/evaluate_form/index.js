@@ -1,19 +1,23 @@
 const express = require("express");
 const sql_serverConn = require("../../sql_server_conn/sql_serverConn");
 const authenticateToken = require("../../secure/jwt");
+const convert_inter_year = require("../../javascript/convert_inter_year");
 const evaluate_form = express();
 evaluate_form.use(express.json());
-//
-evaluate_form.get(
+// display master supplier
+evaluate_form.post(
   "/evaluate/dropdown/supplier",
   authenticateToken,
   async (req, res) => {
     try {
+      const selected_month = convert_inter_year(req.body.month);
       const sql = await sql_serverConn();
       const result = sql.query(
         `
-        SELECT * FROM [dbo].[PECTH_SUPPLIER_MASTER] ORDER by SUPPLIER_NAME ASC
-      `
+            SELECT distinct SUPPLIER as SUPPLIER_NAME FROM [dbo].[PECTH_SUPPLIER_DELIVERY_HISTORICAL] 
+            WHERE PROMISED_DATE BETWEEN DATEADD(month, DATEDIFF(month, 0, '${selected_month}'), 0) and 
+            EOMONTH('${selected_month}') ORDER BY SUPPLIER ASC
+          `
       );
       res.status(200).send((await result).recordset);
     } catch (error) {
@@ -110,10 +114,10 @@ evaluate_form.post(
           evaluatePercent <= 69
             ? "D"
             : evaluatePercent <= 79
-            ? "C"
-            : evaluatePercent <= 89
-            ? "B"
-            : "A"
+              ? "C"
+              : evaluatePercent <= 89
+                ? "B"
+                : "A"
         );
         request.input("EVALUATE_COMMENT", comments);
         request.input("FLAG_STATUS", String(flag_status).toUpperCase());
@@ -250,10 +254,10 @@ evaluate_form.put(
         evaluatePercent <= 69
           ? "D"
           : evaluatePercent <= 79
-          ? "C"
-          : evaluatePercent <= 89
-          ? "B"
-          : "A";
+            ? "C"
+            : evaluatePercent <= 89
+              ? "B"
+              : "A";
 
       // Update evaluation header
       const evaluateHeaderRequest = sql.request();
@@ -333,10 +337,10 @@ evaluate_form.put(
         evaluatePercent <= 69
           ? "D"
           : evaluatePercent <= 79
-          ? "C"
-          : evaluatePercent <= 89
-          ? "B"
-          : "A";
+            ? "C"
+            : evaluatePercent <= 89
+              ? "B"
+              : "A";
 
       // Update evaluation header
       const evaluateHeaderRequest = sql.request();

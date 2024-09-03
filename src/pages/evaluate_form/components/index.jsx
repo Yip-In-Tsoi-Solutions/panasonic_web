@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   Button,
   Card,
@@ -20,8 +20,6 @@ import moment from "moment";
 import Group_topic_evaluate_update from "../../../components/evaluateform/group_topic_evaluate_update";
 import Group_topic_approve from "../../../components/evaluateform/group_topic_approve";
 // Components
-import Supplier_Eva from "../../../components/evaluateform/select_supplier_list/index";
-import ReportMonth from "../../../components/evaluateform/select_report_month";
 import GroupTopic from "../../../components/evaluateform/group_topic";
 import SummaryScore from "../../../components/summary_score/components";
 
@@ -31,8 +29,7 @@ import {
   setEvaluateConfirm,
   setEvaluatePending,
   setEvaluateResultTable,
-  setForm,
-  setVendorList,
+  setForm
 } from "../actions/evaluate_formSlice";
 
 // Helpers
@@ -41,6 +38,7 @@ import convert_year_th from "../../../javascript/convert_year_th";
 import generatePDF from "../../../javascript/generate_pdf/evaluation_pdf/generate_pdf";
 import { CloseCircleOutlined, FilePdfOutlined } from "@ant-design/icons";
 import Summary_score_pdf from "../../../javascript/generate_pdf/evaluate_summary_score_pdf/evaluate_summary_score_pdf";
+import DatePickerSupplier from "../../../components/evaluateform/datepicker_supplier/components";
 
 const dateFormat = "DD/MM/YYYY";
 
@@ -70,30 +68,12 @@ const Evaluate = (props) => {
   const [confirmDrawerOpen, setConfirmDrawerOpen] = useState(false);
   const [confirmData, setConfirmData] = useState(null);
   const [approve_id, setApproveId] = useState("");
-
   useEffect(() => {
     fetchEvaluateTopic();
-    fetchDropdownVendor();
     fetchEvaluate();
     fetchEvaluateDraft();
     fetchEvaluateConfirm();
   }, []);
-
-  // get list of SUPPLIER / VENDORS
-  const fetchDropdownVendor = async () => {
-    try {
-      const response = await axios.get(
-        `${props.baseUrl}/api/evaluate/dropdown/supplier`,
-        {
-          headers: { Authorization: `Bearer ${props.token_id}` },
-        }
-      );
-      dispatch(setVendorList(response.data));
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const fetchEvaluateTopic = async () => {
     try {
       const response = await axios.get(`${props.baseUrl}/api/evaluate/topic`, {
@@ -536,16 +516,21 @@ const Evaluate = (props) => {
                   children: (
                     <Form onFinish={submitForm} form={save_draft}>
                       {contextHolder}
-                      <Supplier_Eva
-                        value={evaluate_vendors.temp_state_filter.vendor}
-                        supplier_list={evaluate_vendors?.vendor_list}
-                      />
-                      <ReportMonth
+                      <br />
+                      <p className="text-[16px]">
+                        การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ
+                      </p>
+                      <br />
+                      <DatePickerSupplier
+                        url={props.baseUrl}
+                        token_id={props.token_id}
                         dateFormat={dateFormat}
                         month={month}
                         moment={moment}
                         setSelectMonth={setSelectMonth}
                         convert_year_th={convert_year_th}
+                        value={evaluate_vendors.temp_state_filter.vendor}
+                        supplier_list={evaluate_vendors?.vendor_list}
                       />
                       <div className="clear-both">
                         <GroupTopic
