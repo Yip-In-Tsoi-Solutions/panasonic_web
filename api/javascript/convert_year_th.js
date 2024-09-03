@@ -1,9 +1,7 @@
 const convert_year_th = (dateString) => {
-  // Given date string
-  const dateStr = "2567-06-19T00:00:00.000Z";
 
   // Convert the string to a Date object
-  const date = new Date(dateStr);
+  const date = new Date(dateString);
 
   // Subtract 5 days
   date.setDate(date.getDate() - 5);

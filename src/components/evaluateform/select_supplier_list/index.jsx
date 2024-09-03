@@ -9,11 +9,6 @@ const Supplier_Eva = ({ value, supplier_list }) => {
   };
   return (
     <>
-      <br />
-      <p className="text-[16px]">
-        การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ
-      </p>
-      <br />
       <div className="grid grid-cols-2 gap-2">
         <p className="text-[16px] float-left">ชื่อผู้ส่งมอบ (Supplier)</p>
         <Form.Item
@@ -34,7 +29,7 @@ const Supplier_Eva = ({ value, supplier_list }) => {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
             {supplier_list.map((item) => (
-              <Option key={item.SUPPLIER_ID} value={item.SUPPLIER_NAME} disabled={item.SUPPLIER_NAME === value}>{item.SUPPLIER_NAME}</Option>
+              <Option value={item.SUPPLIER_NAME} disabled={item.SUPPLIER_NAME === value}>{item.SUPPLIER_NAME}</Option>
             ))}
           </Select>
         </Form.Item>

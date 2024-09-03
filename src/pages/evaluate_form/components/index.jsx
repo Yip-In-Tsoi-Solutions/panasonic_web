@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   Button,
   Card,
@@ -31,8 +31,7 @@ import {
   setEvaluateConfirm,
   setEvaluatePending,
   setEvaluateResultTable,
-  setForm,
-  setVendorList,
+  setForm
 } from "../actions/evaluate_formSlice";
 
 // Helpers
@@ -70,30 +69,12 @@ const Evaluate = (props) => {
   const [confirmDrawerOpen, setConfirmDrawerOpen] = useState(false);
   const [confirmData, setConfirmData] = useState(null);
   const [approve_id, setApproveId] = useState("");
-
   useEffect(() => {
     fetchEvaluateTopic();
-    fetchDropdownVendor();
     fetchEvaluate();
     fetchEvaluateDraft();
     fetchEvaluateConfirm();
   }, []);
-
-  // get list of SUPPLIER / VENDORS
-  const fetchDropdownVendor = async () => {
-    try {
-      const response = await axios.get(
-        `${props.baseUrl}/api/evaluate/dropdown/supplier`,
-        {
-          headers: { Authorization: `Bearer ${props.token_id}` },
-        }
-      );
-      dispatch(setVendorList(response.data));
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const fetchEvaluateTopic = async () => {
     try {
       const response = await axios.get(`${props.baseUrl}/api/evaluate/topic`, {
@@ -536,17 +517,27 @@ const Evaluate = (props) => {
                   children: (
                     <Form onFinish={submitForm} form={save_draft}>
                       {contextHolder}
-                      <Supplier_Eva
-                        value={evaluate_vendors.temp_state_filter.vendor}
-                        supplier_list={evaluate_vendors?.vendor_list}
-                      />
+                      <br />
+                      <p className="text-[16px]">
+                        การประเมินการปฏิบัติงานผู้ส่งมอบด้านการให้บริการและการขนส่งวัตถุดิบ
+                      </p>
+                      <br />
                       <ReportMonth
+                        url={props.baseUrl}
+                        token_id={props.token_id}
                         dateFormat={dateFormat}
                         month={month}
                         moment={moment}
                         setSelectMonth={setSelectMonth}
                         convert_year_th={convert_year_th}
                       />
+                      <div className="clear-both">
+                        <Supplier_Eva
+                          month={month}
+                          value={evaluate_vendors.temp_state_filter.vendor}
+                          supplier_list={evaluate_vendors?.vendor_list}
+                        />
+                      </div>
                       <div className="clear-both">
                         <GroupTopic
                           topicGroup={evaluate_vendors?.evaluate_form}
