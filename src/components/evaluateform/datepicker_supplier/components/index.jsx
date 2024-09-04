@@ -3,7 +3,7 @@ import { useForm } from "antd/es/form/Form";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 const { Option } = Select;
-import { resetEValuate, setVendorList } from "../../../../pages/evaluate_form/actions/evaluate_formSlice";
+import { resetEValuate, setSelect_VendorList, setVendorList } from "../../../../pages/evaluate_form/actions/evaluate_formSlice";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import { useState } from "react";
 const DatePickerSupplier = ({
@@ -12,6 +12,7 @@ const DatePickerSupplier = ({
     dateFormat,
     month,
     moment,
+    setSelectMonth,
     convert_year_th,
     value,
     supplier_list
@@ -24,20 +25,17 @@ const DatePickerSupplier = ({
             let payload = {
                 month: selected_date
             }
-            try {
-                const response = axios.post(
-                    `${url}/api/evaluate/dropdown/supplier`,
-                    payload,
-                    {
-                        headers: { Authorization: `Bearer ${token_id}` },
-                    }
-                );
-                response.then((item) => {
-                    dispatch(setVendorList(item.data));
-                })
-            } catch (error) {
-                dispatch(resetEValuate())
-            }
+            const response = axios.post(
+                `${url}/api/evaluate/dropdown/supplier`,
+                payload,
+                {
+                    headers: { Authorization: `Bearer ${token_id}` },
+                }
+            );
+            response.then((item) => {
+                dispatch(setVendorList(item.data));
+            })
+            setSelectMonth(selected_date)
         }
         else {
             dispatch(resetEValuate());
